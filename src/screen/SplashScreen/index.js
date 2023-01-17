@@ -24,7 +24,7 @@ export default function SplashScreen(props) {
       <Text style={style.splashText}>Simbebas</Text>
       <Image source={Logo} style={{width: 73, height: 98}} />
       <View>
-        <Text style={style.splashText2}>Bamyumas Bebas Bencana</Text>
+        <Text style={style.splashText2}>Banyumas Bebas Bencana</Text>
       </View>
     </View>
   );
