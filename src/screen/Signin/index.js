@@ -20,15 +20,18 @@ export default function Signin(props) {
   const handleChangeForm = (value, name) => {
     setForm({...form, [name]: value});
   };
+  const navSignUp = () => {
+    props.navigation.navigate('Register');
+  };
   const handleLogin = async () => {
     try {
       // console.log(form);
-      const result = await axios.post('/auth/', form);
+      const result = await axios.post('/v1/login/', form);
       // console.log(result.data);
       // await AsyncStorage.setItem('userId', result.data.data.id);
       await AsyncStorage.setItem('token', result.data.data.token);
-      await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
-      // alert('sukses');
+      // await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      alert('sukses');
       // console.log(result.data);
       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
     } catch (error) {
@@ -57,7 +60,7 @@ export default function Signin(props) {
               style={style.input}
               placeholder="Masukan Username Anda"
               placeholderTextColor="#A0A3BD"
-              onChangeText={text => handleChangeForm(text, 'username')}
+              onChangeText={text => handleChangeForm(text, 'email')}
             />
             <TextInput
               style={style.input}
@@ -76,7 +79,9 @@ export default function Signin(props) {
               <Text style={{color: 'black', marginRight: 5}}>
                 Belum Punya Akun?
               </Text>
-              <Text style={{color: 'blue'}}>Daftar</Text>
+              <TouchableOpacity onPress={navSignUp}>
+                <Text style={{color: 'blue'}}>Daftar</Text>
+              </TouchableOpacity>
             </View>
             <TouchableOpacity
               style={{
