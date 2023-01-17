@@ -105,7 +105,7 @@ export default function Pusdalops() {
         </View>
         <View>
           <Text>Tanggal Kejadian</Text>
-          <TextInput data={date} />
+          <Text>Selected date: {date.toLocaleDateString()}</Text>
           <Button
             title="Pilih Tanggal dan waktu"
             onPress={() => setOpen(true)}
