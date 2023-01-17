@@ -20,6 +20,7 @@ export default function Pusdalops() {
   const [image, setImage] = useState();
   // for Date picker
   const [date, setDate] = useState(new Date());
+  // console.log(date);
   const [open, setOpen] = useState(false);
   // for dropdown
   const [select, setSelected] = React.useState('');
@@ -104,6 +105,7 @@ export default function Pusdalops() {
         </View>
         <View>
           <Text>Tanggal Kejadian</Text>
+          <TextInput data={date} />
           <Button
             title="Pilih Tanggal dan waktu"
             onPress={() => setOpen(true)}
