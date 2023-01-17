@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {SelectList} from 'react-native-dropdown-select-list';
 import DatePicker from 'react-native-date-picker';
+import MapView from 'react-native-maps';
 
 export default function Pusdalops() {
   // for Date picker
@@ -75,6 +76,17 @@ export default function Pusdalops() {
         </View>
         <View style={{marginTop: 10}}>
           <Text>Titik Lokasi Terjadinya Bencana</Text>
+          <View>
+            <MapView
+              initialRegion={{
+                latitude: 37.78825,
+                longitude: -122.4324,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              style={{flex: 1, height: 200, width: 400}}
+            />
+          </View>
           <View style={{flexDirection: 'row'}}>
             <TextInput
               placeholder="Lattitude"
