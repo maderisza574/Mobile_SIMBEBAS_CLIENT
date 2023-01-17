@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
-import Logo from '../../assets/img/BPBD.png';
+import Logo from '../../assets/img/Vector.png';
 
 export default function SplashScreen(props) {
   console.log(props);
@@ -16,18 +16,43 @@ export default function SplashScreen(props) {
       } else {
         props.navigation.replace('AuthScreen');
       }
-    }, 1000);
+    }, 10000);
   };
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Image source={Logo} style={{width: 100, height: 100}} />
-      <View style={{flexDirection: 'row'}}>
-        <Text>SIM</Text>
-        <Text>BEBAS</Text>
+    <View style={style.splashContainer}>
+      <Text style={style.splashText}>Simbebas</Text>
+      <Image source={Logo} style={{width: 73, height: 98}} />
+      <View>
+        <Text style={style.splashText2}>Bamyumas Bebas Bencana</Text>
       </View>
     </View>
   );
 }
 
-const style = StyleSheet.create({});
+const style = StyleSheet.create({
+  splashContainer: {
+    backgroundColor: '#FF6A16',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  splashText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+    marginLeft: 10,
+    marginBottom: 10,
+  },
+  splashText2: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+    marginLeft: 10,
+    marginTop: 10,
+  },
+});

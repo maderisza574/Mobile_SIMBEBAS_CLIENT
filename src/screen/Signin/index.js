@@ -11,7 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Logo from '../../assets/img/BPBD.png';
+import Logo from '../../assets/img/Vector.png';
 
 export default function Signin(props) {
   const [form, setForm] = useState({});
@@ -36,58 +36,66 @@ export default function Signin(props) {
     }
   };
   return (
-    <View>
-      <View style={style.containerImage}>
-        <Image source={Logo} style={{width: 100, height: 100}} />
-        <View style={{flexDirection: 'row'}}>
-          <Text style={{marginRight: 5}}>SIM</Text>
-          <Text>BEBAS</Text>
+    <>
+      <View style={style.containerForm}>
+        <View style={style.containerLogin}>
+          <View style={style.containerImage}>
+            <Image source={Logo} style={{width: 39, height: 52}} />
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+              <Text style={style.titleLogin}>simbebas</Text>
+            </View>
+          </View>
         </View>
-        <Text>Sistem Informasi Bebas Bencana</Text>
-      </View>
-      <View style={{marginTop: 30}}>
-        <TextInput
-          style={style.input}
-          placeholder="Masukan Email Anda"
-          onChangeText={text => handleChangeForm(text, 'username')}
-          // defaultValue={form}
-        />
-      </View>
-      <View style={{marginBottom: 20}}>
-        <View style={{position: 'relative'}}>
+        <View>
+          <Text style={style.titleLoginBottom}>Login</Text>
+        </View>
+        <View style={{marginTop: 30}}>
           <TextInput
             style={style.input}
-            placeholder="Masukan Password"
-            autoCapitalize="none"
-            secureTextEntry={showPassword ? false : true}
-            placeholderTextColor="#A0A3BD"
-            onChangeText={text => handleChangeForm(text, 'password')}
+            placeholder="Masukan Username Anda"
+            onChangeText={text => handleChangeForm(text, 'username')}
+            // defaultValue={form}
           />
-          <TouchableOpacity
-            style={{
-              position: 'absolute',
-              // right: 0,
-              marginLeft: 320,
-              height: '100%',
-              paddingHorizontal: 12,
-              justifyContent: 'center',
-            }}
-            onPress={() => setShowPassword(!showPassword)}>
-            {showPassword ? (
-              <Icon name="eye-with-line" size={20} />
-            ) : (
-              <Icon name="eye" size={20} />
-            )}
-          </TouchableOpacity>
+        </View>
+        <View style={{marginBottom: 20}}>
+          <View style={{position: 'relative'}}>
+            <TextInput
+              style={style.input}
+              placeholder="Masukan Password"
+              autoCapitalize="none"
+              secureTextEntry={showPassword ? false : true}
+              placeholderTextColor="#A0A3BD"
+              onChangeText={text => handleChangeForm(text, 'password')}
+            />
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                // right: 0,
+                marginLeft: 320,
+                height: '100%',
+                paddingHorizontal: 12,
+                justifyContent: 'center',
+              }}
+              onPress={() => setShowPassword(!showPassword)}>
+              {showPassword ? (
+                <Icon name="eye-with-line" size={20} />
+              ) : (
+                <Icon name="eye" size={20} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{marginTop: 30}}>
+          <Pressable style={style.buttonLogin} onPress={handleLogin}>
+            <Text style={style.textLogin}>Masuk</Text>
+          </Pressable>
+          {/* <Button title="Masuk" onPress={handleLogin} style={{outerWidth: 20}} /> */}
+        </View>
+        <View style={{marginLeft: 100, marginTop: 15}}>
+          <Text>Belum Punya Akun? Daftar</Text>
         </View>
       </View>
-      <View style={{marginTop: 200}}>
-        <Pressable style={style.buttonLogin} onPress={handleLogin}>
-          <Text style={style.textLogin}>Masuk</Text>
-        </Pressable>
-        {/* <Button title="Masuk" onPress={handleLogin} style={{outerWidth: 20}} /> */}
-      </View>
-    </View>
+    </>
   );
 }
 
@@ -127,5 +135,32 @@ const style = StyleSheet.create({
     letterSpacing: 0.25,
     color: 'white',
     marginLeft: 100,
+  },
+  containerLogin: {
+    backgroundColor: '#FF6A16',
+    height: 250,
+    width: 400,
+  },
+  titleLogin: {
+    color: 'white',
+    fontSize: 24,
+  },
+  textRegister: {
+    marginRight: 100,
+  },
+  containerForm: {
+    backgroundColor: 'white',
+    height: 100,
+    width: 500,
+    borderRadius: 30,
+  },
+  titleLoginBottom: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'black',
+    marginLeft: 180,
+    marginTop: 30,
   },
 });
