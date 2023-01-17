@@ -84,7 +84,7 @@ export default function Signin(props) {
                 // right: 0,
                 marginLeft: 320,
                 height: '100%',
-                paddingHorizontal: 12,
+                paddingHorizontal: 6,
                 justifyContent: 'center',
               }}
               onPress={() => setShowPassword(!showPassword)}>
