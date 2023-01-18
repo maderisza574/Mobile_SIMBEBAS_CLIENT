@@ -5,7 +5,8 @@ const axiosApiIntances = axios.create({
   // baseURL: 'https://event-organizing-backend.vercel.app/api/',
   // baseURL: 'https://creative-signal-backend.vercel.app/api/',
   // ipdevice: 3001,
-  baseURL: 'http://192.168.43.51:3001/api',
+  // baseURL: 'http://192.168.43.51:3001/api',
+  baseURL: 'http://192.168.43.51:5000/api',
 });
 
 // Add a request interceptor

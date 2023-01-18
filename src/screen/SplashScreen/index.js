@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
-import Logo from '../../assets/img/Vector.png';
+import Logo from '../../assets/img/BPBD.png';
 
 export default function SplashScreen(props) {
   console.log(props);
@@ -21,10 +21,10 @@ export default function SplashScreen(props) {
 
   return (
     <View style={style.splashContainer}>
-      <Text style={style.splashText}>Simbebas</Text>
-      <Image source={Logo} style={{width: 73, height: 98}} />
+      <Text style={style.splashText}>SIMBEBAS</Text>
+      <Image source={Logo} style={{width: 98, height: 98}} />
       <View>
-        <Text style={style.splashText2}>Bamyumas Bebas Bencana</Text>
+        <Text style={style.splashText2}>Banyumas Bebas Bencana</Text>
       </View>
     </View>
   );

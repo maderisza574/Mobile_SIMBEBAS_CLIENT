@@ -10,6 +10,7 @@ import {
   PermissionsAndroid,
   Image,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Entypo';
 import {SelectList} from 'react-native-dropdown-select-list';
 import DatePicker from 'react-native-date-picker';
 import MapView from 'react-native-maps';
@@ -18,6 +19,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 export default function Pusdalops() {
   //for image picker
   const [image, setImage] = useState();
+  // console.log(image);
   // for Date picker
   const [date, setDate] = useState(new Date());
   // console.log(date);
@@ -37,19 +39,45 @@ export default function Pusdalops() {
   // for camera
   const handleLaunchCamera = async () => {
     try {
-      const photo = await launchCamera({
-        mediaType: 'photo',
-        maxWidth: 100,
-        quality: 0.2,
-        cameraType: 'back',
-      });
-      const formData = new FormData();
-      formData.append('image', {
-        name: photo.assets[0].fileName,
-        type: photo.assets[0].type,
-        uri: photo.assets[0].uri,
-      });
-      const result = await setImage(result.assets[0].uri);
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Cool Photo App Camera Permission',
+          message: 'Cool Photo App needs access to your camera ',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        launchCamera(
+          {
+            mediaType: 'photo',
+            includeBase64: false,
+            maxHeight: 200,
+            maxWidth: 200,
+          },
+          response => {
+            if (response.didCancel) {
+              console.log('User cancelled image picker');
+            }
+            if (response.errorCode) {
+              console.log('ImagePicker Error: ', response.errorMessage);
+            }
+            if (response.assets) {
+              const source = {
+                uri: response.assets[0].uri,
+                type: response.assets[0].type,
+                name: response.assets[0].fileName,
+              };
+              setImage(response.assets[0].uri);
+              // setImage({...image, image: source});
+            }
+          },
+        );
+      } else {
+        console.log('Camera permission denied');
+      }
     } catch (error) {
       console.log(error);
     }
@@ -65,6 +93,7 @@ export default function Pusdalops() {
       type: photo.assets[0].type,
       uri: photo.assets[0].uri,
     });
+    setImage(photo.assets[0].uri);
   };
   // const openCamera = async () => {
   //   let options = {
@@ -82,7 +111,7 @@ export default function Pusdalops() {
   return (
     <View>
       <ScrollView>
-        <Text style={{marginBottom: 30}}>
+        <Text style={{marginBottom: 10}}>
           Silahkan isi beberapa data untuk melapor
         </Text>
         <View style={{padding: 5}}>
@@ -163,16 +192,20 @@ export default function Pusdalops() {
         <View style={{flexDirection: 'row', padding: 10}}>
           <View style={{marginRight: 60}}>
             <Text>Preview Image</Text>
-            <Image source={{uri: image}} style={{width: 30, height: 30}} />
+            <Image source={{uri: image}} style={{width: 200, height: 200}} />
           </View>
+        </View>
+        <View style={{marginBottom: 10, flexDirection: 'row'}}>
           <TouchableOpacity
             style={{borderWidth: 1, marginRight: 10, width: 60}}
             onPress={handleLaunchCamera}>
+            <Icon name="camera" size={20} style={{marginLeft: 10}} />
             <Text>Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{borderWidth: 1, marginRight: 10}}
+            style={{borderWidth: 1, marginRight: 10, width: 60}}
             onPress={handleLaunchImageLibrary}>
+            <Icon name="folder-images" size={20} style={{marginLeft: 10}} />
             <Text>Gallery</Text>
           </TouchableOpacity>
         </View>
