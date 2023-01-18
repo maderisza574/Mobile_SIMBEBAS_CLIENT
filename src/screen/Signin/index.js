@@ -11,7 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Logo from '../../assets/img/Vector.png';
+import Logo from '../../assets/img/BPBD.png';
 
 export default function Signin(props) {
   const [form, setForm] = useState({});
@@ -43,14 +43,14 @@ export default function Signin(props) {
       {/* <View style={style.containerForm}> */}
       <View style={style.containerLogin}>
         <View style={style.containerImage}>
-          <Image source={Logo} style={{width: 39, height: 52}} />
+          <Image source={Logo} style={{width: 60, height: 60}} />
           <View style={{flexDirection: 'row', marginTop: 10}}>
-            <Text style={style.titleLogin}>simbebas</Text>
+            <Text style={style.titleLogin}>SIMBEBAS</Text>
           </View>
         </View>
         <View
           style={{backgroundColor: 'white', height: '100%', borderRadius: 25}}>
-          <Text style={style.titleLogin}>simbebas</Text>
+          <Text style={style.titleLogin}>SIMBEBAS</Text>
 
           <View>
             <Text style={style.titleLoginBottom}>Login</Text>
@@ -91,6 +91,7 @@ export default function Signin(props) {
                 height: '100%',
                 paddingHorizontal: 6,
                 justifyContent: 'center',
+                marginTop: -10,
               }}
               onPress={() => setShowPassword(!showPassword)}>
               {showPassword ? (

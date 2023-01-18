@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   Pressable,
   Image,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Logo from '../../assets/img/Vector.png';
+import Logo from '../../assets/img/BPBD.png';
 
 export default function Register(props) {
   const [form, setForm] = useState({});
@@ -20,14 +21,20 @@ export default function Register(props) {
   const handleChangeForm = (value, name) => {
     setForm({...form, [name]: value});
   };
-  const handleLogin = async () => {
+  const navSignin = () => {
+    props.navigation.navigate('Signin');
+  };
+  const navVerification = () => {
+    props.navigation.navigate('Verifikasi');
+  };
+  const handleRegister = async () => {
     try {
       // console.log(form);
-      const result = await axios.post('/auth/', form);
+      // const result = await axios.post('/auth/', form);
       // console.log(result.data);
       // await AsyncStorage.setItem('userId', result.data.data.id);
-      await AsyncStorage.setItem('token', result.data.data.token);
-      await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      // await AsyncStorage.setItem('token', result.data.data.token);
+      // await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
       // alert('sukses');
       // console.log(result.data);
       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
@@ -37,74 +44,96 @@ export default function Register(props) {
   };
   return (
     <>
-      {/* <View style={style.containerForm}> */}
-      <View style={style.containerLogin}>
-        <View style={style.containerImage}>
-          <Image source={Logo} style={{width: 39, height: 52}} />
-          <View style={{flexDirection: 'row', marginTop: 10}}>
-            <Text style={style.titleLogin}>simbebas</Text>
-          </View>
-        </View>
-        <View
-          style={{backgroundColor: 'white', height: '100%', borderRadius: 25}}>
-          <Text style={style.titleLogin}>simbebas</Text>
-
-          <View>
-            <Text style={style.titleLoginBottom}>Login</Text>
-          </View>
-          <View style={{padding: 20}}>
-            <TextInput
-              style={style.input}
-              placeholder="Masukan Username Anda"
-              placeholderTextColor="#A0A3BD"
-              onChangeText={text => handleChangeForm(text, 'username')}
-            />
-            <TextInput
-              style={style.input}
-              placeholder="Masukan Password"
-              autoCapitalize="none"
-              secureTextEntry={showPassword ? false : true}
-              placeholderTextColor="#A0A3BD"
-              onChangeText={text => handleChangeForm(text, 'password')}
-            />
-            <Pressable style={style.buttonLogin} onPress={handleLogin}>
-              <Text style={style.textLogin}>Masuk</Text>
-            </Pressable>
-
-            <View
-              style={{marginLeft: 100, marginTop: 15, flexDirection: 'row'}}>
-              <Text style={{color: 'black', marginRight: 5}}>
-                Belum Punya Akun?
-              </Text>
-              <Text style={{color: 'blue'}}>Daftar</Text>
+      <ScrollView>
+        {/* <View style={style.containerForm}> */}
+        <View style={style.containerLogin}>
+          <View style={style.containerImage}>
+            <Image source={Logo} style={{width: 60, height: 60}} />
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+              <Text style={style.titleLogin}>SIMBEBAS</Text>
             </View>
-            <TouchableOpacity
-              style={{
-                position: 'absolute',
-                // right: 0,
-                marginLeft: 320,
-                height: '100%',
-                paddingHorizontal: 6,
-                justifyContent: 'center',
-              }}
-              onPress={() => setShowPassword(!showPassword)}>
-              {showPassword ? (
-                <Icon name="eye-with-line" size={20} />
-              ) : (
-                <Icon name="eye" size={20} />
-              )}
-            </TouchableOpacity>
           </View>
-          {/* </View> */}
-          <View style={{marginTop: 30}}>
-            {/* <Button
+          <View
+            style={{
+              backgroundColor: 'white',
+              height: '100%',
+              borderRadius: 25,
+            }}>
+            <Text style={style.titleLogin}>simbebas</Text>
+
+            <View>
+              <Text style={style.titleLoginBottom}>Register</Text>
+            </View>
+            <View style={{padding: 20}}>
+              <TextInput
+                style={style.input}
+                placeholder="Masukan Username Anda"
+                placeholderTextColor="#A0A3BD"
+                onChangeText={text => handleChangeForm(text, 'username')}
+              />
+
+              <TextInput
+                style={style.input}
+                placeholder="Masukan Password"
+                autoCapitalize="none"
+                secureTextEntry={showPassword ? false : true}
+                placeholderTextColor="#A0A3BD"
+                onChangeText={text => handleChangeForm(text, 'password')}
+              />
+              <TextInput
+                style={style.input}
+                placeholder="Masukan email"
+                placeholderTextColor="#A0A3BD"
+                onChangeText={text => handleChangeForm(text, 'email')}
+              />
+              <TextInput
+                style={style.input}
+                placeholder="No WhatsApp"
+                placeholderTextColor="#A0A3BD"
+                onChangeText={text => handleChangeForm(text, 'nowhatsapp')}
+              />
+              <Pressable style={style.buttonLogin} onPress={navVerification}>
+                <Text style={style.textLogin}>Daftar Akun</Text>
+              </Pressable>
+
+              <View
+                style={{marginLeft: 100, marginTop: 15, flexDirection: 'row'}}>
+                <Text style={{color: 'black', marginRight: 5}}>
+                  Sudah Punya akun?
+                </Text>
+                <TouchableOpacity onPress={navSignin}>
+                  <Text style={{color: 'blue'}}>Masuk</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  // right: 0,
+                  marginLeft: 320,
+                  height: '100%',
+                  paddingHorizontal: 6,
+                  justifyContent: 'center',
+                  marginTop: -10,
+                }}
+                onPress={() => setShowPassword(!showPassword)}>
+                {showPassword ? (
+                  <Icon name="eye-with-line" size={20} />
+                ) : (
+                  <Icon name="eye" size={20} />
+                )}
+              </TouchableOpacity>
+            </View>
+            {/* </View> */}
+            <View style={{marginTop: 30}}>
+              {/* <Button
               title="Masuk"
               onPress={handleLogin}
               style={{outerWidth: 20}}
             /> */}
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 }

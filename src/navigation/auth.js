@@ -6,6 +6,7 @@ const Stack = createNativeStackNavigator();
 
 import Signin from '../screen/Signin';
 import Register from '../screen/Register';
+import Verifikasi from '../screen/Verifikasi';
 
 export default function AuthStackNavigator() {
   return (
@@ -18,6 +19,11 @@ export default function AuthStackNavigator() {
       <Stack.Screen
         name="Register"
         component={Register}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Verifikasi"
+        component={Verifikasi}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

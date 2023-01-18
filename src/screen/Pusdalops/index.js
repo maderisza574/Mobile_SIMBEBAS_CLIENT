@@ -10,6 +10,7 @@ import {
   PermissionsAndroid,
   Image,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Entypo';
 import {SelectList} from 'react-native-dropdown-select-list';
 import DatePicker from 'react-native-date-picker';
 import MapView from 'react-native-maps';
@@ -92,6 +93,7 @@ export default function Pusdalops() {
       type: photo.assets[0].type,
       uri: photo.assets[0].uri,
     });
+    setImage(photo.assets[0].uri);
   };
   // const openCamera = async () => {
   //   let options = {
@@ -109,7 +111,7 @@ export default function Pusdalops() {
   return (
     <View>
       <ScrollView>
-        <Text style={{marginBottom: 30}}>
+        <Text style={{marginBottom: 10}}>
           Silahkan isi beberapa data untuk melapor
         </Text>
         <View style={{padding: 5}}>
@@ -192,14 +194,18 @@ export default function Pusdalops() {
             <Text>Preview Image</Text>
             <Image source={{uri: image}} style={{width: 200, height: 200}} />
           </View>
+        </View>
+        <View style={{marginBottom: 10, flexDirection: 'row'}}>
           <TouchableOpacity
             style={{borderWidth: 1, marginRight: 10, width: 60}}
             onPress={handleLaunchCamera}>
+            <Icon name="camera" size={20} style={{marginLeft: 10}} />
             <Text>Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{borderWidth: 1, marginRight: 10}}
+            style={{borderWidth: 1, marginRight: 10, width: 60}}
             onPress={handleLaunchImageLibrary}>
+            <Icon name="folder-images" size={20} style={{marginLeft: 10}} />
             <Text>Gallery</Text>
           </TouchableOpacity>
         </View>
