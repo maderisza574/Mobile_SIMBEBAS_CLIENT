@@ -28,11 +28,11 @@ export default function Signin(props) {
       // console.log(form);
       const result = await axios.post('/v1/login/', form);
       // console.log(result.data);
-      // await AsyncStorage.setItem('userId', result.data.data.id);
-      await AsyncStorage.setItem('token', result.data.data.token);
+      // await AsyncStorage.setItem('userName', result.data.data.username);
+      // await AsyncStorage.setItem('token', result.data.data.token);
       // await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
       alert('sukses');
-      // console.log(result.data);
+      console.log(result.data);
       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
     } catch (error) {
       // alert(error.response.data.message);
@@ -60,7 +60,7 @@ export default function Signin(props) {
               style={style.input}
               placeholder="Masukan Username Anda"
               placeholderTextColor="#A0A3BD"
-              onChangeText={text => handleChangeForm(text, 'email')}
+              onChangeText={text => handleChangeForm(text, 'username')}
             />
             <TextInput
               style={style.input}
