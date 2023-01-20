@@ -18,6 +18,8 @@ import MapView from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 export default function Pusdalops() {
+  const [form, setForm] = useState({});
+  console.log(form);
   //for image picker
   const [image, setImage] = useState();
   // console.log(image);
@@ -29,6 +31,11 @@ export default function Pusdalops() {
   const [tindakan, setTindakan] = React.useState('');
   const [bencana, setBencana] = React.useState('');
   const [bencanaPenangulangan, setbencanaPenangulangan] = React.useState('');
+  const [latitude, setlatitude] = useState();
+  const [longitude, setlongiude] = useState();
+  const handleChangeForm = (value, name) => {
+    setForm({...form, [name]: value});
+  };
   //
   const dataTindakan = [
     {
@@ -175,7 +182,10 @@ export default function Pusdalops() {
           </View>
           <View>
             <Text>Tanggal Kejadian</Text>
-            <TextInput placeholder={date.toLocaleDateString()} />
+            <TextInput
+              placeholder={date.toLocaleDateString()}
+              style={{borderWidth: 1, borderRadius: 10}}
+            />
             <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
               <Text style={style.textLogin}>Pilih Tanggal dan waktu</Text>
             </Pressable>
@@ -216,7 +226,7 @@ export default function Pusdalops() {
                 style={{flex: 1, height: 200, width: 380}}
               />
             </View>
-            <View style={{flexDirection: 'row', marginTop: 5}}>
+            <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
                 placeholder="Lattitude"
                 style={{
@@ -226,14 +236,16 @@ export default function Pusdalops() {
                   borderRadius: 3,
                   width: 170,
                 }}
+                onChangeText={text => handleChangeForm(text, 'latitude')}
               />
               <TextInput
                 placeholder="Longtitude"
                 style={{borderWidth: 1, borderRadius: 3, width: 170}}
+                onChangeText={text => handleChangeForm(text, 'longtitude')}
               />
             </View>
           </View>
-          <View>
+          <View style={{marginTop: 20}}>
             <Text>Upload gambar</Text>
           </View>
           <View style={{flexDirection: 'row', padding: 10}}>
@@ -242,18 +254,22 @@ export default function Pusdalops() {
               <Image source={{uri: image}} style={{width: 200, height: 200}} />
             </View>
           </View>
-          <View style={{marginBottom: 10, flexDirection: 'row'}}>
+          <View
+            style={{
+              marginBottom: 10,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <TouchableOpacity
-              style={{borderWidth: 1, marginRight: 10, width: 60}}
+              style={{marginRight: 10, width: 60}}
               onPress={handleLaunchCamera}>
               <Icon name="camera" size={20} style={{marginLeft: 10}} />
-              <Text>Camera</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{borderWidth: 1, marginRight: 10, width: 60}}
+              style={{marginRight: 10, width: 60}}
               onPress={handleLaunchImageLibrary}>
               <Icon name="folder-images" size={20} style={{marginLeft: 10}} />
-              <Text>Gallery</Text>
             </TouchableOpacity>
           </View>
           <View>
@@ -270,7 +286,9 @@ export default function Pusdalops() {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Button title="Kirim" />
+            <Pressable style={style.buttonLogin}>
+              <Text style={style.textLogin}>Kirim</Text>
+            </Pressable>
           </View>
         </View>
       </ScrollView>
