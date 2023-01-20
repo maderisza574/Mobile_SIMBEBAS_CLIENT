@@ -16,6 +16,7 @@ import DrawerContent from '../components/DrawerContent';
 import HeaderHome from '../components/Header/home';
 import HeaderDefault from '../components/Header/default';
 import Asesmen from '../screen/Asesmen';
+import Verifikator from '../screen/Verifikator';
 
 function MenuNavigator() {
   return (
@@ -44,6 +45,16 @@ function MenuNavigator() {
       <Drawer.Screen
         name="Asesmen"
         component={Asesmen}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="Safety" color={color} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Verifikator"
+        component={Verifikator}
         options={{
           header: props => <HeaderDefault {...props} />,
           drawerIcon: ({size, color}) => (
