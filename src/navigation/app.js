@@ -9,6 +9,7 @@ const Drawer = createDrawerNavigator();
 
 import Home from '../screen/Home';
 import Detail from '../screen/Detail';
+import Map from '../screen/map';
 
 import Pusdalops from '../screen/Pusdalops';
 import DrawerContent from '../components/DrawerContent';
@@ -32,6 +33,16 @@ function MenuNavigator() {
       <Drawer.Screen
         name="Pusdalop"
         component={Pusdalops}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="filetext1" color={color} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Map"
+        component={Map}
         options={{
           header: props => <HeaderDefault {...props} />,
           drawerIcon: ({size, color}) => (
