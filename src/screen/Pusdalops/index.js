@@ -277,6 +277,7 @@ export default function Pusdalops() {
                 value={stateMap.latitude}
                 placeholder="Latitude"
                 keyboardType="numeric"
+                style={{marginRight: 30}}
               />
 
               <TextInput
@@ -284,8 +285,11 @@ export default function Pusdalops() {
                 keyboardType="numeric"
                 placeholder="Longitude"
                 value={stateMap.longitude}
+                style={{marginRight: 10}}
               />
-              <Button title="Search" onPress={handleSearch} />
+              <Pressable style={style.buttonSearchMap} onPress={handleSearch}>
+                <Text style={style.textSearchMap}>Cari</Text>
+              </Pressable>
             </View>
           </View>
           <View style={{marginTop: 20}}>
@@ -377,6 +381,27 @@ const style = StyleSheet.create({
     marginTop: 30,
   },
   textLogin: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  buttonSearchMap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ff471a',
+    width: '30%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: -6,
+    marginLeft: 50,
+  },
+  textSearchMap: {
     fontSize: 16,
     lineHeight: 21,
     fontWeight: 'bold',

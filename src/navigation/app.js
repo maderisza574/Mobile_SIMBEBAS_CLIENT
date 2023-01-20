@@ -15,6 +15,7 @@ import Pusdalops from '../screen/Pusdalops';
 import DrawerContent from '../components/DrawerContent';
 import HeaderHome from '../components/Header/home';
 import HeaderDefault from '../components/Header/default';
+import Asesmen from '../screen/Asesmen';
 
 function MenuNavigator() {
   return (
@@ -41,12 +42,22 @@ function MenuNavigator() {
         }}
       />
       <Drawer.Screen
+        name="Asesmen"
+        component={Asesmen}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="Safety" color={color} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen
         name="Map"
         component={Map}
         options={{
           header: props => <HeaderDefault {...props} />,
           drawerIcon: ({size, color}) => (
-            <Icon name="filetext1" color={color} size={size} />
+            <Icon name="enviroment" color={color} size={size} />
           ),
         }}
       />
