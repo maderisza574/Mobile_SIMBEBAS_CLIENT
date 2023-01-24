@@ -336,6 +336,9 @@ export default function Pusdalops() {
             <Pressable style={style.buttonLogin}>
               <Text style={style.textLogin}>Kirim</Text>
             </Pressable>
+            <Pressable style={style.buttonBatal}>
+              <Text style={style.textLogin}>Batal</Text>
+            </Pressable>
           </View>
         </View>
       </ScrollView>
@@ -379,6 +382,19 @@ const style = StyleSheet.create({
     textAlign: 'center',
     height: 50,
     marginTop: 30,
+  },
+  buttonBatal: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ff0000',
+    width: '100%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: 10,
   },
   textLogin: {
     fontSize: 16,

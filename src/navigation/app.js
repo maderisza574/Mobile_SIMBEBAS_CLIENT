@@ -17,6 +17,7 @@ import HeaderHome from '../components/Header/home';
 import HeaderDefault from '../components/Header/default';
 import Asesmen from '../screen/Asesmen';
 import Verifikator from '../screen/Verifikator';
+import AsesmenDetail from '../screen/Asesmen Detail';
 
 function MenuNavigator() {
   return (
@@ -89,7 +90,14 @@ export default function AppStackNavigator() {
         options={{headerShown: false}}
       />
       <Stack.Screen name="Detail" component={Detail} />
-      {/* ORDER */}
+      {/* ASESMEN DETAIL */}
+      <Stack.Screen
+        name="AsesmenDetail"
+        component={AsesmenDetail}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+        }}
+      />
       {/* PAYMENT */}
       {/* EDIT PROFILE */}
       {/* CHANGE PASSWORD */}
