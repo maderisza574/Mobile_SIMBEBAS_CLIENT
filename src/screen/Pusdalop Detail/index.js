@@ -18,7 +18,7 @@ import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-export default function Pusdalops() {
+export default function PusdalopDetail() {
   const [form, setForm] = useState({});
   console.log(form);
   //for image picker

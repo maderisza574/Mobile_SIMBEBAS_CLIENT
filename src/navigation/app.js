@@ -11,13 +11,14 @@ import Home from '../screen/Home';
 import Detail from '../screen/Detail';
 import Map from '../screen/map';
 
-import Pusdalops from '../screen/Pusdalops';
+import Pusdalop from '../screen/Pusdalop';
 import DrawerContent from '../components/DrawerContent';
 import HeaderHome from '../components/Header/home';
 import HeaderDefault from '../components/Header/default';
 import Asesmen from '../screen/Asesmen';
 import Verifikator from '../screen/Verifikator';
 import AsesmenDetail from '../screen/Asesmen Detail';
+import PusdalopDetail from '../screen/Pusdalop Detail';
 
 function MenuNavigator() {
   return (
@@ -35,7 +36,7 @@ function MenuNavigator() {
       />
       <Drawer.Screen
         name="Pusdalop"
-        component={Pusdalops}
+        component={Pusdalop}
         options={{
           header: props => <HeaderDefault {...props} />,
           drawerIcon: ({size, color}) => (
@@ -59,7 +60,7 @@ function MenuNavigator() {
         options={{
           header: props => <HeaderDefault {...props} />,
           drawerIcon: ({size, color}) => (
-            <Icon name="Safety" color={color} size={size} />
+            <Icon name="team" color={color} size={size} />
           ),
         }}
       />
@@ -98,7 +99,15 @@ export default function AppStackNavigator() {
           header: props => <HeaderDefault {...props} />,
         }}
       />
-      {/* PAYMENT */}
+      {/* PUSDALOP DETAIL*/}
+      <Stack.Screen
+        name="PusdalopDetail"
+        component={PusdalopDetail}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+        }}
+      />
+      {/*
       {/* EDIT PROFILE */}
       {/* CHANGE PASSWORD */}
     </Stack.Navigator>
