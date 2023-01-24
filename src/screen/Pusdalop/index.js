@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
-export default function Asesmen(props) {
-  const navAsesmenDetail = () => {
-    props.navigation.navigate('AsesmenDetail');
+export default function Pusdalop(props) {
+  const navPusdalopDetail = () => {
+    props.navigation.navigate('PusdalopDetail');
   };
   const [people, setPeople] = useState([
     {
@@ -83,7 +83,7 @@ export default function Asesmen(props) {
           />
           <View style={{justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{color: 'white'}}>Data Lapor Bencana</Text>
-            <Text style={{color: 'white'}}>(ASESMEN)</Text>
+            <Text style={{color: 'white'}}>(PUSDALOP)</Text>
           </View>
         </View>
       </View>
@@ -114,7 +114,7 @@ export default function Asesmen(props) {
                       width: 50,
                       borderRadius: 10,
                     }}
-                    onPress={navAsesmenDetail}>
+                    onPress={navPusdalopDetail}>
                     <Text style={{marginLeft: -50}}>Lihat</Text>
                   </Pressable>
                 </View>
@@ -127,7 +127,6 @@ export default function Asesmen(props) {
     </View>
   );
 }
-
 const style = StyleSheet.create({
   titleScreen: {
     backgroundColor: '#FF6A16',

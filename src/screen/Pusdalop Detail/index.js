@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -15,9 +15,10 @@ import Icon from 'react-native-vector-icons/Entypo';
 import {SelectList} from 'react-native-dropdown-select-list';
 import DatePicker from 'react-native-date-picker';
 import MapView from 'react-native-maps';
+import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-export default function Pusdalops() {
+export default function PusdalopDetail() {
   const [form, setForm] = useState({});
   console.log(form);
   //for image picker
@@ -36,7 +37,7 @@ export default function Pusdalops() {
   const handleChangeForm = (value, name) => {
     setForm({...form, [name]: value});
   };
-  //
+
   const dataTindakan = [
     {
       key: '1',
@@ -128,6 +129,41 @@ export default function Pusdalops() {
   //     setImage(result.assets[0].uri);
   //   }
   // };
+  const [stateMap, setStateMap] = useState({
+    latitude: null || -7.431391,
+    longitude: null || 109.247833,
+  });
+  const [mapRegion, setMapRegion] = useState({
+    latitude: stateMap.latitude || -7.431391,
+    longitude: stateMap.longitude || 109.247833,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+  // console.log(stateMap);
+  const handleLatitudeChange = latitude => {
+    setStateMap({...stateMap, latitude: parseFloat(latitude)});
+  };
+  const handleLongitudeChange = longitude => {
+    setStateMap({...stateMap, longitude: parseFloat(longitude)});
+  };
+  const handleSearch = () => {
+    setMapRegion({
+      ...mapRegion,
+      latitude: stateMap.latitude,
+      longitude: stateMap.longitude,
+    });
+  };
+
+  useEffect(() => {
+    if (stateMap.latitude && stateMap.longitude) {
+      setMapRegion({
+        latitude: stateMap.latitude,
+        longitude: stateMap.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    }
+  }, [stateMap.latitude, stateMap.longitude]);
   return (
     <View>
       <ScrollView>
@@ -217,32 +253,43 @@ export default function Pusdalops() {
             <Text>Titik Lokasi Terjadinya Bencana</Text>
             <View>
               <MapView
-                initialRegion={{
-                  latitude: -7.424361,
-                  longitude: 109.23009,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                style={{flex: 1, height: 200, width: 380}}
-              />
+                initialRegion={mapRegion}
+                style={{flex: 1, height: 200, width: 380}}>
+                <Marker
+                  draggable
+                  coordinate={{
+                    latitude: stateMap.latitude,
+                    longitude: stateMap.longitude,
+                  }}
+                  onDragEnd={e =>
+                    setStateMap({
+                      ...stateMap,
+                      latitude: e.nativeEvent.coordinate.latitude,
+                      longitude: e.nativeEvent.coordinate.longitude,
+                    })
+                  }
+                />
+              </MapView>
             </View>
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
-                placeholder="Lattitude"
-                style={{
-                  marginRight: 20,
-                  marginLeft: 10,
-                  borderWidth: 1,
-                  borderRadius: 3,
-                  width: 170,
-                }}
-                onChangeText={text => handleChangeForm(text, 'latitude')}
+                onChangeText={handleLatitudeChange}
+                value={stateMap.latitude}
+                placeholder="Latitude"
+                keyboardType="numeric"
+                style={{marginRight: 30}}
               />
+
               <TextInput
-                placeholder="Longtitude"
-                style={{borderWidth: 1, borderRadius: 3, width: 170}}
-                onChangeText={text => handleChangeForm(text, 'longtitude')}
+                onChangeText={handleLongitudeChange}
+                keyboardType="numeric"
+                placeholder="Longitude"
+                value={stateMap.longitude}
+                style={{marginRight: 10}}
               />
+              <Pressable style={style.buttonSearchMap} onPress={handleSearch}>
+                <Text style={style.textSearchMap}>Cari</Text>
+              </Pressable>
             </View>
           </View>
           <View style={{marginTop: 20}}>
@@ -289,6 +336,9 @@ export default function Pusdalops() {
             <Pressable style={style.buttonLogin}>
               <Text style={style.textLogin}>Kirim</Text>
             </Pressable>
+            <Pressable style={style.buttonBatal}>
+              <Text style={style.textLogin}>Batal</Text>
+            </Pressable>
           </View>
         </View>
       </ScrollView>
@@ -333,7 +383,41 @@ const style = StyleSheet.create({
     height: 50,
     marginTop: 30,
   },
+  buttonBatal: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ff0000',
+    width: '100%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: 10,
+  },
   textLogin: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  buttonSearchMap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ff471a',
+    width: '30%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: -6,
+    marginLeft: 50,
+  },
+  textSearchMap: {
     fontSize: 16,
     lineHeight: 21,
     fontWeight: 'bold',
