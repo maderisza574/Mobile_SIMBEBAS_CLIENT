@@ -19,6 +19,7 @@ import Asesmen from '../screen/Asesmen';
 import Verifikator from '../screen/Verifikator';
 import AsesmenDetail from '../screen/Asesmen Detail';
 import PusdalopDetail from '../screen/Pusdalop Detail';
+import Counter from '../screen/Counter';
 
 function MenuNavigator() {
   return (
@@ -74,7 +75,17 @@ function MenuNavigator() {
           ),
         }}
       />
-      {/* MY BOOKING */}
+      {/* Counter */}
+      <Drawer.Screen
+        name="Counter"
+        component={Counter}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="enviroment" color={color} size={size} />
+          ),
+        }}
+      />
       {/* MY WISHLIST */}
     </Drawer.Navigator>
   );
