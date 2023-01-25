@@ -12,8 +12,12 @@ import Icon from 'react-native-vector-icons/Entypo';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Logo from '../../assets/img/BPBD.png';
+import {login} from '../../stores/actions/auth';
+import {useDispatch, useSelector} from 'react-redux';
 
 export default function Signin(props) {
+  const dispatch = useDispatch();
+  const auth = useSelector(state => state.auth);
   const [form, setForm] = useState({});
   // console.log(form);
   const [showPassword, setShowPassword] = useState(false);
@@ -23,19 +27,29 @@ export default function Signin(props) {
   const navSignUp = () => {
     props.navigation.navigate('Register');
   };
+  // const handleLogin = async () => {
+  //   try {
+  //     // console.log(form);
+  //     const result = await axios.post('/v1/login/', form);
+  //     // console.log(result.data);
+  //     // await AsyncStorage.setItem('userName', result.data.data.username);
+  //     // await AsyncStorage.setItem('token', result.data.data.token);
+  //     // await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+  //     alert('sukses');
+  //     console.log(result.data);
+  //     props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+  //   } catch (error) {
+  //     // alert(error.response.data.message);
+  //   }
+  // };
+  // with redux
   const handleLogin = async () => {
     try {
-      // console.log(form);
-      const result = await axios.post('/v1/login/', form);
-      // console.log(result.data);
-      // await AsyncStorage.setItem('userName', result.data.data.username);
-      // await AsyncStorage.setItem('token', result.data.data.token);
-      // await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      const result = await dispatch(login(form));
       alert('sukses');
-      console.log(result.data);
-      props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+      await props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
     } catch (error) {
-      // alert(error.response.data.message);
+      console.log(error);
     }
   };
   return (
