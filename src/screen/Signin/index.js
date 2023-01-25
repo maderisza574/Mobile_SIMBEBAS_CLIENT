@@ -19,7 +19,7 @@ export default function Signin(props) {
   const dispatch = useDispatch();
   const auth = useSelector(state => state.auth);
   const [form, setForm] = useState({});
-  // console.log(form);
+  console.log(form);
   const [showPassword, setShowPassword] = useState(false);
   const handleChangeForm = (value, name) => {
     setForm({...form, [name]: value});
@@ -46,10 +46,14 @@ export default function Signin(props) {
   const handleLogin = async () => {
     try {
       const result = await dispatch(login(form));
-      alert('sukses');
-      await props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+      console.log(result);
+      setTimeout(() => {
+        alert('sukses');
+        props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+      }, 3000);
     } catch (error) {
-      console.log(error);
+      alert(error.response);
+      console.log(error.response);
     }
   };
   return (

@@ -88,6 +88,14 @@ export default function Pusdalop(props) {
         </View>
       </View>
       <View style={style.containerInput}>
+        <View>
+          <Text>Riwayat Bencana</Text>
+          <View>
+            <Pressable style={style.buttonLogin} onPress={navPusdalopDetail}>
+              <Text style={style.textLogin}>Buat Laporan</Text>
+            </Pressable>
+          </View>
+        </View>
         <FlatList
           data={people}
           keyExtractor={item => item.key}
@@ -106,16 +114,31 @@ export default function Pusdalop(props) {
                     lorem ipsum lorem lorem lorem lorem lorem lorem
                   </Text>
                 </View>
-                <View style={{marginLeft: -40}}>
+                <View
+                  style={{
+                    marginLeft: 250,
+                    flexDirection: 'row',
+                    position: 'absolute',
+                  }}>
                   <Pressable
                     style={{
                       backgroundColor: '#FF6A16',
                       color: '#FFFF',
                       width: 50,
                       borderRadius: 10,
+                      marginRight: 5,
                     }}
                     onPress={navPusdalopDetail}>
-                    <Text style={{marginLeft: -50}}>Lihat</Text>
+                    <Text style={{marginLeft: 10}}>Lihat</Text>
+                  </Pressable>
+                  <Pressable
+                    style={{
+                      backgroundColor: '#FF6A16',
+                      color: '#FFFF',
+                      width: 50,
+                      borderRadius: 10,
+                    }}>
+                    <Text style={{marginLeft: 8}}>Delete</Text>
                   </Pressable>
                 </View>
               </View>
@@ -144,5 +167,34 @@ const style = StyleSheet.create({
     // height: 2800,
     position: 'relative',
     marginTop: -10,
+  },
+  buttonLogin: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ff471a',
+    width: '30%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  textLogin: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  card: {
+    width: 250,
+    height: 100,
+    marginHorizontal: 15,
+    marginTop: 20,
+    backgroundColor: 'Blue',
+    borderColor: 'Black',
   },
 });
