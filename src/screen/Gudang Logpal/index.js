@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import {Text, View, StyleSheet, FlatList, Pressable, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-export default function GudangLogpal() {
+export default function GudangLogpal(props) {
+  const navTambahGudangLogpal = () => {
+    props.navigation.navigate('TambahLogpal');
+  };
   const [people, setPeople] = useState([
     {
       name: 'Shaun',
@@ -64,7 +67,7 @@ export default function GudangLogpal() {
             marginTop: -3,
           }}>
           <Icon
-            name="Safety"
+            name="inbox"
             size={40}
             color={'white'}
             style={{marginLeft: 10}}
@@ -77,7 +80,7 @@ export default function GudangLogpal() {
       </View>
       <View style={style.containerInput}>
         <Text>GudangLogpal</Text>
-        <Pressable style={style.buttonTambah}>
+        <Pressable style={style.buttonTambah} onPress={navTambahGudangLogpal}>
           <Text style={style.textTambah}>Tambah</Text>
         </Pressable>
         <FlatList

@@ -21,6 +21,8 @@ import AsesmenDetail from '../screen/Asesmen Detail';
 import PusdalopDetail from '../screen/Pusdalop Detail';
 import Counter from '../screen/Counter';
 import GudangLogpal from '../screen/Gudang Logpal';
+import TambahLogpal from '../screen/Tambah Logpal';
+import TindakanTRC from '../screen/TindakanTrc';
 
 function MenuNavigator() {
   return (
@@ -76,6 +78,17 @@ function MenuNavigator() {
           ),
         }}
       />
+      {/* Tindakan TRC*/}
+      <Drawer.Screen
+        name="TindakanTRC"
+        component={TindakanTRC}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="flag" color={color} size={size} />
+          ),
+        }}
+      />
       <Drawer.Screen
         name="Map"
         component={Map}
@@ -97,7 +110,6 @@ function MenuNavigator() {
           ),
         }}
       />
-      {/* MY WISHLIST */}
     </Drawer.Navigator>
   );
 }
@@ -129,8 +141,16 @@ export default function AppStackNavigator() {
           header: props => <HeaderDefault {...props} />,
         }}
       />
-      {/*
-      {/* EDIT PROFILE */}
+
+      {/* Tambah Logpal*/}
+      <Stack.Screen
+        name="TambahLogpal"
+        component={TambahLogpal}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+        }}
+      />
+
       {/* CHANGE PASSWORD */}
     </Stack.Navigator>
   );
