@@ -8,7 +8,7 @@ import {
   Image,
   Pressable,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 export default function Asesmen(props) {
   const navAsesmenDetail = () => {
@@ -76,7 +76,7 @@ export default function Asesmen(props) {
             marginTop: -3,
           }}>
           <Icon
-            name="news"
+            name="Safety"
             size={40}
             color={'white'}
             style={{marginLeft: 10}}

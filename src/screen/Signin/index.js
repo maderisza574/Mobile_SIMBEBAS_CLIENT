@@ -16,9 +16,9 @@ import {login} from '../../stores/actions/auth';
 import {useDispatch, useSelector} from 'react-redux';
 
 export default function Signin(props) {
+  const [form, setForm] = useState({});
   const dispatch = useDispatch();
   const auth = useSelector(state => state.auth);
-  const [form, setForm] = useState({});
   console.log(form);
   const [showPassword, setShowPassword] = useState(false);
   const handleChangeForm = (value, name) => {

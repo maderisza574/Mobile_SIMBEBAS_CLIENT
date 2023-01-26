@@ -20,6 +20,7 @@ import Verifikator from '../screen/Verifikator';
 import AsesmenDetail from '../screen/Asesmen Detail';
 import PusdalopDetail from '../screen/Pusdalop Detail';
 import Counter from '../screen/Counter';
+import GudangLogpal from '../screen/Gudang Logpal';
 
 function MenuNavigator() {
   return (
@@ -62,6 +63,16 @@ function MenuNavigator() {
           header: props => <HeaderDefault {...props} />,
           drawerIcon: ({size, color}) => (
             <Icon name="team" color={color} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Gudang Logpal"
+        component={GudangLogpal}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="inbox" color={color} size={size} />
           ),
         }}
       />

@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/AntDesign';
 import DatePicker from 'react-native-date-picker';
 import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
@@ -131,7 +131,7 @@ export default function AsesmenDetail() {
               marginTop: -3,
             }}>
             <Icon
-              name="news"
+              name="Safety"
               size={40}
               color={'white'}
               style={{marginLeft: 10}}
@@ -440,7 +440,7 @@ export default function AsesmenDetail() {
               <TouchableOpacity
                 style={{marginRight: 10, width: 60}}
                 onPress={handleLaunchImageLibrary}>
-                <Icon name="folder-images" size={20} style={{marginLeft: 10}} />
+                <Icon name="folder1" size={20} style={{marginLeft: 10}} />
               </TouchableOpacity>
             </View>
             <View>
