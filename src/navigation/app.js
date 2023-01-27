@@ -23,7 +23,8 @@ import Counter from '../screen/Counter';
 import GudangLogpal from '../screen/Gudang Logpal';
 import TambahLogpal from '../screen/Tambah Logpal';
 import TindakanTRC from '../screen/TindakanTrc';
-
+import LogpalCepat from '../screen/Logpal Cepat';
+import LogpalCepatDetail from '../screen/Logpal Cepat Detail';
 function MenuNavigator() {
   return (
     // DAFTARKAN MENU YANG NANTINYA AKAN MASUK KE DALAM DRAWER DISINI
@@ -89,6 +90,17 @@ function MenuNavigator() {
           ),
         }}
       />
+      {/* Logpal Cepat */}
+      <Drawer.Screen
+        name="LogpalCepat"
+        component={LogpalCepat}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="exception1" color={color} size={size} />
+          ),
+        }}
+      />
       <Drawer.Screen
         name="Map"
         component={Map}
@@ -150,8 +162,14 @@ export default function AppStackNavigator() {
           header: props => <HeaderDefault {...props} />,
         }}
       />
-
-      {/* CHANGE PASSWORD */}
+      {/* Logpal Cepat Detail */}
+      <Stack.Screen
+        name="LogpalCepatDetail"
+        component={LogpalCepatDetail}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+        }}
+      />
     </Stack.Navigator>
   );
 }
