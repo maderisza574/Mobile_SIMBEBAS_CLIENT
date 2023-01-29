@@ -4,7 +4,7 @@ import Logo from '../../assets/img/BPBD.png';
 
 export default function SplashScreen(props) {
   console.log(props);
-  const token = false;
+  const token = true;
   useEffect(() => {
     checkToken();
   }, []);
