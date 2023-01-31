@@ -9,7 +9,6 @@ import {
   Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
-import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Logo from '../../assets/img/BPBD.png';
 import {login} from '../../stores/actions/auth';
@@ -17,48 +16,20 @@ import {useDispatch, useSelector} from 'react-redux';
 import {ActivityIndicator} from 'react-native-paper';
 
 export default function Signin(props) {
-  const [form, setForm] = useState({});
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const [form, setForm] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const auth = useSelector(state => state.auth);
-  console.log(form);
   const [showPassword, setShowPassword] = useState(false);
+
   const handleChangeForm = (value, name) => {
     setForm({...form, [name]: value});
   };
   const navSignUp = () => {
     props.navigation.navigate('Register');
   };
-  // const handleLogin = async () => {
-  //   try {
-  //     // console.log(form);
-  //     const result = await axios.post('/v1/login/', form);
-  //     // console.log(result.data);
-  //     // await AsyncStorage.setItem('userName', result.data.data.username);
-  //     // await AsyncStorage.setItem('token', result.data.data.token);
-  //     // await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
-  //     alert('sukses');
-  //     console.log(result.data);
-  //     props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
-  //   } catch (error) {
-  //     // alert(error.response.data.message);
-  //   }
-  // };
-  // with redux
-  // const handleLogin = async () => {
-  //   try {
-  //     const result = await dispatch(login(form));
-  //     await AsyncStorage.setItem('token', result.data.token);
-  //     setTimeout(() => {
-  //       alert('sukses');
-  //       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
-  //     }, 3000);
-  //   } catch (error) {
-  //     alert(error.response);
-  //     console.log(error.response);
-  //   }
-  // };
+
   const handleLogin = async () => {
     try {
       setErrorMessage(' ');
