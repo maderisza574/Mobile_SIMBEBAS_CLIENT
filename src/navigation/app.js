@@ -25,6 +25,7 @@ import TambahLogpal from '../screen/Tambah Logpal';
 import TindakanTRC from '../screen/TindakanTrc';
 import LogpalCepat from '../screen/Logpal Cepat';
 import LogpalCepatDetail from '../screen/Logpal Cepat Detail';
+import VerifikatorDetail from '../screen/Verifikator Detail';
 function MenuNavigator() {
   return (
     // DAFTARKAN MENU YANG NANTINYA AKAN MASUK KE DALAM DRAWER DISINI
@@ -166,6 +167,13 @@ export default function AppStackNavigator() {
       <Stack.Screen
         name="LogpalCepatDetail"
         component={LogpalCepatDetail}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="VerifikatorDetail"
+        component={VerifikatorDetail}
         options={{
           header: props => <HeaderDefault {...props} />,
         }}

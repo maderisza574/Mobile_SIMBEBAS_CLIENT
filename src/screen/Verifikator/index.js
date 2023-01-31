@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   View,
@@ -6,10 +6,67 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
+  FlatList,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
-export default function Verifikator() {
+export default function VerifikatorDetail(props) {
+  const navVerifikatorDetail = () => {
+    props.navigation.navigate('VerifikatorDetail');
+  };
+  const [people, setPeople] = useState([
+    {
+      name: 'Shaun',
+      image: 'https://via.placeholder.com/100x100',
+      key: '1',
+    },
+    {
+      name: 'San',
+      image: 'https://via.placeholder.com/100x100',
+      key: '2',
+    },
+    {
+      name: 'Sun',
+      image: 'https://via.placeholder.com/100x100',
+      key: '3',
+    },
+    {
+      name: 'dab',
+      image: 'https://via.placeholder.com/100x100',
+      key: '4',
+    },
+    {
+      name: 'dun',
+      image: 'https://via.placeholder.com/100x100',
+      key: '5',
+    },
+    {
+      name: 'dor',
+      image: 'https://via.placeholder.com/100x100',
+      key: '6',
+    },
+    {
+      name: 'dur',
+      image: 'https://via.placeholder.com/100x100',
+      key: '7',
+    },
+    {
+      name: 'der',
+      image: 'https://via.placeholder.com/100x100',
+      key: '8',
+    },
+    {
+      name: 'doel',
+      image: 'https://via.placeholder.com/100x100',
+      key: '9',
+    },
+    {
+      name: 'doer',
+      image: 'https://via.placeholder.com/100x100',
+      key: '10',
+    },
+  ]);
   return (
     <View>
       <ScrollView>
@@ -30,140 +87,58 @@ export default function Verifikator() {
           </View>
         </View>
         <View style={style.containerInput}>
-          <Text>Perbaiki Isian Data Bencana</Text>
-          <View style={{marginBottom: 10}}>
-            <Text>Jenis Bencana</Text>
-            <TextInput
-              placeholder="Tanah Longsor"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
           <View>
-            <Text>Tanggal Kejadian</Text>
-            <TextInput
-              placeholder="Tanngal kejadian"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
+            <Text>Riwayat Bencana</Text>
           </View>
-          <View>
-            <Text>Lokasi Terjadinya Bencana</Text>
-            <TextInput
-              placeholder="INPUT MAP"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Kecamatan</Text>
-            <TextInput
-              placeholder="KEMRAJEN"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Desa</Text>
-            <TextInput
-              placeholder="Desa Alasmalang"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Alamat</Text>
-            <TextInput
-              placeholder="alamat"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Kerusakan Rumah</Text>
-            <TextInput
-              placeholder="alamat"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Cakupan Banjir</Text>
-            <TextInput
-              placeholder="alamat"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Deskripsi Kronologis</Text>
-            <TextInput
-              placeholder="alamat"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Tindakan</Text>
-            <TextInput
-              placeholder="Pendataan dan koordinasi dengan perangkat desa"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Peralatan dibutuhkan</Text>
-            <TextInput
-              placeholder="Pendataan dan koordinasi dengan perangkat desa"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>Rekomendasi</Text>
-            <TextInput
-              placeholder="Pendataan dan koordinasi dengan perangkat desa"
-              style={{borderWidth: 1, borderRadius: 10}}
-            />
-          </View>
-          <View>
-            <Text>ASESMENT</Text>
-          </View>
-          <View>
-            <Text>Data Barang Yang Di Butuhkan</Text>
-            <View style={{flexDirection: 'row'}}>
-              <View>
-                <Text>Nama Barang</Text>
-                <TextInput
-                  placeholder="sembako"
-                  style={{borderWidth: 1, borderRadius: 10}}
-                />
+          <FlatList
+            data={people}
+            keyExtractor={item => item.key}
+            renderItem={({item}) => (
+              <View style={style.card}>
+                <View style={{flexDirection: 'row'}}>
+                  <Image
+                    source={{uri: `${item.image}`}}
+                    style={{width: 100, height: 100}}
+                  />
+                  <View>
+                    <Text style={{marginLeft: 10}}>Bencana</Text>
+                    <Text style={{marginLeft: 10}}>Location</Text>
+                    <Text style={{marginLeft: 10}}>Butuh asesment</Text>
+                    <Text style={{marginLeft: 10}}>
+                      lorem ipsum lorem lorem lorem lorem lorem lorem
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      marginLeft: 250,
+                      flexDirection: 'row',
+                      position: 'absolute',
+                    }}>
+                    <Pressable
+                      style={{
+                        backgroundColor: '#FF6A16',
+                        color: '#FFFF',
+                        width: 50,
+                        borderRadius: 10,
+                        marginRight: 5,
+                      }}
+                      onPress={navVerifikatorDetail}>
+                      <Text style={{marginLeft: 10}}>Lihat</Text>
+                    </Pressable>
+                    <Pressable
+                      style={{
+                        backgroundColor: '#FF6A16',
+                        color: '#FFFF',
+                        width: 50,
+                        borderRadius: 10,
+                      }}>
+                      <Text style={{marginLeft: 8}}>Delete</Text>
+                    </Pressable>
+                  </View>
+                </View>
               </View>
-              <View>
-                <Text>Qty</Text>
-                <TextInput
-                  placeholder="qty"
-                  style={{borderWidth: 1, borderRadius: 10}}
-                />
-              </View>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <View>
-                <Text>Nama Barang</Text>
-                <TextInput
-                  placeholder="sembako"
-                  style={{borderWidth: 1, borderRadius: 10}}
-                />
-              </View>
-              <View>
-                <Text>Qty</Text>
-                <TextInput
-                  placeholder="qty"
-                  style={{borderWidth: 1, borderRadius: 10}}
-                />
-              </View>
-            </View>
-          </View>
-          <View>
-            <Text>Upload File Gambar</Text>
-          </View>
-          <View>
-            <Pressable>
-              <Text>Kirim</Text>
-            </Pressable>
-            <Pressable>
-              <Text>Batal</Text>
-            </Pressable>
-          </View>
+            )}
+          />
         </View>
       </ScrollView>
     </View>
@@ -186,5 +161,31 @@ const style = StyleSheet.create({
     // height: 500,
     position: 'relative',
     marginTop: -30,
+  },
+  buttonLogin: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ff471a',
+    width: '100%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: 30,
+  },
+  buttonBatal: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ff0000',
+    width: '100%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: 10,
   },
 });

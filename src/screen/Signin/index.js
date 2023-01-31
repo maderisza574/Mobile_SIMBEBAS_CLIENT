@@ -14,9 +14,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Logo from '../../assets/img/BPBD.png';
 import {login} from '../../stores/actions/auth';
 import {useDispatch, useSelector} from 'react-redux';
+import {ActivityIndicator} from 'react-native-paper';
 
 export default function Signin(props) {
   const [form, setForm] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const auth = useSelector(state => state.auth);
   console.log(form);
@@ -43,17 +46,37 @@ export default function Signin(props) {
   //   }
   // };
   // with redux
+  // const handleLogin = async () => {
+  //   try {
+  //     const result = await dispatch(login(form));
+  //     await AsyncStorage.setItem('token', result.data.token);
+  //     setTimeout(() => {
+  //       alert('sukses');
+  //       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+  //     }, 3000);
+  //   } catch (error) {
+  //     alert(error.response);
+  //     console.log(error.response);
+  //   }
+  // };
   const handleLogin = async () => {
     try {
+      setErrorMessage(' ');
+      setIsLoading(true);
+      if (!form.username || !form.password) {
+        setIsLoading(false);
+        return setErrorMessage('Please fill in all required fields.');
+      }
       const result = await dispatch(login(form));
-      console.log(result);
-      setTimeout(() => {
-        alert('sukses');
-        props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
-      }, 3000);
+      await AsyncStorage.setItem(
+        'token',
+        result.action.payload.data.data.token,
+      );
+
+      props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+      return;
     } catch (error) {
-      alert(error.response);
-      console.log(error.response);
+      setIsLoading(false);
     }
   };
   return (
@@ -88,9 +111,26 @@ export default function Signin(props) {
               placeholderTextColor="#A0A3BD"
               onChangeText={text => handleChangeForm(text, 'password')}
             />
-            <Pressable style={style.buttonLogin} onPress={handleLogin}>
+            {/* <Pressable style={style.buttonLogin} onPress={handleLogin}>
               <Text style={style.textLogin}>Masuk</Text>
-            </Pressable>
+            </Pressable> */}
+            <TouchableOpacity
+              onPress={() => {
+                handleLogin();
+              }}>
+              <View style={style.buttonContainer}>
+                {isLoading ? (
+                  <ActivityIndicator
+                    animating={isLoading}
+                    color="white"
+                    size={20}
+                    style={style.button}
+                  />
+                ) : (
+                  <Text style={style.button}>Log In</Text>
+                )}
+              </View>
+            </TouchableOpacity>
 
             <View
               style={{marginLeft: 100, marginTop: 15, flexDirection: 'row'}}>
@@ -199,5 +239,22 @@ const style = StyleSheet.create({
     color: 'black',
     marginLeft: 180,
     marginTop: 30,
+  },
+  buttonContainer: {
+    marginHorizontal: '5%',
+    marginTop: '5%',
+    marginBottom: '5%',
+    alignItems: 'center',
+    backgroundColor: '#ff471a',
+    borderRadius: 15,
+    shadowRadius: 2,
+  },
+  button: {
+    fontFamily: 'Poppins',
+    fontWeight: '900',
+    fontSize: 18,
+    letterSpacing: 0.5,
+    color: '#FFFFFF',
+    padding: '5%',
   },
 });

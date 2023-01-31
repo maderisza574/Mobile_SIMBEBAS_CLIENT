@@ -10,30 +10,23 @@ const login = (state = initialState, action) => {
     case 'LOGIN_PENDING': {
       return {
         ...state,
-        data: {},
-        isLoading: false,
-        isError: false,
-        message: '',
+        errorMessage: null,
+        isLoading: true,
       };
     }
     case 'LOGIN_FULFILLED': {
       return {
         ...state,
-        data: action.payload.data.data,
+        errorMessage: null,
         isLoading: false,
-        isError: false,
-        // message: action.payload.data.message,
-        message: 'berhasil',
+        token: action.payload.data.data.token,
       };
     }
     case 'LOGIN_REJECTED': {
       return {
         ...state,
-        data: {},
+        errorMessage: action.payload.response.data.message,
         isLoading: false,
-        isError: true,
-        // message: action.payload.response.data.m,
-        message: 'gagal',
       };
     }
     default: {

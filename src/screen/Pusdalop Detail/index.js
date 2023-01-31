@@ -17,10 +17,74 @@ import DatePicker from 'react-native-date-picker';
 import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import axios from '../../utils/axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PusdalopDetail() {
+  // tes multiple input
+  const [inputs, setInputs] = useState([{value: '', image: null}]);
+
+  const handleAddInput = () => {
+    setInputs([...inputs, {value: '', image: null}]);
+  };
+
+  const handleInputChange = (text, index) => {
+    const newInputs = [...inputs];
+    newInputs[index].value = text;
+    setInputs(newInputs);
+  };
+  const handleRemoveInput = index => {
+    setInputs(inputs.filter((input, i) => i !== index));
+  };
+  const handleImageChange = (image, index) => {
+    const newInputs = [...inputs];
+    newInputs[index].image = image;
+    setInputs(newInputs);
+  };
+  //  end multiple input
   const [form, setForm] = useState({});
-  console.log(form);
+  // console.log(form);
+  const dataPusdalop = {
+    id_jenis_bencana: '1',
+    id_tindakan: '1',
+    user_pemohon: 'johan',
+    isi_aduan: 'tes',
+    no_telepon: '089898989',
+    nama: 'bencana alam',
+    alamat: 'test alamat',
+    id_desa: '1',
+    id_kecamatan: '1',
+    lng: '9898989',
+    lat: '67676767',
+    tindakan_trc: 'true',
+    logpal: 'true',
+    //ke:tessss
+    //keteranganGambar[1]:tosss
+    tanggal: '2023-03-12',
+  };
+  console.log(dataPusdalop);
+  const handleCreatePusdalop = async () => {
+    try {
+      let formData = new FormData();
+      for (let key in dataPusdalop) {
+        formData.append(key, dataPusdalop[key]);
+      }
+      await AsyncStorage.getItem('userId');
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + this.state.clientToken,
+        },
+      };
+
+      const response = await axios.post('/v1/pusdalops', formData, config);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   //for image picker
   const [image, setImage] = useState();
   // console.log(image);
@@ -194,6 +258,7 @@ export default function PusdalopDetail() {
               data={dataTindakan}
               save="value"
               placeholder="Pilih Jenis Tindakan"
+              onChangeText={dataPusdalop => handleChangeForm(dataPusdalop)}
             />
           </View>
           <View>
@@ -295,45 +360,74 @@ export default function PusdalopDetail() {
           <View style={{marginTop: 20}}>
             <Text>Upload gambar</Text>
           </View>
-          <View style={{flexDirection: 'row', padding: 10}}>
-            <View style={{marginRight: 60}}>
-              <Text>Preview Image</Text>
-              <Image source={{uri: image}} style={{width: 200, height: 200}} />
-            </View>
-          </View>
+
           <View
             style={{
               marginBottom: 10,
               flexDirection: 'row',
               justifyContent: 'center',
               alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              style={{marginRight: 10, width: 60}}
-              onPress={handleLaunchCamera}>
-              <Icon name="camera" size={20} style={{marginLeft: 10}} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{marginRight: 10, width: 60}}
-              onPress={handleLaunchImageLibrary}>
-              <Icon name="folder-images" size={20} style={{marginLeft: 10}} />
-            </TouchableOpacity>
-          </View>
+            }}
+          />
+
+          {/* loop image input */}
           <View>
-            <Text>Keterangan</Text>
-            <TextInput
-              placeholder="Masukan Keterangan gambar"
-              style={{
-                height: 100,
-                width: 350,
-                borderWidth: 1,
-                marginLeft: 15,
-                marginTop: 5,
-              }}
+            {inputs.map((input, index) => (
+              <View key={index}>
+                <View style={{flexDirection: 'row', padding: 10}}>
+                  <View style={{marginRight: 60}}>
+                    <Text>Preview Image</Text>
+                    <Image
+                      source={{uri: image}}
+                      style={{width: 200, height: 200}}
+                    />
+                  </View>
+                </View>
+                <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    style={{marginRight: 10, width: 60}}
+                    onPress={handleLaunchCamera}>
+                    <Icon name="camera" size={20} style={{marginLeft: 10}} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{marginRight: 10, width: 60}}
+                    onPress={handleLaunchImageLibrary}>
+                    <Icon
+                      name="folder-images"
+                      size={20}
+                      style={{marginLeft: 10}}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <Text>Keterangan</Text>
+                  <TextInput
+                    placeholder="Masukan Keterangan gambar"
+                    style={{
+                      height: 100,
+                      width: 350,
+                      borderWidth: 1,
+                      marginLeft: 15,
+                      marginTop: 5,
+                    }}
+                    value={input.value}
+                    onChangeText={text => handleInputChange(text, index)}
+                  />
+                  <Button
+                    title="Remove"
+                    onPress={() => handleRemoveInput(index)}
+                  />
+                </View>
+              </View>
+            ))}
+            <Button
+              title="Tambahkan Beberapa Gambar"
+              onPress={handleAddInput}
             />
           </View>
+          {/* end input loop image */}
           <View style={{marginTop: 10}}>
-            <Pressable style={style.buttonLogin}>
+            <Pressable style={style.buttonLogin} onPress={handleCreatePusdalop}>
               <Text style={style.textLogin}>Kirim</Text>
             </Pressable>
             <Pressable style={style.buttonBatal}>
@@ -377,7 +471,7 @@ const style = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 7,
     elevation: 3,
-    backgroundColor: '#ff471a',
+    backgroundColor: '#1a8cff',
     width: '100%',
     textAlign: 'center',
     height: 50,
