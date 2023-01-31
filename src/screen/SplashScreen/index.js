@@ -1,22 +1,26 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 import Logo from '../../assets/img/BPBD.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SplashScreen(props) {
   console.log(props);
-  const token = true;
+  // const token = false;
   useEffect(() => {
     checkToken();
   }, []);
 
   const checkToken = () => {
-    setTimeout(() => {
-      if (token) {
-        props.navigation.replace('AppScreen');
-      } else {
-        props.navigation.replace('AuthScreen');
-      }
-    }, 10000);
+    setTimeout(async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          props.navigation.replace('AppScreen');
+        } else {
+          props.navigation.replace('AuthScreen');
+        }
+      } catch (error) {}
+    }, 1500);
   };
 
   return (

@@ -8,7 +8,7 @@ export default function Pusdalop(props) {
   };
   const [people, setPeople] = useState([
     {
-      name: 'Shaun',
+      name: 'Tanah Longsor',
       image: 'https://via.placeholder.com/100x100',
       key: '1',
     },
@@ -137,7 +137,6 @@ export default function Pusdalop(props) {
             </View>
           )}
         />
-        <Text>Asesmen</Text>
       </View>
     </View>
   );
