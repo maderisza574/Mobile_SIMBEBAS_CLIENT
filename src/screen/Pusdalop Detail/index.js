@@ -21,6 +21,25 @@ import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PusdalopDetail() {
+  const dataPusdalop = {
+    id_jenis_bencana: '1',
+    id_tindakan: '1',
+    user_pemohon: 'johan',
+    isi_aduan: 'tes',
+    no_telepon: '089898989',
+    nama: 'bencana alam',
+    alamat: 'test alamat',
+    id_desa: '1',
+    id_kecamatan: '1',
+    lng: '9898989',
+    lat: '67676767',
+    tindakan_trc: 'true',
+    logpal: 'true',
+    //ke:tessss
+    //keteranganGambar[1]:tosss
+    tanggal: '2023-03-12',
+  };
+  const [form, setForm] = useState({});
   // tes multiple input
   const [inputs, setInputs] = useState([{value: '', image: null}]);
 
@@ -42,43 +61,74 @@ export default function PusdalopDetail() {
     setInputs(newInputs);
   };
   //  end multiple input
-  const [form, setForm] = useState({});
+
   // console.log(form);
-  const dataPusdalop = {
-    id_jenis_bencana: '1',
-    id_tindakan: '1',
-    user_pemohon: 'johan',
-    isi_aduan: 'tes',
-    no_telepon: '089898989',
-    nama: 'bencana alam',
-    alamat: 'test alamat',
-    id_desa: '1',
-    id_kecamatan: '1',
-    lng: '9898989',
-    lat: '67676767',
-    tindakan_trc: 'true',
-    logpal: 'true',
-    //ke:tessss
-    //keteranganGambar[1]:tosss
-    tanggal: '2023-03-12',
-  };
-  console.log(dataPusdalop);
+  // FOR DROPDOWN
+  const [tindakanOptions, setTindakanOptions] = useState([]);
+  // console.log(tindakanOptions);
+  const [bencanaOptions, setBencanaOptions] = useState([]);
+  const [selected, setSelected] = React.useState('');
+
+  // const [selectedTindakan, setSelectedTindakan] = useState(null);
+  useEffect(() => {
+    axios
+      .get('/v1/tindakan?page=1&perPage=10')
+      .then(res => {
+        // console.log(res.data);
+        // Store Values in Temporary Array
+        let newArray = res.data.rows.map(item => {
+          return {key: item.id, value: item.jenis_tindakan};
+        });
+        // console.log(newArray);
+        // Set Data Variable
+        setTindakanOptions(newArray);
+      })
+      // .then(res => setTindakanOptions(res.data))
+      .catch(error => console.error(error));
+  }, []);
+
+  useEffect(() => {
+    // if (!selectedTindakan) {
+    // setSelected('');
+    //   console.log(selectedTindakan);
+    //   return;
+    // }
+
+    axios
+      .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected}`)
+      .then(res => {
+        // console.log('id', selected);
+
+        // Store Values in Temporary Array
+        let newArray = res.data.rows.map(item => {
+          return {key: item.id, value: item.sub_jenis};
+        });
+        // console.log(newArray);
+        // Set Data Variable
+        setBencanaOptions(newArray);
+      })
+      .catch(error => console.error(error));
+  }, []);
+  // END DROPDWON
+
   const handleCreatePusdalop = async () => {
     try {
       let formData = new FormData();
       for (let key in dataPusdalop) {
         formData.append(key, dataPusdalop[key]);
       }
-      await AsyncStorage.getItem('userId');
+      const datauser = await AsyncStorage.getItem('token');
+      console.log(datauser);
 
       const config = {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + this.state.clientToken,
+          Authorization: 'Bearer ' + datauser,
         },
       };
 
       const response = await axios.post('/v1/pusdalops', formData, config);
+      alert('Sukses Membuat Laporan');
       console.log(response.data);
     } catch (error) {
       console.error(error);
@@ -92,35 +142,18 @@ export default function PusdalopDetail() {
   const [date, setDate] = useState(new Date());
   // console.log(date);
   const [open, setOpen] = useState(false);
-  // for dropdown
-  const [tindakan, setTindakan] = React.useState('');
-  const [bencana, setBencana] = React.useState('');
-  const [bencanaPenangulangan, setbencanaPenangulangan] = React.useState('');
+
   const [latitude, setlatitude] = useState();
   const [longitude, setlongiude] = useState();
-  const handleChangeForm = (value, name) => {
-    setForm({...form, [name]: value});
+  const handleChangeForm = (name, value) => {
+    if (name === 'image') {
+      setForm({...form, [name]: value});
+      setImage({uri: value});
+    } else {
+      setForm({...form, [name]: value});
+    }
   };
 
-  const dataTindakan = [
-    {
-      key: '1',
-      value: 'Pencegahan',
-    },
-    {key: '2', value: 'Penangulangan'},
-  ];
-  const dataBencana = [
-    {
-      key: '1',
-      value: 'Kerja Bakti',
-    },
-  ];
-  const dataPenangulangan = [
-    {
-      key: '1',
-      value: 'Banjir Bandang',
-    },
-  ];
   // for camera
   const handleLaunchCamera = async () => {
     try {
@@ -253,33 +286,28 @@ export default function PusdalopDetail() {
           </Text>
           <View style={{padding: 5}}>
             <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
+            {/* <SelectList
+              items={tindakanOptions}
+              onChange={value => setSelectedTindakan(value)}
+              selectedValue={setSelectedTindakan}
+              labelExtractor={({jenis_tindakan}) => jenis_tindakan}
+              valueExtractor={({id}) => id}
+            /> */}
             <SelectList
-              setSelected={val => setTindakan(val)}
-              data={dataTindakan}
-              save="value"
-              placeholder="Pilih Jenis Tindakan"
-              onChangeText={dataPusdalop => handleChangeForm(dataPusdalop)}
+              setSelected={setSelected}
+              data={tindakanOptions}
+              onSelect={() => alert(selected)}
             />
           </View>
           <View>
             <Text>Jenis Bencana</Text>
-            {tindakan === 'Pencegahan' ? (
-              <SelectList
-                setSelected={() => setBencana()}
-                data={dataBencana}
-                save="value"
-                placeholder="Masukan Jenis Bencana"
-              />
-            ) : tindakan === 'Penangulangan' ? (
-              <SelectList
-                setSelected={() => setbencanaPenangulangan()}
-                data={dataPenangulangan}
-                save="value"
-                placeholder="Masukan Jenis Bencana"
-              />
-            ) : (
-              <SelectList placeholder="Masukan Jenis Tindakan Terlebih dahulu" />
-            )}
+            <SelectList
+              // data={bencanaOptions.rows[0] ? bencanaOptions.rows[0] : ''}
+              data={bencanaOptions}
+              itemKey="id"
+              itemLabel="name"
+              // disabled={!selectedTindakan}
+            />
           </View>
           <View>
             <Text>Tanggal Kejadian</Text>

@@ -10,7 +10,7 @@ const axiosApiIntances = axios.create({
   // baseURL: 'http://192.168.43.51:5000/api',
   // baseURL: 'http://10.11.3.61:5000/api',
   // baseURL: 'http://192.168.73.65:5000/api',
-  baseURL: 'http://193.168.73.45:5000/api',
+  baseURL: 'http://192.168.43.51:5000/api',
 });
 
 // Add a request interceptor
