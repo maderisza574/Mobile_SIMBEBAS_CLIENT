@@ -10,18 +10,18 @@ const axiosApiIntances = axios.create({
   // baseURL: 'http://192.168.43.51:5000/api',
   // baseURL: 'http://10.11.3.61:5000/api',
   // baseURL: 'http://192.168.73.65:5000/api',
-  baseURL: 'http://192.168.43.51:5000/api',
+  baseURL: 'http://193.168.73.149:5000/api',
 });
 
 // Add a request interceptor
 axiosApiIntances.interceptors.request.use(
   async function (config) {
     // Do something before request is sent
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    // const refreshToken = await AsyncStorage.getItem('refreshToken');
     const token = await AsyncStorage.getItem('token');
     config.headers = {
       Authorization: `Bearer ${token}`,
-      refreshtoken: refreshToken,
+      // refreshtoken: refreshToken,
     };
     return config;
   },

@@ -21,10 +21,24 @@ import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PusdalopDetail() {
+  //  ini untuk penampung
+  const [form, setForm] = useState({});
+  const [inputs, setInputs] = useState([{value: '', image: null}]);
+  const [tindakanOptions, setTindakanOptions] = useState([]);
+  const [bencanaOptions, setBencanaOptions] = useState([]);
+  console.log(bencanaOptions);
+  const [kecamatan, setKecamatan] = useState([]);
+  const [selected, setSelected] = React.useState('');
+  const [image, setImage] = useState();
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
+  const [latitude, setlatitude] = useState();
+  const [longitude, setlongiude] = useState();
+  // akhir penampung
   const dataPusdalop = {
-    id_jenis_bencana: '1',
-    id_tindakan: '1',
-    user_pemohon: 'johan',
+    id_tindakan: tindakanOptions[0]?.key,
+    id_jenis_bencana: bencanaOptions[0]?.key,
+    user_pemohon: 'Pusdalop',
     isi_aduan: 'tes',
     no_telepon: '089898989',
     nama: 'bencana alam',
@@ -32,16 +46,16 @@ export default function PusdalopDetail() {
     id_desa: '1',
     id_kecamatan: '1',
     lng: '9898989',
-    lat: '67676767',
+    lat: stateMap,
     tindakan_trc: 'true',
     logpal: 'true',
     //ke:tessss
     //keteranganGambar[1]:tosss
-    tanggal: '2023-03-12',
+    tanggal: date,
   };
-  const [form, setForm] = useState({});
+  // console.log(dataPusdalop);
+
   // tes multiple input
-  const [inputs, setInputs] = useState([{value: '', image: null}]);
 
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
@@ -64,51 +78,49 @@ export default function PusdalopDetail() {
 
   // console.log(form);
   // FOR DROPDOWN
-  const [tindakanOptions, setTindakanOptions] = useState([]);
-  // console.log(tindakanOptions);
-  const [bencanaOptions, setBencanaOptions] = useState([]);
-  const [selected, setSelected] = React.useState('');
 
-  // const [selectedTindakan, setSelectedTindakan] = useState(null);
+  const getDatatindakan = async () => {
+    try {
+      const result = await axios.get('/v1/tindakan?page=1&perPage=10');
+      let newArray = result.data.rows.map(item => {
+        return {key: item.id, value: item.jenis_tindakan};
+      });
+      setTindakanOptions(newArray);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getDataBencana = async () => {
+    try {
+      if (!selected === 1) {
+        setSelected(1);
+      } else if (!selected === 2) {
+        setSelected(2);
+      } else {
+        setSelected(1);
+      }
+      const res = await axios.get(
+        `/v1/bencana?page=1&perPage=10&tindakanId=${selected}`,
+      );
+      let newArray = res.data.rows.map(item => {
+        return {key: item.id, value: item.sub_jenis};
+      });
+      setBencanaOptions(newArray);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    axios
-      .get('/v1/tindakan?page=1&perPage=10')
-      .then(res => {
-        // console.log(res.data);
-        // Store Values in Temporary Array
-        let newArray = res.data.rows.map(item => {
-          return {key: item.id, value: item.jenis_tindakan};
-        });
-        // console.log(newArray);
-        // Set Data Variable
-        setTindakanOptions(newArray);
-      })
-      // .then(res => setTindakanOptions(res.data))
-      .catch(error => console.error(error));
+    setTimeout(() => {
+      getDatatindakan(1);
+    }, 3000);
+    setTimeout(() => {
+      getDataBencana(1);
+    }, 4000);
   }, []);
 
-  useEffect(() => {
-    // if (!selectedTindakan) {
-    // setSelected('');
-    //   console.log(selectedTindakan);
-    //   return;
-    // }
-
-    axios
-      .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected}`)
-      .then(res => {
-        // console.log('id', selected);
-
-        // Store Values in Temporary Array
-        let newArray = res.data.rows.map(item => {
-          return {key: item.id, value: item.sub_jenis};
-        });
-        // console.log(newArray);
-        // Set Data Variable
-        setBencanaOptions(newArray);
-      })
-      .catch(error => console.error(error));
-  }, []);
   // END DROPDWON
 
   const handleCreatePusdalop = async () => {
@@ -136,22 +148,9 @@ export default function PusdalopDetail() {
   };
 
   //for image picker
-  const [image, setImage] = useState();
-  // console.log(image);
-  // for Date picker
-  const [date, setDate] = useState(new Date());
-  // console.log(date);
-  const [open, setOpen] = useState(false);
 
-  const [latitude, setlatitude] = useState();
-  const [longitude, setlongiude] = useState();
-  const handleChangeForm = (name, value) => {
-    if (name === 'image') {
-      setForm({...form, [name]: value});
-      setImage({uri: value});
-    } else {
-      setForm({...form, [name]: value});
-    }
+  const formHandler = (value, name) => {
+    setForm({...form, [name]: value});
   };
 
   // for camera
@@ -294,6 +293,7 @@ export default function PusdalopDetail() {
               valueExtractor={({id}) => id}
             /> */}
             <SelectList
+              onPress={getDatatindakan}
               setSelected={setSelected}
               data={tindakanOptions}
               onSelect={() => alert(selected)}
@@ -304,9 +304,9 @@ export default function PusdalopDetail() {
             <SelectList
               // data={bencanaOptions.rows[0] ? bencanaOptions.rows[0] : ''}
               data={bencanaOptions}
-              itemKey="id"
-              itemLabel="name"
-              // disabled={!selectedTindakan}
+              setSelected={setBencanaOptions}
+              disabled={!selected}
+              onPress={getDataBencana}
             />
           </View>
           <View>
@@ -329,6 +329,7 @@ export default function PusdalopDetail() {
               onConfirm={date => {
                 setOpen(false);
                 setDate(date);
+                // formHandler(tanggal);
               }}
               onCancel={() => {
                 setOpen(false);
@@ -340,6 +341,8 @@ export default function PusdalopDetail() {
             <TextInput
               placeholder="Masukan Isi Aduan"
               style={style.inputAduan}
+              name="isi_aduan"
+              onChangeText={text => formHandler(text, 'isi_aduan')}
             />
           </View>
           <View style={{marginTop: 10}}>
@@ -366,7 +369,10 @@ export default function PusdalopDetail() {
             </View>
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
-                onChangeText={handleLatitudeChange}
+                onChangeText={text => {
+                  handleLatitudeChange(text);
+                  formHandler(text);
+                }}
                 value={stateMap.latitude}
                 placeholder="Latitude"
                 keyboardType="numeric"

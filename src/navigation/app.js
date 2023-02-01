@@ -9,7 +9,7 @@ const Drawer = createDrawerNavigator();
 
 import Home from '../screen/Home';
 import Detail from '../screen/Detail';
-import Map from '../screen/map';
+// import Map from '../screen/map';
 
 import Pusdalop from '../screen/Pusdalop';
 import DrawerContent from '../components/DrawerContent';
@@ -19,7 +19,7 @@ import Asesmen from '../screen/Asesmen';
 import Verifikator from '../screen/Verifikator';
 import AsesmenDetail from '../screen/Asesmen Detail';
 import PusdalopDetail from '../screen/Pusdalop Detail';
-import Counter from '../screen/Counter';
+// import Counter from '../screen/Counter';
 import GudangLogpal from '../screen/Gudang Logpal';
 import TambahLogpal from '../screen/Tambah Logpal';
 import TindakanTRC from '../screen/TindakanTrc';
@@ -102,7 +102,7 @@ function MenuNavigator() {
           ),
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Map"
         component={Map}
         options={{
@@ -111,9 +111,9 @@ function MenuNavigator() {
             <Icon name="enviroment" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
       {/* Counter */}
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Counter"
         component={Counter}
         options={{
@@ -122,7 +122,7 @@ function MenuNavigator() {
             <Icon name="enviroment" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 }
