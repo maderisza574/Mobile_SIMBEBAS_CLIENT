@@ -9,6 +9,7 @@ const Drawer = createDrawerNavigator();
 
 import Home from '../screen/Home';
 import Detail from '../screen/Detail';
+
 // import Map from '../screen/map';
 
 import Pusdalop from '../screen/Pusdalop';
@@ -19,6 +20,7 @@ import Asesmen from '../screen/Asesmen';
 import Verifikator from '../screen/Verifikator';
 import AsesmenDetail from '../screen/Asesmen Detail';
 import PusdalopDetail from '../screen/Pusdalop Detail';
+import PusdalopCreate from '../screen/Pusdalop Create';
 // import Counter from '../screen/Counter';
 import GudangLogpal from '../screen/Gudang Logpal';
 import TambahLogpal from '../screen/Tambah Logpal';
@@ -150,6 +152,13 @@ export default function AppStackNavigator() {
       <Stack.Screen
         name="PusdalopDetail"
         component={PusdalopDetail}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="PusdalopCreate"
+        component={PusdalopCreate}
         options={{
           header: props => <HeaderDefault {...props} />,
         }}

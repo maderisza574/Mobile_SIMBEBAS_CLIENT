@@ -21,18 +21,18 @@ import axios from '../../utils/axios';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function PusdalopDetail(props) {
+export default function PusdalopCreate() {
   //  ini untuk penampung
-  const dataDetailPusdalop = props.route.params;
-  console.log(dataDetailPusdalop.all.risalah[0].ket);
   const [form, setForm] = useState({});
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [bencanaOptions, setBencanaOptions] = useState([]);
   const [upload, setUpload] = useState(false);
+  // console.log(bencanaOptions);
   const [kecamatan, setKecamatan] = useState([]);
   const [selected, setSelected] = React.useState('');
   const [image, setImage] = useState();
+  console.log(image);
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [latitude, setlatitude] = useState();
@@ -64,6 +64,7 @@ export default function PusdalopDetail(props) {
   const formHandler = (value, name) => {
     setDataPusdalop({...dataPusdalop, [name]: value});
   };
+  console.log(dataPusdalop);
 
   // tes multiple input
 
@@ -86,6 +87,7 @@ export default function PusdalopDetail(props) {
   };
   //  end multiple input
 
+  // console.log(form);
   // FOR DROPDOWN
 
   const getDatatindakan = async () => {
@@ -94,7 +96,7 @@ export default function PusdalopDetail(props) {
       let newArray = result.data.rows.map(item => {
         return {key: item.id, value: item.jenis_tindakan};
       });
-
+      // console.log(newArray);
       setTimeout(() => {
         setTindakanOptions(newArray);
       }, 1000);
@@ -170,6 +172,7 @@ export default function PusdalopDetail(props) {
 
       const response = await axios.post('/v1/pusdalops', formData, config);
       alert('Success Creating Report');
+      console.log(response.data);
     } catch (error) {
       console.error(error.message);
     }
@@ -281,6 +284,7 @@ export default function PusdalopDetail(props) {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+  // console.log(stateMap);
   const handleLatitudeChange = latitude => {
     setStateMap({...stateMap, latitude: parseFloat(latitude)});
   };
@@ -305,7 +309,6 @@ export default function PusdalopDetail(props) {
       });
     }
   }, [stateMap.latitude, stateMap.longitude]);
-
   return (
     <View>
       <ScrollView>
@@ -322,8 +325,7 @@ export default function PusdalopDetail(props) {
               color={'white'}
               style={{marginLeft: 10}}
             />
-            <Text style={{color: 'white'}}>Pusdalop Detail</Text>
-            <Text style={{color: 'white'}}>{dataDetailPusdalop.all.nama}</Text>
+            <Text style={{color: 'white'}}>Lapor Bencana</Text>
           </View>
         </View>
         <View style={style.containerInput}>
@@ -345,7 +347,6 @@ export default function PusdalopDetail(props) {
               onChange={setSelected}
               data={tindakanOptions}
               onSelect={() => alert(selected)}
-              placeholder={dataDetailPusdalop.all.id_tindakan}
             />
           </View>
           <View>
@@ -361,7 +362,7 @@ export default function PusdalopDetail(props) {
           <View>
             <Text>Tanggal Kejadian</Text>
             <TextInput
-              placeholder={dataDetailPusdalop.all.tanggal}
+              placeholder={date.toLocaleDateString()}
               style={{borderWidth: 1, borderRadius: 10}}
             />
             <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
@@ -389,7 +390,7 @@ export default function PusdalopDetail(props) {
           <View>
             <Text>Isi Aduan</Text>
             <TextInput
-              placeholder={dataDetailPusdalop.all.isi_aduan}
+              placeholder="Masukan Isi Aduan"
               style={style.inputAduan}
               name="isi_aduan"
               onChangeText={text => formHandler(text, 'isi_aduan')}
@@ -421,7 +422,7 @@ export default function PusdalopDetail(props) {
               <TextInput
                 onChangeText={text => formHandler(text, 'lat')}
                 value={stateMap.latitude}
-                placeholder={dataDetailPusdalop.all.lat}
+                placeholder="Latitude"
                 keyboardType="numeric"
                 style={{marginRight: 30}}
               />
@@ -430,7 +431,7 @@ export default function PusdalopDetail(props) {
                 onChangeText={text => formHandler(text, 'lng')}
                 // onChangeText={handleLongitudeChange}
                 keyboardType="numeric"
-                placeholder={dataDetailPusdalop.all.lng}
+                placeholder="Longitude"
                 value={stateMap.longitude}
                 style={{marginRight: 10}}
               />
@@ -484,7 +485,7 @@ export default function PusdalopDetail(props) {
                 <View>
                   <Text>Keterangan</Text>
                   <TextInput
-                    placeholder={dataDetailPusdalop.all.risalah[0].ket}
+                    placeholder="Masukan Keterangan gambar"
                     style={{
                       height: 100,
                       width: 350,

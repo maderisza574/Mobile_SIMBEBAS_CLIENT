@@ -3,11 +3,11 @@ import {View, Text, FlatList, StyleSheet, Image, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from '../../utils/axios';
 export default function Pusdalop(props) {
-  const navPusdalopDetail = () => {
-    props.navigation.navigate('PusdalopDetail');
+  const navPusdalopCreate = () => {
+    props.navigation.navigate('PusdalopCreate');
   };
   const [data, setData] = useState([]);
-  console.log(data[0]);
+  // console.log(data.isi_aduan);
   const [people, setPeople] = useState([
     {
       name: 'Tanah Longsor',
@@ -97,7 +97,7 @@ export default function Pusdalop(props) {
         <View>
           <Text>Riwayat Bencana</Text>
           <View>
-            <Pressable style={style.buttonLogin} onPress={navPusdalopDetail}>
+            <Pressable style={style.buttonLogin} onPress={navPusdalopCreate}>
               <Text style={style.textLogin}>Buat Laporan</Text>
             </Pressable>
           </View>
@@ -108,17 +108,17 @@ export default function Pusdalop(props) {
           renderItem={({item}) => (
             <View style={style.card}>
               <View style={{flexDirection: 'row'}}>
-                {/* <Image
-                  source={{uri: `${item.image}`}}
+                <Image
+                  source={require('../../assets/img/bencana1.png')}
                   style={{width: 100, height: 100}}
-                /> */}
+                />
                 <View>
                   <Text style={{marginLeft: 10}}>{item.nama}</Text>
-                  <Text style={{marginLeft: 10}}>Location</Text>
-                  <Text style={{marginLeft: 10}}>Butuh asesment</Text>
+                  <Text style={{marginLeft: 10}}>{item.alamat}</Text>
                   <Text style={{marginLeft: 10}}>
-                    lorem ipsum lorem lorem lorem lorem lorem lorem
+                    {item.lock_verif ? 'Sudah Verifikasi' : 'Belum Verifikasi'}
                   </Text>
+                  <Text style={{marginLeft: 10}}>{item.id}</Text>
                 </View>
                 <View
                   style={{
@@ -134,7 +134,13 @@ export default function Pusdalop(props) {
                       borderRadius: 10,
                       marginRight: 5,
                     }}
-                    onPress={navPusdalopDetail}>
+                    onPress={() => {
+                      props.navigation.navigate('PusdalopDetail', {
+                        // image: item.image,
+                        all: item,
+                        id: item.id,
+                      });
+                    }}>
                     <Text style={{marginLeft: 10}}>Lihat</Text>
                   </Pressable>
                   <Pressable
