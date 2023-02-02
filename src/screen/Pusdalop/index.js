@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, StyleSheet, Image, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
-
+import axios from '../../utils/axios';
 export default function Pusdalop(props) {
   const navPusdalopDetail = () => {
     props.navigation.navigate('PusdalopDetail');
   };
+  const [data, setData] = useState([]);
+  console.log(data[0]);
   const [people, setPeople] = useState([
     {
       name: 'Tanah Longsor',
@@ -58,6 +60,18 @@ export default function Pusdalop(props) {
       key: '10',
     },
   ]);
+  useEffect(() => {
+    getDataPusdalop();
+  }, []);
+  const getDataPusdalop = async () => {
+    try {
+      const result = await axios.get('/v1/pusdalops?page=1&perPage=10');
+      setData(result.data.rows);
+      // console.log(result.data.rows);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <View>
       <View style={style.titleScreen}>
@@ -89,17 +103,17 @@ export default function Pusdalop(props) {
           </View>
         </View>
         <FlatList
-          data={people}
-          keyExtractor={item => item.key}
+          data={data}
+          keyExtractor={item => item.id}
           renderItem={({item}) => (
             <View style={style.card}>
               <View style={{flexDirection: 'row'}}>
-                <Image
+                {/* <Image
                   source={{uri: `${item.image}`}}
                   style={{width: 100, height: 100}}
-                />
+                /> */}
                 <View>
-                  <Text style={{marginLeft: 10}}>Bencana</Text>
+                  <Text style={{marginLeft: 10}}>{item.nama}</Text>
                   <Text style={{marginLeft: 10}}>Location</Text>
                   <Text style={{marginLeft: 10}}>Butuh asesment</Text>
                   <Text style={{marginLeft: 10}}>

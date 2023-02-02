@@ -18,6 +18,7 @@ import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
+import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PusdalopDetail() {
@@ -26,34 +27,44 @@ export default function PusdalopDetail() {
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [bencanaOptions, setBencanaOptions] = useState([]);
-  console.log(bencanaOptions);
+  const [upload, setUpload] = useState(false);
+  // console.log(bencanaOptions);
   const [kecamatan, setKecamatan] = useState([]);
   const [selected, setSelected] = React.useState('');
   const [image, setImage] = useState();
+  console.log(image);
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [latitude, setlatitude] = useState();
   const [longitude, setlongiude] = useState();
   // akhir penampung
-  const dataPusdalop = {
-    id_tindakan: tindakanOptions[0]?.key,
-    id_jenis_bencana: bencanaOptions[0]?.key,
+  // yang belum ditampung
+  //  - alamat
+  //  - id desa
+  //  - id kecamatan
+  const [dataPusdalop, setDataPusdalop] = useState({
+    id_tindakan: '1',
+    id_jenis_bencana: '1',
     user_pemohon: 'Pusdalop',
-    isi_aduan: 'tes',
+    // isi_aduan: 'tes',
     no_telepon: '089898989',
     nama: 'bencana alam',
     alamat: 'test alamat',
     id_desa: '1',
     id_kecamatan: '1',
-    lng: '9898989',
-    lat: stateMap,
+    // lng: '9898989',
+    // lat: stateMap,
     tindakan_trc: 'true',
     logpal: 'true',
+    // image[0]: image,
     //ke:tessss
     //keteranganGambar[1]:tosss
-    tanggal: date,
+    // tanggal: date,
+  });
+  const formHandler = (value, name) => {
+    setDataPusdalop({...dataPusdalop, [name]: value});
   };
-  // console.log(dataPusdalop);
+  console.log(dataPusdalop);
 
   // tes multiple input
 
@@ -85,21 +96,18 @@ export default function PusdalopDetail() {
       let newArray = result.data.rows.map(item => {
         return {key: item.id, value: item.jenis_tindakan};
       });
-      setTindakanOptions(newArray);
+      // console.log(newArray);
+      setTimeout(() => {
+        setTindakanOptions(newArray);
+      }, 1000);
+      await setSelected(newArray[0]?.key);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getDataBencana = async () => {
+  const getDataBencana = async (selected = 1) => {
     try {
-      if (!selected === 1) {
-        setSelected(1);
-      } else if (!selected === 2) {
-        setSelected(2);
-      } else {
-        setSelected(1);
-      }
       const res = await axios.get(
         `/v1/bencana?page=1&perPage=10&tindakanId=${selected}`,
       );
@@ -113,24 +121,47 @@ export default function PusdalopDetail() {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      getDatatindakan(1);
-    }, 3000);
-    setTimeout(() => {
-      getDataBencana(1);
-    }, 4000);
+    getDatatindakan();
+    getDataBencana();
   }, []);
 
   // END DROPDWON
 
+  // const handleCreatePusdalop = async () => {
+  //   try {
+  //     let formData = new FormData();
+  //     for (let key in dataPusdalop) {
+  //       formData.append(key, dataPusdalop[key]);
+  //     }
+  //     const datauser = await AsyncStorage.getItem('token');
+  //     // console.log(datauser);
+
+  //     const config = {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //         Authorization: 'Bearer ' + datauser,
+  //       },
+  //     };
+
+  //     const response = await axios.post('/v1/pusdalops', formData, config);
+  //     alert('Sukses Membuat Laporan');
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // };
   const handleCreatePusdalop = async () => {
     try {
       let formData = new FormData();
       for (let key in dataPusdalop) {
         formData.append(key, dataPusdalop[key]);
       }
+      const formImageData = new FormData();
+      for (const data in image) {
+        formImageData.append(data, image[data]);
+      }
+      formData.append('formImage', formImageData);
       const datauser = await AsyncStorage.getItem('token');
-      console.log(datauser);
 
       const config = {
         headers: {
@@ -140,18 +171,31 @@ export default function PusdalopDetail() {
       };
 
       const response = await axios.post('/v1/pusdalops', formData, config);
-      alert('Sukses Membuat Laporan');
+      alert('Success Creating Report');
       console.log(response.data);
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
   };
 
-  //for image picker
+  // const updateImageHandler = async () => {
+  //   try {
+  //     setUpload(true);
+  //     const formData = new FormData();
+  //     for (const data in image) {
+  //       formData.append(data, image[data]);
+  //     }
+  //     await axios.patch('/api/user', formData);
+  //     setUpload(false);
+  //     setImage({});
+  //     ('');
+  //     alert('succes');
+  //   } catch (error) {
+  //     setUpload(false);
+  //   }
+  // };
 
-  const formHandler = (value, name) => {
-    setForm({...form, [name]: value});
-  };
+  //for image picker
 
   // for camera
   const handleLaunchCamera = async () => {
@@ -212,6 +256,11 @@ export default function PusdalopDetail() {
     });
     setImage(photo.assets[0].uri);
   };
+
+  // const cancelImageHandler = () => {
+  //   setFormImage({});
+  //   setPreview('');
+  // };
   // const openCamera = async () => {
   //   let options = {
   //     saveToPhotos: true,
@@ -295,6 +344,7 @@ export default function PusdalopDetail() {
             <SelectList
               onPress={getDatatindakan}
               setSelected={setSelected}
+              onChange={setSelected}
               data={tindakanOptions}
               onSelect={() => alert(selected)}
             />
@@ -329,6 +379,7 @@ export default function PusdalopDetail() {
               onConfirm={date => {
                 setOpen(false);
                 setDate(date);
+                formHandler(moment(date).format('YYYY-MM-DD'), 'tanggal');
                 // formHandler(tanggal);
               }}
               onCancel={() => {
@@ -369,10 +420,7 @@ export default function PusdalopDetail() {
             </View>
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
-                onChangeText={text => {
-                  handleLatitudeChange(text);
-                  formHandler(text);
-                }}
+                onChangeText={text => formHandler(text, 'lat')}
                 value={stateMap.latitude}
                 placeholder="Latitude"
                 keyboardType="numeric"
@@ -380,7 +428,8 @@ export default function PusdalopDetail() {
               />
 
               <TextInput
-                onChangeText={handleLongitudeChange}
+                onChangeText={text => formHandler(text, 'lng')}
+                // onChangeText={handleLongitudeChange}
                 keyboardType="numeric"
                 placeholder="Longitude"
                 value={stateMap.longitude}
@@ -445,7 +494,7 @@ export default function PusdalopDetail() {
                       marginTop: 5,
                     }}
                     value={input.value}
-                    onChangeText={text => handleInputChange(text, index)}
+                    onChangeText={text => formHandler(text, 'keteranganGambar')}
                   />
                   <Button
                     title="Remove"
