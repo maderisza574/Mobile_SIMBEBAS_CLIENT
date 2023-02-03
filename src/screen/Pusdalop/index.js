@@ -7,7 +7,7 @@ export default function Pusdalop(props) {
     props.navigation.navigate('PusdalopCreate');
   };
   const [data, setData] = useState([]);
-  // console.log(data.isi_aduan);
+
   const [people, setPeople] = useState([
     {
       name: 'Tanah Longsor',
@@ -63,15 +63,19 @@ export default function Pusdalop(props) {
   useEffect(() => {
     getDataPusdalop();
   }, []);
+  const [pusdalopid, setPusdalopId] = useState(null);
+
   const getDataPusdalop = async () => {
     try {
       const result = await axios.get('/v1/pusdalops?page=1&perPage=10');
       setData(result.data.rows);
+      setPusdalopId(result.data.rows[0]?.id);
       // console.log(result.data.rows);
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <View>
       <View style={style.titleScreen}>
@@ -142,15 +146,6 @@ export default function Pusdalop(props) {
                       });
                     }}>
                     <Text style={{marginLeft: 10}}>Lihat</Text>
-                  </Pressable>
-                  <Pressable
-                    style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                    }}>
-                    <Text style={{marginLeft: 8}}>Delete</Text>
                   </Pressable>
                 </View>
               </View>

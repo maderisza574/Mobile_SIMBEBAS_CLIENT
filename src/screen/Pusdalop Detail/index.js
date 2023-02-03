@@ -24,66 +24,95 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function PusdalopDetail(props) {
   //  ini untuk penampung
   const dataDetailPusdalop = props.route.params;
-  console.log(dataDetailPusdalop.all.risalah[0].ket);
-  const [form, setForm] = useState({});
+  const pusdalopid = dataDetailPusdalop.all.id;
+  const [isLoadingData, setisLoadingData] = useState(false);
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [bencanaOptions, setBencanaOptions] = useState([]);
-  const [upload, setUpload] = useState(false);
-  const [kecamatan, setKecamatan] = useState([]);
   const [selected, setSelected] = React.useState('');
   const [image, setImage] = useState();
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
-  const [latitude, setlatitude] = useState();
-  const [longitude, setlongiude] = useState();
   // akhir penampung
   // yang belum ditampung
   //  - alamat
   //  - id desa
   //  - id kecamatan
-  const [dataPusdalop, setDataPusdalop] = useState({
-    id_tindakan: '1',
-    id_jenis_bencana: '1',
-    user_pemohon: 'Pusdalop',
-    // isi_aduan: 'tes',
-    no_telepon: '089898989',
-    nama: 'bencana alam',
-    alamat: 'test alamat',
-    id_desa: '1',
-    id_kecamatan: '1',
-    // lng: '9898989',
-    // lat: stateMap,
-    tindakan_trc: 'true',
-    logpal: 'true',
-    // image[0]: image,
-    //ke:tessss
-    //keteranganGambar[1]:tosss
-    // tanggal: date,
-  });
   const formHandler = (value, name) => {
-    setDataPusdalop({...dataPusdalop, [name]: value});
+    setForm({...form, [name]: value});
   };
+  const [form, setForm] = useState({
+    id_jenis_bencana: '',
+    id_tindakan: '',
+    user_pemohon: '',
+    isi_aduan: '',
+    no_telepon: '',
+    nama: '',
+    alamat: '',
+    id_desa: '',
+    id_kecamatan: '',
+    lng: '',
+    lat: '',
+    tindakan_trc: '',
+    logpal: '',
+    tanggal: '',
+  });
 
   // tes multiple input
+  const updatePusdalop = async e => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      setisLoadingData(true);
+      const response = await axios.dispatch(
+        `/v1/pusdalops/${pusdalopid}`,
+        config,
+        form,
+      );
+      alert('sukses');
+      setisLoadingData(false);
+      console.log(response);
+      e.preventDefault();
+    } catch (error) {
+      alert('error');
+    }
+  };
+
+  const deletePusdalop = async () => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      const response = await axios.delete(
+        `/v1/pusdalops/${pusdalopid}`,
+        config,
+      );
+      console.log(response);
+
+      alert('Sukses Menghapus Data');
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
   };
 
-  const handleInputChange = (text, index) => {
-    const newInputs = [...inputs];
-    newInputs[index].value = text;
-    setInputs(newInputs);
-  };
   const handleRemoveInput = index => {
     setInputs(inputs.filter((input, i) => i !== index));
   };
-  const handleImageChange = (image, index) => {
-    const newInputs = [...inputs];
-    newInputs[index].image = image;
-    setInputs(newInputs);
-  };
+
   //  end multiple input
 
   // FOR DROPDOWN
@@ -124,73 +153,6 @@ export default function PusdalopDetail(props) {
   }, []);
 
   // END DROPDWON
-
-  // const handleCreatePusdalop = async () => {
-  //   try {
-  //     let formData = new FormData();
-  //     for (let key in dataPusdalop) {
-  //       formData.append(key, dataPusdalop[key]);
-  //     }
-  //     const datauser = await AsyncStorage.getItem('token');
-  //     // console.log(datauser);
-
-  //     const config = {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //         Authorization: 'Bearer ' + datauser,
-  //       },
-  //     };
-
-  //     const response = await axios.post('/v1/pusdalops', formData, config);
-  //     alert('Sukses Membuat Laporan');
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // };
-  const handleCreatePusdalop = async () => {
-    try {
-      let formData = new FormData();
-      for (let key in dataPusdalop) {
-        formData.append(key, dataPusdalop[key]);
-      }
-      const formImageData = new FormData();
-      for (const data in image) {
-        formImageData.append(data, image[data]);
-      }
-      formData.append('formImage', formImageData);
-      const datauser = await AsyncStorage.getItem('token');
-
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + datauser,
-        },
-      };
-
-      const response = await axios.post('/v1/pusdalops', formData, config);
-      alert('Success Creating Report');
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  // const updateImageHandler = async () => {
-  //   try {
-  //     setUpload(true);
-  //     const formData = new FormData();
-  //     for (const data in image) {
-  //       formData.append(data, image[data]);
-  //     }
-  //     await axios.patch('/api/user', formData);
-  //     setUpload(false);
-  //     setImage({});
-  //     ('');
-  //     alert('succes');
-  //   } catch (error) {
-  //     setUpload(false);
-  //   }
-  // };
 
   //for image picker
 
@@ -509,8 +471,11 @@ export default function PusdalopDetail(props) {
           </View>
           {/* end input loop image */}
           <View style={{marginTop: 10}}>
-            <Pressable style={style.buttonLogin} onPress={handleCreatePusdalop}>
-              <Text style={style.textLogin}>Kirim</Text>
+            <Pressable style={style.buttonLogin} onPress={updatePusdalop}>
+              <Text style={style.textLogin}>Simpan</Text>
+            </Pressable>
+            <Pressable style={style.buttonBatal} onPress={deletePusdalop}>
+              <Text style={style.textLogin}>Hapus Data</Text>
             </Pressable>
             <Pressable style={style.buttonBatal}>
               <Text style={style.textLogin}>Batal</Text>
