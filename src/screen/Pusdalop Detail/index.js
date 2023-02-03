@@ -344,7 +344,7 @@ export default function PusdalopDetail(props) {
           <Picker
             selectedValue={selectedPickerTindakan}
             onValueChange={(label, key) => setSelected(key)}>
-            <Picker.Item label="PILIH JENIS TINDAKAN" />
+            {/* <Picker.Item label="PILIH JENIS TINDAKAN" /> */}
             {tindakanOptions.map(option => (
               <Picker.Item
                 style={{color: 'black'}}
@@ -362,8 +362,10 @@ export default function PusdalopDetail(props) {
             <View>
               <Picker
                 selectedValue={bencanaOptions}
-                onValueChange={(label, key) => setKeyBencanaOptions(key)}>
-                <Picker.Item label="PILIH JENIS Bencana" />
+                onValueChange={(itemValue, itemIndex) =>
+                  setKeyBencanaOptions(itemValue)
+                }>
+                {/* <Picker.Item label="PILIH JENIS Bencana" /> */}
                 {bencanaOptions.map(option => (
                   <Picker.Item
                     style={{color: 'black'}}
