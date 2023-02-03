@@ -136,7 +136,7 @@ export default function Pusdalop(props) {
                       color: '#FFFF',
                       width: 50,
                       borderRadius: 10,
-                      marginRight: 5,
+                      marginLeft: 30,
                     }}
                     onPress={() => {
                       props.navigation.navigate('PusdalopDetail', {

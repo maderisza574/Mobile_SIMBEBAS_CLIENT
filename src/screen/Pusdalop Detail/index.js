@@ -20,6 +20,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Picker} from '@react-native-picker/picker';
 
 export default function PusdalopDetail(props) {
   //  ini untuk penampung
@@ -28,11 +29,80 @@ export default function PusdalopDetail(props) {
   const [isLoadingData, setisLoadingData] = useState(false);
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [tindakanOptions, setTindakanOptions] = useState([]);
+  // console.log(tindakanOptions);
   const [bencanaOptions, setBencanaOptions] = useState([]);
+  console.log(bencanaOptions);
+  const [keyBencanaOption, setKeyBencanaOptions] = useState();
   const [selected, setSelected] = React.useState('');
+
   const [image, setImage] = useState();
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  // TES PICKER
+  // FOR DROPDOWN
+
+  const getDatatindakan = async () => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      const result = await axios.get('/v1/tindakan?page=1&perPage=10', config);
+      // let newArray = result.data.rows.map(item => {
+      //   return {key: item.id, value: item.jenis_tindakan};
+      // })
+      setTindakanOptions(result.data.rows);
+
+      // await setSelected(newArray[0]?.key);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getDataBencana = async (selected = 1) => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      const res = await axios.get(
+        `/v1/bencana?page=1&perPage=10&tindakanId=${selected}`,
+        config,
+      );
+      await setBencanaOptions(res.data.rows);
+      // let newArray = res.data.rows.map(item => {
+      //   return {key: item.id, value: item.sub_jenis};
+      // });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getDatatindakan();
+    getDataBencana();
+  }, []);
+
+  // END DROPDWON
+  const [selectedPickerTindakan, setSelectedPickerTindakan] = useState();
+  // console.log(selectedPickerTindakan);
+
+  const handleOptionSelect = value => {
+    if (value === 'option1') {
+      setSelected('Option 1 is selected');
+    } else if (value === 'option2') {
+      setSelected('Option 2 is selected');
+    } else {
+      setSelected('');
+    }
+  };
+  // END PICKER
   // akhir penampung
   // yang belum ditampung
   //  - alamat
@@ -114,45 +184,6 @@ export default function PusdalopDetail(props) {
   };
 
   //  end multiple input
-
-  // FOR DROPDOWN
-
-  const getDatatindakan = async () => {
-    try {
-      const result = await axios.get('/v1/tindakan?page=1&perPage=10');
-      let newArray = result.data.rows.map(item => {
-        return {key: item.id, value: item.jenis_tindakan};
-      });
-
-      setTimeout(() => {
-        setTindakanOptions(newArray);
-      }, 1000);
-      await setSelected(newArray[0]?.key);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getDataBencana = async (selected = 1) => {
-    try {
-      const res = await axios.get(
-        `/v1/bencana?page=1&perPage=10&tindakanId=${selected}`,
-      );
-      let newArray = res.data.rows.map(item => {
-        return {key: item.id, value: item.sub_jenis};
-      });
-      setBencanaOptions(newArray);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    getDatatindakan();
-    getDataBencana();
-  }, []);
-
-  // END DROPDWON
 
   //for image picker
 
@@ -301,24 +332,55 @@ export default function PusdalopDetail(props) {
               labelExtractor={({jenis_tindakan}) => jenis_tindakan}
               valueExtractor={({id}) => id}
             /> */}
-            <SelectList
+            {/* <SelectList
               onPress={getDatatindakan}
               setSelected={setSelected}
               onChange={setSelected}
               data={tindakanOptions}
               onSelect={() => alert(selected)}
               placeholder={dataDetailPusdalop.all.id_tindakan}
-            />
+            /> */}
           </View>
+          <Picker
+            selectedValue={selectedPickerTindakan}
+            onValueChange={(label, key) => setSelected(key)}>
+            <Picker.Item label="PILIH JENIS TINDAKAN" />
+            {tindakanOptions.map(option => (
+              <Picker.Item
+                style={{color: 'black'}}
+                key={option.id}
+                label={option.jenis_tindakan}
+                value={option.id}
+              />
+            ))}
+
+            {/* <Picker.Item label="PENCEGAHAN" value="1" />
+            <Picker.Item label="PENANGULANGAN" value="2" /> */}
+          </Picker>
           <View>
             <Text>Jenis Bencana</Text>
-            <SelectList
+            <View>
+              <Picker
+                selectedValue={bencanaOptions}
+                onValueChange={(label, key) => setKeyBencanaOptions(key)}>
+                <Picker.Item label="PILIH JENIS Bencana" />
+                {bencanaOptions.map(option => (
+                  <Picker.Item
+                    style={{color: 'black'}}
+                    key={option.id}
+                    label={option.sub_jenis}
+                    value={option.id_jenis_bencana}
+                  />
+                ))}
+              </Picker>
+            </View>
+            {/* <SelectList
               // data={bencanaOptions.rows[0] ? bencanaOptions.rows[0] : ''}
               data={bencanaOptions}
               setSelected={setBencanaOptions}
               disabled={!selected}
               onPress={getDataBencana}
-            />
+            /> */}
           </View>
           <View>
             <Text>Tanggal Kejadian</Text>
