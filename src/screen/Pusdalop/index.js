@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, FlatList, StyleSheet, Image, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
+import axios from '../../utils/axios';
 
 export default function Pusdalop(props) {
   const navPusdalopDetail = () => {
-    props.navigation.navigate('PusdalopDetail');
+    props.navigation.navigate('PusdalopCreate');
   };
+  const [dataPusdalop, setDataPusdalop] = useState();
   const [people, setPeople] = useState([
     {
       name: 'Tanah Longsor',
@@ -58,6 +60,21 @@ export default function Pusdalop(props) {
       key: '10',
     },
   ]);
+  useEffect(() => {
+    handleGetBencana();
+  }, []);
+  console.log('INI DATA PUSDALOP', dataPusdalop);
+  const handleGetBencana = async () => {
+    try {
+      const result = await axios.get(`/v1/pusdalops?page=1&perPage=5`);
+      // console.log(result.data.rows[0]);
+      setDataPusdalop(result.data.rows);
+      alert('sukses');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View>
       <View style={style.titleScreen}>
@@ -89,19 +106,19 @@ export default function Pusdalop(props) {
           </View>
         </View>
         <FlatList
-          data={people}
-          keyExtractor={item => item.key}
+          data={dataPusdalop}
+          keyExtractor={item => item.id}
           renderItem={({item}) => (
             <View style={style.card}>
               <View style={{flexDirection: 'row'}}>
-                <Image
+                {/* <Image
                   source={{uri: `${item.image}`}}
                   style={{width: 100, height: 100}}
-                />
+                /> */}
                 <View>
-                  <Text style={{marginLeft: 10}}>Bencana</Text>
-                  <Text style={{marginLeft: 10}}>Location</Text>
-                  <Text style={{marginLeft: 10}}>Butuh asesment</Text>
+                  <Text style={{marginLeft: 10}}>{item.nama}</Text>
+                  <Text style={{marginLeft: 10}}>{item.alamat}</Text>
+                  <Text style={{marginLeft: 10}}>{item.tanggal}</Text>
                   <Text style={{marginLeft: 10}}>
                     lorem ipsum lorem lorem lorem lorem lorem lorem
                   </Text>

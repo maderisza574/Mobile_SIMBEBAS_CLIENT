@@ -12,13 +12,14 @@ import Detail from '../screen/Detail';
 import Map from '../screen/map';
 
 import Pusdalop from '../screen/Pusdalop';
+import PusdalopDetail from '../screen/Pusdalop Detail';
+import PusdalopCreate from '../screen/PusdalopCreate';
 import DrawerContent from '../components/DrawerContent';
 import HeaderHome from '../components/Header/home';
 import HeaderDefault from '../components/Header/default';
 import Asesmen from '../screen/Asesmen';
 import Verifikator from '../screen/Verifikator';
 import AsesmenDetail from '../screen/Asesmen Detail';
-import PusdalopDetail from '../screen/Pusdalop Detail';
 import Counter from '../screen/Counter';
 import GudangLogpal from '../screen/Gudang Logpal';
 import TambahLogpal from '../screen/Tambah Logpal';
@@ -174,6 +175,13 @@ export default function AppStackNavigator() {
       <Stack.Screen
         name="VerifikatorDetail"
         component={VerifikatorDetail}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="PusdalopCreate"
+        component={PusdalopCreate}
         options={{
           header: props => <HeaderDefault {...props} />,
         }}

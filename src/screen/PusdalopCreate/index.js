@@ -20,7 +20,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function PusdalopDetail() {
+export default function PusdalopCreate() {
   const dataPusdalop = {
     id_jenis_bencana: '1',
     id_tindakan: '1',
@@ -67,7 +67,7 @@ export default function PusdalopDetail() {
   const [tindakanOptions, setTindakanOptions] = useState([]);
   // console.log(tindakanOptions);
   const [bencanaOptions, setBencanaOptions] = useState([]);
-  // console.log('INI DATA BENCANA', bencanaOptions);
+  console.log('INI DATA BENCANA', bencanaOptions);
   const [selected, setSelected] = React.useState('');
   const dataJenis = [
     {key: '1', value: 'PENCEGAHAN'},
