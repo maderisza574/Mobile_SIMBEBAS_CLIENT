@@ -67,48 +67,47 @@ export default function PusdalopDetail() {
   const [tindakanOptions, setTindakanOptions] = useState([]);
   // console.log(tindakanOptions);
   const [bencanaOptions, setBencanaOptions] = useState([]);
+  console.log('INI DATA BENCANA', bencanaOptions);
   const [selected, setSelected] = React.useState('');
-
-  // const [selectedTindakan, setSelectedTindakan] = useState(null);
+  const dataJenis = [
+    {key: '1', value: 'PENCEGAHAN'},
+    {key: '2', value: 'PENANGGULANGAN'},
+  ];
+  // useEffect(() => {
+  //   axios
+  //     .get('/v1/tindakan?page=1&perPage=10')
+  //     .then(res => {
+  //       let newArray = res.data.rows.map(item => {
+  //         return {key: item.id, value: item.jenis_tindakan};
+  //       });
+  //       setTindakanOptions(newArray);
+  //     })
+  //     .catch(error => console.error(error));
+  // }, []);
+  // const handleGetBencana = async () => {
+  //   try {
+  //     await axios.get(`/v1/bencana?page=1&perPage=10&tindakanId=1`);
+  //     await (res => {
+  //       let newArray = res.data.rows.map(item => {
+  //         return {key: item.id, value: item.sub_jenis};
+  //       });
+  //       setBencanaOptions(newArray);
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   useEffect(() => {
     axios
-      .get('/v1/tindakan?page=1&perPage=10')
+      .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected || 1}`)
       .then(res => {
-        // console.log(res.data);
-        // Store Values in Temporary Array
-        let newArray = res.data.rows.map(item => {
-          return {key: item.id, value: item.jenis_tindakan};
-        });
-        // console.log(newArray);
-        // Set Data Variable
-        setTindakanOptions(newArray);
-      })
-      // .then(res => setTindakanOptions(res.data))
-      .catch(error => console.error(error));
-  }, []);
-
-  useEffect(() => {
-    // if (!selectedTindakan) {
-    // setSelected('');
-    //   console.log(selectedTindakan);
-    //   return;
-    // }
-
-    axios
-      .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected}`)
-      .then(res => {
-        // console.log('id', selected);
-
-        // Store Values in Temporary Array
         let newArray = res.data.rows.map(item => {
           return {key: item.id, value: item.sub_jenis};
         });
-        // console.log(newArray);
-        // Set Data Variable
         setBencanaOptions(newArray);
       })
       .catch(error => console.error(error));
-  }, []);
+  }, [selected]);
   // END DROPDWON
 
   const handleCreatePusdalop = async () => {
@@ -213,19 +212,7 @@ export default function PusdalopDetail() {
     });
     setImage(photo.assets[0].uri);
   };
-  // const openCamera = async () => {
-  //   let options = {
-  //     saveToPhotos: true,
-  //     mediaType: 'photo',
-  //   };
-  //   const granted = await PermissionsAndroid.request(
-  //     PermissionsAndroid.PERMISSIONS.CAMERA,
-  //   );
-  //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //     const result = await launchCamera(options);
-  //     setImage(result.assets[0].uri);
-  //   }
-  // };
+
   const [stateMap, setStateMap] = useState({
     latitude: null || -7.431391,
     longitude: null || 109.247833,
@@ -286,6 +273,7 @@ export default function PusdalopDetail() {
           </Text>
           <View style={{padding: 5}}>
             <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
+
             {/* <SelectList
               items={tindakanOptions}
               onChange={value => setSelectedTindakan(value)}
@@ -293,19 +281,30 @@ export default function PusdalopDetail() {
               labelExtractor={({jenis_tindakan}) => jenis_tindakan}
               valueExtractor={({id}) => id}
             /> */}
-            <SelectList
+            {/* <SelectList
               setSelected={setSelected}
               data={tindakanOptions}
               onSelect={() => alert(selected)}
+            /> */}
+            <SelectList
+              setSelected={key => setSelected(key)}
+              data={dataJenis}
+              save="key"
+              itemKey="key"
+              itemLabel="name"
             />
           </View>
           <View>
             <Text>Jenis Bencana</Text>
+            {/* <Button title="get" onPress={handleGetBencana} /> */}
+
             <SelectList
               // data={bencanaOptions.rows[0] ? bencanaOptions.rows[0] : ''}
               data={bencanaOptions}
               itemKey="id"
               itemLabel="name"
+              defaultOption={bencanaOptions}
+              // onSelect={() => se}
               // disabled={!selectedTindakan}
             />
           </View>
