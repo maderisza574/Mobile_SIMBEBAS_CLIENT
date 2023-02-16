@@ -21,25 +21,19 @@ import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PusdalopCreate() {
-  const dataPusdalop = {
-    id_jenis_bencana: '1',
-    id_tindakan: '1',
-    user_pemohon: 'johan',
-    isi_aduan: 'tes',
-    no_telepon: '089898989',
-    nama: 'bencana alam',
-    alamat: 'test alamat',
-    id_desa: '1',
-    id_kecamatan: '1',
-    lng: '9898989',
-    lat: '67676767',
-    tindakan_trc: 'true',
-    logpal: 'true',
-    //ke:tessss
-    //keteranganGambar[1]:tosss
-    tanggal: '2023-03-12',
-  };
+  const [image, setImage] = useState();
+  const [tindakanOptions, setTindakanOptions] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [latitude, setlatitude] = useState();
+  const [longitude, setlongiude] = useState();
   const [form, setForm] = useState({});
+  const [bencanaOptions, setBencanaOptions] = useState([]);
+  const [selected, setSelected] = React.useState('');
+  const [date, setDate] = useState(new Date());
+  const [kecamatanOption, setKecamatanOption] = useState([]);
+  const [desaOPtion, setDesaOption] = useState([]);
+  console.log('INI DATA DESA', desaOPtion);
+  // console.log('ini data kecamatan', kecamatanOption);
   // tes multiple input
   const [inputs, setInputs] = useState([{value: '', image: null}]);
 
@@ -62,13 +56,6 @@ export default function PusdalopCreate() {
   };
   //  end multiple input
 
-  // console.log(form);
-  // FOR DROPDOWN
-  const [tindakanOptions, setTindakanOptions] = useState([]);
-  // console.log(tindakanOptions);
-  const [bencanaOptions, setBencanaOptions] = useState([]);
-  console.log('INI DATA BENCANA', bencanaOptions);
-  const [selected, setSelected] = React.useState('');
   const dataJenis = [
     {key: '1', value: 'PENCEGAHAN'},
     {key: '2', value: 'PENANGGULANGAN'},
@@ -109,6 +96,28 @@ export default function PusdalopCreate() {
       .catch(error => console.error(error));
   }, [selected]);
   // END DROPDWON
+  useEffect(() => {
+    axios
+      .get(`/v1/kecamatan?page=1&perPage=27`)
+      .then(res => {
+        let newArray = res.data.rows.map(item => {
+          return {key: item.id, value: item.kecamatan};
+        });
+        setKecamatanOption(newArray);
+      })
+      .catch(error => console.error(error));
+  }, []);
+  useEffect(() => {
+    axios
+      .get(`/v1/desa?page=1&perPage=27`)
+      .then(res => {
+        let newArray = res.data.rows.map(item => {
+          return {key: item.id, value: item.desa};
+        });
+        setDesaOption(newArray);
+      })
+      .catch(error => console.error(error));
+  }, []);
 
   const handleCreatePusdalop = async () => {
     try {
@@ -131,25 +140,6 @@ export default function PusdalopCreate() {
       console.log(response.data);
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  //for image picker
-  const [image, setImage] = useState();
-  // console.log(image);
-  // for Date picker
-  const [date, setDate] = useState(new Date());
-  // console.log(date);
-  const [open, setOpen] = useState(false);
-
-  const [latitude, setlatitude] = useState();
-  const [longitude, setlongiude] = useState();
-  const handleChangeForm = (name, value) => {
-    if (name === 'image') {
-      setForm({...form, [name]: value});
-      setImage({uri: value});
-    } else {
-      setForm({...form, [name]: value});
     }
   };
 
@@ -248,6 +238,26 @@ export default function PusdalopCreate() {
       });
     }
   }, [stateMap.latitude, stateMap.longitude]);
+
+  const dataPusdalop = {
+    id_jenis_bencana: '1',
+    id_tindakan: '1',
+    user_pemohon: 'johan',
+    isi_aduan: 'tes',
+    no_telepon: '089898989',
+    nama: 'bencana alam',
+    alamat: 'test alamat',
+    id_desa: '1',
+    id_kecamatan: '1',
+    lng: '9898989',
+    lat: '67676767',
+    tindakan_trc: 'true',
+    logpal: 'true',
+    //ke:tessss
+    //keteranganGambar[1]:tosss
+    tanggal: '2023-03-12',
+  };
+
   return (
     <View>
       <ScrollView>
@@ -383,7 +393,70 @@ export default function PusdalopCreate() {
                 <Text style={style.textSearchMap}>Cari</Text>
               </Pressable>
             </View>
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+              <View>
+                <Text>Pelapor:</Text>
+              </View>
+              <View style={{marginLeft: 30}}>
+                <Text>Nama</Text>
+              </View>
+              <View style={{marginLeft: 110}}>
+                <Text>No TELP/HP</Text>
+              </View>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{marginLeft: 80}}>
+                <TextInput
+                  placeholder="Masukan Nama"
+                  style={{
+                    borderWidth: 2,
+                    borderColor: 'Black',
+                    borderRadius: 10,
+                    marginRight: 5,
+                    width: 150,
+                  }}
+                />
+              </View>
+              <View>
+                <SelectList data={desaOPtion} />
+              </View>
+            </View>
           </View>
+          {/* Kecamatan */}
+          <View style={{marginTop: 20}}>
+            <View>
+              <Text>Kecamatan:</Text>
+            </View>
+            <View>
+              <View style={{marginLeft: 10}}>
+                <SelectList data={kecamatanOption} />
+              </View>
+            </View>
+          </View>
+          {/* end Kecamatan */}
+          {/* Desa */}
+          <View style={{marginTop: 20}}>
+            <View>
+              <Text>Desa</Text>
+            </View>
+            <View>
+              <SelectList data={desaOPtion} />
+            </View>
+          </View>
+          {/* End Desa */}
+          {/* Alamat */}
+          <View style={{marginTop: 10}}>
+            <View>
+              <Text>Alamat</Text>
+            </View>
+            <View>
+              <TextInput
+                placeholder="Masukan Alamat"
+                style={{borderWidth: 3, borderColor: 'black', borderRadius: 10}}
+              />
+            </View>
+          </View>
+          {/* End Alamat */}
           <View style={{marginTop: 20}}>
             <Text>Upload gambar</Text>
           </View>
@@ -436,6 +509,7 @@ export default function PusdalopCreate() {
                       borderWidth: 1,
                       marginLeft: 15,
                       marginTop: 5,
+                      marginBottom: 10,
                     }}
                     value={input.value}
                     onChangeText={text => handleInputChange(text, index)}

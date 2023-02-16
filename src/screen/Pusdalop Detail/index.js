@@ -20,7 +20,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function PusdalopDetail() {
+export default function PusdalopDetail(props) {
   const dataPusdalop = {
     id_jenis_bencana: '1',
     id_tindakan: '1',
@@ -264,7 +264,8 @@ export default function PusdalopDetail() {
               color={'white'}
               style={{marginLeft: 10}}
             />
-            <Text style={{color: 'white'}}>Lapor Bencana</Text>
+            <Text style={{color: 'white'}}>Detail</Text>
+            <Text style={{color: 'white'}}>Laporan Pusdalop</Text>
           </View>
         </View>
         <View style={style.containerInput}>
@@ -455,10 +456,10 @@ export default function PusdalopDetail() {
           {/* end input loop image */}
           <View style={{marginTop: 10}}>
             <Pressable style={style.buttonLogin} onPress={handleCreatePusdalop}>
-              <Text style={style.textLogin}>Kirim</Text>
+              <Text style={style.textLogin}>Perbaiki</Text>
             </Pressable>
             <Pressable style={style.buttonBatal}>
-              <Text style={style.textLogin}>Batal</Text>
+              <Text style={style.textLogin}>Hapus</Text>
             </Pressable>
           </View>
         </View>
@@ -489,7 +490,7 @@ const style = StyleSheet.create({
     width: '100%',
     // height: 500,
     position: 'relative',
-    marginTop: -30,
+    marginTop: -20,
   },
   buttonLogin: {
     alignItems: 'center',

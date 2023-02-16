@@ -4,75 +4,30 @@ import Icon from 'react-native-vector-icons/Entypo';
 import axios from '../../utils/axios';
 
 export default function Pusdalop(props) {
-  const navPusdalopDetail = () => {
-    props.navigation.navigate('PusdalopCreate');
-  };
+  const [pusdalop, setpusdalop] = useState();
   const [dataPusdalop, setDataPusdalop] = useState();
-  const [people, setPeople] = useState([
-    {
-      name: 'Tanah Longsor',
-      image: 'https://via.placeholder.com/100x100',
-      key: '1',
-    },
-    {
-      name: 'San',
-      image: 'https://via.placeholder.com/100x100',
-      key: '2',
-    },
-    {
-      name: 'Sun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '3',
-    },
-    {
-      name: 'dab',
-      image: 'https://via.placeholder.com/100x100',
-      key: '4',
-    },
-    {
-      name: 'dun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '5',
-    },
-    {
-      name: 'dor',
-      image: 'https://via.placeholder.com/100x100',
-      key: '6',
-    },
-    {
-      name: 'dur',
-      image: 'https://via.placeholder.com/100x100',
-      key: '7',
-    },
-    {
-      name: 'der',
-      image: 'https://via.placeholder.com/100x100',
-      key: '8',
-    },
-    {
-      name: 'doel',
-      image: 'https://via.placeholder.com/100x100',
-      key: '9',
-    },
-    {
-      name: 'doer',
-      image: 'https://via.placeholder.com/100x100',
-      key: '10',
-    },
-  ]);
+
   useEffect(() => {
     handleGetBencana();
   }, []);
-  console.log('INI DATA PUSDALOP', dataPusdalop);
+  // console.log('INI DATA PUSDALOP', dataPusdalop);
   const handleGetBencana = async () => {
     try {
       const result = await axios.get(`/v1/pusdalops?page=1&perPage=5`);
       // console.log(result.data.rows[0]);
-      setDataPusdalop(result.data.rows);
+      setpusdalop(result.data.rows);
       alert('sukses');
     } catch (error) {
       console.log(error);
     }
+  };
+  const navPusdalopDetail = () => {
+    props.navigation.navigate('PusdalopCreate');
+  };
+  const navPusdalop = id => {
+    // setDataPusdalop(id);
+    console.log('ini id flat list', id);
+    props.navigation.navigate('PusdalopDetail', {pusdalopId: id});
   };
 
   return (
@@ -106,8 +61,7 @@ export default function Pusdalop(props) {
           </View>
         </View>
         <FlatList
-          data={dataPusdalop}
-          keyExtractor={item => item.id}
+          data={pusdalop}
           renderItem={({item}) => (
             <View style={style.card}>
               <View style={{flexDirection: 'row'}}>
@@ -119,9 +73,6 @@ export default function Pusdalop(props) {
                   <Text style={{marginLeft: 10}}>{item.nama}</Text>
                   <Text style={{marginLeft: 10}}>{item.alamat}</Text>
                   <Text style={{marginLeft: 10}}>{item.tanggal}</Text>
-                  <Text style={{marginLeft: 10}}>
-                    lorem ipsum lorem lorem lorem lorem lorem lorem
-                  </Text>
                 </View>
                 <View
                   style={{
@@ -137,22 +88,24 @@ export default function Pusdalop(props) {
                       borderRadius: 10,
                       marginRight: 5,
                     }}
-                    onPress={navPusdalopDetail}>
+                    onPress={() => navPusdalop(item.id)}>
                     <Text style={{marginLeft: 10}}>Lihat</Text>
                   </Pressable>
-                  <Pressable
+                  {/* <Pressable
                     style={{
                       backgroundColor: '#FF6A16',
                       color: '#FFFF',
                       width: 50,
                       borderRadius: 10,
-                    }}>
+                    }}
+                    onPress={handleDeleteBencana(item.id)}>
                     <Text style={{marginLeft: 8}}>Delete</Text>
-                  </Pressable>
+                  </Pressable> */}
                 </View>
               </View>
             </View>
           )}
+          keyExtractor={item => item.id}
         />
       </View>
     </View>
