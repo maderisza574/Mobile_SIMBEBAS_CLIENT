@@ -26,18 +26,22 @@ export default function PusdalopCreate() {
   const [open, setOpen] = useState(false);
   const [latitude, setlatitude] = useState();
   const [longitude, setlongiude] = useState();
-  const [form, setForm] = useState({});
-  const [bencanaOptions, setBencanaOptions] = useState([]);
-  const [keybencana, setKeyBencana] = useState([]);
+  const [form, setForm] = useState();
+  // console.log('INI DATA FORM', form);
+  // console.log('INI DATA ISI ADUAN', form);
+  const [bencanaOptions, setBencanaOptions] = useState('');
+  const [keybencana, setKeyBencana] = useState(0);
   // console.log('INI KEY BENCANA', keybencana);
-  const [selected, setSelected] = React.useState('');
+  const [selected, setSelected] = React.useState(0);
   // console.log('INI DATA SELECTED', selected);
   const [date, setDate] = useState(new Date());
+  // console.log('ini data tanggal', date);
   const [kecamatanOption, setKecamatanOption] = useState([]);
-  const [keykecamatan, setkeyKecamatan] = useState([]);
+  const [keykecamatan, setkeyKecamatan] = useState(0);
   // console.log('INI DATA KEY KECAMATAN', keykecamatan);
   const [desaOPtion, setDesaOption] = useState([]);
-  const [keyDesa, setKeyDesa] = useState([]);
+  const [keyDesa, setKeyDesa] = useState(0);
+  const [isiaduan, setIsiAduan] = useState('');
   // console.log('INI DATA Key DESA', keyDesa);
 
   // console.log('INI DATA DESA', desaOPtion);
@@ -248,24 +252,27 @@ export default function PusdalopCreate() {
       });
     }
   }, [stateMap.latitude, stateMap.longitude]);
+  const handleChangeForm = text => {
+    setForm(text);
+  };
 
   const dataPusdalop = {
     id_jenis_bencana: selected,
     id_tindakan: keybencana,
-    user_pemohon: 'johan',
-    isi_aduan: 'tes',
-    no_telepon: '089898989',
-    nama: 'bencana alam',
-    alamat: 'test alamat',
+    user_pemohon: '',
+    isi_aduan: form,
+    no_telepon: '',
+    nama: '',
+    alamat: '',
     id_desa: keyDesa,
     id_kecamatan: keykecamatan,
-    lng: '9898989',
-    lat: '67676767',
+    lng: '',
+    lat: '',
     tindakan_trc: 'true',
     logpal: 'true',
     //ke:tessss
     //keteranganGambar[1]:tosss
-    tanggal: '2023-03-12',
+    tanggal: date,
   };
   console.log('INI DATA PUSDALOP', dataPusdalop);
 
@@ -313,6 +320,7 @@ export default function PusdalopCreate() {
               save="key"
               itemKey="key"
               itemLabel="name"
+              onValueChange
             />
           </View>
           <View>
@@ -361,6 +369,8 @@ export default function PusdalopCreate() {
             <TextInput
               placeholder="Masukan Isi Aduan"
               style={style.inputAduan}
+              onChangeText={handleChangeForm}
+              value={form}
             />
           </View>
           <View style={{marginTop: 10}}>
