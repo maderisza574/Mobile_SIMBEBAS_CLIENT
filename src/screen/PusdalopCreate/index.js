@@ -28,11 +28,19 @@ export default function PusdalopCreate() {
   const [longitude, setlongiude] = useState();
   const [form, setForm] = useState({});
   const [bencanaOptions, setBencanaOptions] = useState([]);
+  const [keybencana, setKeyBencana] = useState([]);
+  // console.log('INI KEY BENCANA', keybencana);
   const [selected, setSelected] = React.useState('');
+  // console.log('INI DATA SELECTED', selected);
   const [date, setDate] = useState(new Date());
   const [kecamatanOption, setKecamatanOption] = useState([]);
+  const [keykecamatan, setkeyKecamatan] = useState([]);
+  // console.log('INI DATA KEY KECAMATAN', keykecamatan);
   const [desaOPtion, setDesaOption] = useState([]);
-  console.log('INI DATA DESA', desaOPtion);
+  const [keyDesa, setKeyDesa] = useState([]);
+  // console.log('INI DATA Key DESA', keyDesa);
+
+  // console.log('INI DATA DESA', desaOPtion);
   // console.log('ini data kecamatan', kecamatanOption);
   // tes multiple input
   const [inputs, setInputs] = useState([{value: '', image: null}]);
@@ -108,15 +116,17 @@ export default function PusdalopCreate() {
       .catch(error => console.error(error));
   }, []);
   useEffect(() => {
-    axios
-      .get(`/v1/desa?page=1&perPage=27`)
-      .then(res => {
-        let newArray = res.data.rows.map(item => {
-          return {key: item.id, value: item.desa};
-        });
-        setDesaOption(newArray);
-      })
-      .catch(error => console.error(error));
+    setTimeout(() => {
+      axios
+        .get(`/v1/desa?page=1&perPage=27`)
+        .then(res => {
+          let newArray = res.data.rows.map(item => {
+            return {key: item.id, value: item.desa};
+          });
+          setDesaOption(newArray);
+        })
+        .catch(error => console.error(error));
+    }, 3000);
   }, []);
 
   const handleCreatePusdalop = async () => {
@@ -240,15 +250,15 @@ export default function PusdalopCreate() {
   }, [stateMap.latitude, stateMap.longitude]);
 
   const dataPusdalop = {
-    id_jenis_bencana: '1',
-    id_tindakan: '1',
+    id_jenis_bencana: selected,
+    id_tindakan: keybencana,
     user_pemohon: 'johan',
     isi_aduan: 'tes',
     no_telepon: '089898989',
     nama: 'bencana alam',
     alamat: 'test alamat',
-    id_desa: '1',
-    id_kecamatan: '1',
+    id_desa: keyDesa,
+    id_kecamatan: keykecamatan,
     lng: '9898989',
     lat: '67676767',
     tindakan_trc: 'true',
@@ -257,6 +267,7 @@ export default function PusdalopCreate() {
     //keteranganGambar[1]:tosss
     tanggal: '2023-03-12',
   };
+  console.log('INI DATA PUSDALOP', dataPusdalop);
 
   return (
     <View>
@@ -314,6 +325,7 @@ export default function PusdalopCreate() {
               itemKey="id"
               itemLabel="name"
               defaultOption={bencanaOptions}
+              setSelected={key => setKeyBencana(key)}
               // onSelect={() => se}
               // disabled={!selectedTindakan}
             />
@@ -418,7 +430,13 @@ export default function PusdalopCreate() {
                 />
               </View>
               <View>
-                <SelectList data={desaOPtion} />
+                <SelectList
+                  setSelected={key => setkeyKecamatan(key)}
+                  data={desaOPtion}
+                  save="key"
+                  itemKey="key"
+                  itemLabel="name"
+                />
               </View>
             </View>
           </View>
@@ -429,7 +447,13 @@ export default function PusdalopCreate() {
             </View>
             <View>
               <View style={{marginLeft: 10}}>
-                <SelectList data={kecamatanOption} />
+                <SelectList
+                  setSelected={key => setkeyKecamatan(key)}
+                  data={kecamatanOption}
+                  save="key"
+                  itemKey="key"
+                  itemLabel="name"
+                />
               </View>
             </View>
           </View>
@@ -440,7 +464,13 @@ export default function PusdalopCreate() {
               <Text>Desa</Text>
             </View>
             <View>
-              <SelectList data={desaOPtion} />
+              <SelectList
+                setSelected={key => setKeyDesa(key)}
+                data={desaOPtion}
+                save="key"
+                itemKey="key"
+                itemLabel="name"
+              />
             </View>
           </View>
           {/* End Desa */}
