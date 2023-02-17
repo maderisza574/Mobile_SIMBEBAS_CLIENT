@@ -1,34 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, FlatList, StyleSheet, Image, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
-import axios from '../../utils/axios';
 import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 
 export default function Pusdalop(props) {
   const pusdalop = useSelector(state => state.pusdalop.data);
   const dispatch = useDispatch();
-  // const [pusdalop, setpusdalop] = useState();
-  // const [dataPusdalop, setDataPusdalop] = useState();
 
   useEffect(() => {
     dispatch(getDataPusdalop());
   }, []);
 
-  // useEffect(() => {
-  //   handleGetBencana();
-  // }, []);
-  // console.log('INI DATA PUSDALOP', dataPusdalop);
-  // const handleGetBencana = async () => {
-  //   try {
-  //     const result = await axios.get(`/v1/pusdalops?page=1&perPage=5`);
-  //     // console.log(result.data.rows[0]);
-  //     setpusdalop(result.data.rows);
-  //     alert('sukses');
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   const navPusdalopDetail = () => {
     props.navigation.navigate('PusdalopCreate');
   };

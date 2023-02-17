@@ -19,8 +19,14 @@ import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {createDataPusdalop} from '../../stores/actions/pusdalop';
 
 export default function PusdalopCreate() {
+  // redux
+  const dispatch = useDispatch();
+  const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
+  // end redux
   const [image, setImage] = useState();
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [open, setOpen] = useState(false);
@@ -78,30 +84,6 @@ export default function PusdalopCreate() {
     {key: '1', value: 'PENCEGAHAN'},
     {key: '2', value: 'PENANGGULANGAN'},
   ];
-  // useEffect(() => {
-  //   axios
-  //     .get('/v1/tindakan?page=1&perPage=10')
-  //     .then(res => {
-  //       let newArray = res.data.rows.map(item => {
-  //         return {key: item.id, value: item.jenis_tindakan};
-  //       });
-  //       setTindakanOptions(newArray);
-  //     })
-  //     .catch(error => console.error(error));
-  // }, []);
-  // const handleGetBencana = async () => {
-  //   try {
-  //     await axios.get(`/v1/bencana?page=1&perPage=10&tindakanId=1`);
-  //     await (res => {
-  //       let newArray = res.data.rows.map(item => {
-  //         return {key: item.id, value: item.sub_jenis};
-  //       });
-  //       setBencanaOptions(newArray);
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   useEffect(() => {
     axios
       .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected || 1}`)
@@ -141,12 +123,13 @@ export default function PusdalopCreate() {
 
   const handleCreatePusdalop = async () => {
     try {
-      let formData = new FormData();
-      for (let key in dataPusdalop) {
-        formData.append(key, dataPusdalop[key]);
-      }
+      // let formData = new FormData();
+      // for (let key in dataPusdalop) {
+      //   formData.append(key, dataPusdalop[key]);
+      //   console.log('INI DATA DALAM FUNGSI', formData);
+      // }
       const datauser = await AsyncStorage.getItem('token');
-      console.log(datauser);
+      // console.log(datauser);
 
       const config = {
         headers: {
@@ -154,12 +137,14 @@ export default function PusdalopCreate() {
           Authorization: 'Bearer ' + datauser,
         },
       };
-
-      const response = await axios.post('/v1/pusdalops', formData, config);
+      await dispatch(createDataPusdalop(dataPusdalop, config));
       alert('Sukses Membuat Laporan');
-      console.log(response.data);
+      props.navigation.navigate('Pusdalop');
+
+      // const response = await axios.post('/v1/pusdalops', formData, config);
+      // console.log(response.data);
     } catch (error) {
-      console.error(error);
+      alert('GAGAL');
     }
   };
 
@@ -280,7 +265,7 @@ export default function PusdalopCreate() {
     //keteranganGambar[1]:tosss
     tanggal: date,
   };
-  console.log('INI DATA PUSDALOP', dataPusdalop);
+  // console.log('INI DATA PUSDALOP', dataPusdalop);
 
   return (
     <View>

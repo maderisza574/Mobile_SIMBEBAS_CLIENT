@@ -18,30 +18,21 @@ import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
+import {deleteDataPusdalop} from '../../stores/actions/pusdalop';
+import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 export default function PusdalopDetail(props) {
-  const dataPusdalop = {
-    id_jenis_bencana: '1',
-    id_tindakan: '1',
-    user_pemohon: 'johan',
-    isi_aduan: 'tes',
-    no_telepon: '089898989',
-    nama: 'bencana alam',
-    alamat: 'test alamat',
-    id_desa: '1',
-    id_kecamatan: '1',
-    lng: '9898989',
-    lat: '67676767',
-    tindakan_trc: 'true',
-    logpal: 'true',
-    //ke:tessss
-    //keteranganGambar[1]:tosss
-    tanggal: '2023-03-12',
-  };
+  const dispatch = useDispatch();
   const [form, setForm] = useState({});
-  // tes multiple input
+  const [image, setImage] = useState();
   const [inputs, setInputs] = useState([{value: '', image: null}]);
+  const [date, setDate] = useState(new Date());
+  const [tindakanOptions, setTindakanOptions] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [bencanaOptions, setBencanaOptions] = useState([]);
+  const [selected, setSelected] = React.useState('');
+  const [latitude, setlatitude] = useState();
+  const [longitude, setlongiude] = useState();
 
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
@@ -60,43 +51,12 @@ export default function PusdalopDetail(props) {
     newInputs[index].image = image;
     setInputs(newInputs);
   };
-  //  end multiple input
 
-  // console.log(form);
-  // FOR DROPDOWN
-  const [tindakanOptions, setTindakanOptions] = useState([]);
-  // console.log(tindakanOptions);
-  const [bencanaOptions, setBencanaOptions] = useState([]);
-  // console.log('INI DATA BENCANA', bencanaOptions);
-  const [selected, setSelected] = React.useState('');
   const dataJenis = [
     {key: '1', value: 'PENCEGAHAN'},
     {key: '2', value: 'PENANGGULANGAN'},
   ];
-  // useEffect(() => {
-  //   axios
-  //     .get('/v1/tindakan?page=1&perPage=10')
-  //     .then(res => {
-  //       let newArray = res.data.rows.map(item => {
-  //         return {key: item.id, value: item.jenis_tindakan};
-  //       });
-  //       setTindakanOptions(newArray);
-  //     })
-  //     .catch(error => console.error(error));
-  // }, []);
-  // const handleGetBencana = async () => {
-  //   try {
-  //     await axios.get(`/v1/bencana?page=1&perPage=10&tindakanId=1`);
-  //     await (res => {
-  //       let newArray = res.data.rows.map(item => {
-  //         return {key: item.id, value: item.sub_jenis};
-  //       });
-  //       setBencanaOptions(newArray);
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+
   useEffect(() => {
     axios
       .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected || 1}`)
@@ -108,42 +68,7 @@ export default function PusdalopDetail(props) {
       })
       .catch(error => console.error(error));
   }, [selected]);
-  // END DROPDWON
 
-  const handleCreatePusdalop = async () => {
-    try {
-      let formData = new FormData();
-      for (let key in dataPusdalop) {
-        formData.append(key, dataPusdalop[key]);
-      }
-      const datauser = await AsyncStorage.getItem('token');
-      console.log(datauser);
-
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + datauser,
-        },
-      };
-
-      const response = await axios.post('/v1/pusdalops', formData, config);
-      alert('Sukses Membuat Laporan');
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  //for image picker
-  const [image, setImage] = useState();
-  // console.log(image);
-  // for Date picker
-  const [date, setDate] = useState(new Date());
-  // console.log(date);
-  const [open, setOpen] = useState(false);
-
-  const [latitude, setlatitude] = useState();
-  const [longitude, setlongiude] = useState();
   const handleChangeForm = (name, value) => {
     if (name === 'image') {
       setForm({...form, [name]: value});
@@ -237,7 +162,24 @@ export default function PusdalopDetail(props) {
       longitude: stateMap.longitude,
     });
   };
-
+  const pusdalopId = props.route.params.pusdalopId;
+  const handleDeletePusdalop = async () => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      // console.log('PUSDALOP ID HANDLE', pusdalopId);
+      await dispatch(deleteDataPusdalop(pusdalopId, config));
+      alert('sukses');
+      props.navigation.navigate('Pusdalop');
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     if (stateMap.latitude && stateMap.longitude) {
       setMapRegion({
@@ -455,10 +397,10 @@ export default function PusdalopDetail(props) {
           </View>
           {/* end input loop image */}
           <View style={{marginTop: 10}}>
-            <Pressable style={style.buttonLogin} onPress={handleCreatePusdalop}>
+            <Pressable style={style.buttonLogin}>
               <Text style={style.textLogin}>Perbaiki</Text>
             </Pressable>
-            <Pressable style={style.buttonBatal}>
+            <Pressable style={style.buttonBatal} onPress={handleDeletePusdalop}>
               <Text style={style.textLogin}>Hapus</Text>
             </Pressable>
           </View>
