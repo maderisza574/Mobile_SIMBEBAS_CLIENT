@@ -24,35 +24,41 @@ export default function PusdalopCreate() {
   const [image, setImage] = useState();
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [open, setOpen] = useState(false);
-  const [latitude, setlatitude] = useState();
-  const [longitude, setlongiude] = useState();
+  const [latitude, setlatitude] = useState(0);
+  const [longitude, setlongiude] = useState(0);
   const [form, setForm] = useState();
-  // console.log('INI DATA FORM', form);
-  // console.log('INI DATA ISI ADUAN', form);
+  const [dataNama, setDataNama] = useState('');
+  const [dataTelp, setdataTelp] = useState(0);
+  const [dataAlamat, setDataAlamat] = useState('');
   const [bencanaOptions, setBencanaOptions] = useState('');
   const [keybencana, setKeyBencana] = useState(0);
-  // console.log('INI KEY BENCANA', keybencana);
   const [selected, setSelected] = React.useState(0);
-  // console.log('INI DATA SELECTED', selected);
   const [date, setDate] = useState(new Date());
-  // console.log('ini data tanggal', date);
   const [kecamatanOption, setKecamatanOption] = useState([]);
   const [keykecamatan, setkeyKecamatan] = useState(0);
-  // console.log('INI DATA KEY KECAMATAN', keykecamatan);
   const [desaOPtion, setDesaOption] = useState([]);
   const [keyDesa, setKeyDesa] = useState(0);
   const [isiaduan, setIsiAduan] = useState('');
-  // console.log('INI DATA Key DESA', keyDesa);
-
-  // console.log('INI DATA DESA', desaOPtion);
-  // console.log('ini data kecamatan', kecamatanOption);
-  // tes multiple input
   const [inputs, setInputs] = useState([{value: '', image: null}]);
 
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
   };
-
+  const handleChangeLat = text => {
+    setlatitude(text);
+  };
+  const handleChangeLong = text => {
+    setlongiude(text);
+  };
+  const handleChangeNama = text => {
+    setDataNama(text);
+  };
+  const handleChangeNo = text => {
+    setdataTelp(text);
+  };
+  const handleChangeALamat = text => {
+    setDataAlamat(text);
+  };
   const handleInputChange = (text, index) => {
     const newInputs = [...inputs];
     newInputs[index].value = text;
@@ -259,15 +265,15 @@ export default function PusdalopCreate() {
   const dataPusdalop = {
     id_jenis_bencana: selected,
     id_tindakan: keybencana,
-    user_pemohon: '',
+    user_pemohon: dataNama,
     isi_aduan: form,
-    no_telepon: '',
-    nama: '',
-    alamat: '',
+    no_telepon: dataTelp,
+    nama: dataNama,
+    alamat: dataAlamat,
     id_desa: keyDesa,
     id_kecamatan: keykecamatan,
-    lng: '',
-    lat: '',
+    lng: longitude,
+    lat: latitude,
     tindakan_trc: 'true',
     logpal: 'true',
     //ke:tessss
@@ -302,18 +308,6 @@ export default function PusdalopCreate() {
           <View style={{padding: 5}}>
             <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
 
-            {/* <SelectList
-              items={tindakanOptions}
-              onChange={value => setSelectedTindakan(value)}
-              selectedValue={setSelectedTindakan}
-              labelExtractor={({jenis_tindakan}) => jenis_tindakan}
-              valueExtractor={({id}) => id}
-            /> */}
-            {/* <SelectList
-              setSelected={setSelected}
-              data={tindakanOptions}
-              onSelect={() => alert(selected)}
-            /> */}
             <SelectList
               setSelected={key => setSelected(key)}
               data={dataJenis}
@@ -325,17 +319,13 @@ export default function PusdalopCreate() {
           </View>
           <View>
             <Text>Jenis Bencana</Text>
-            {/* <Button title="get" onPress={handleGetBencana} /> */}
 
             <SelectList
-              // data={bencanaOptions.rows[0] ? bencanaOptions.rows[0] : ''}
               data={bencanaOptions}
               itemKey="id"
               itemLabel="name"
               defaultOption={bencanaOptions}
               setSelected={key => setKeyBencana(key)}
-              // onSelect={() => se}
-              // disabled={!selectedTindakan}
             />
           </View>
           <View>
@@ -347,10 +337,6 @@ export default function PusdalopCreate() {
             <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
               <Text style={style.textLogin}>Pilih Tanggal dan waktu</Text>
             </Pressable>
-            {/* <Button
-              title="Pilih Tanggal dan waktu"
-              onPress={() => setOpen(true)}
-            /> */}
             <DatePicker
               modal
               open={open}
@@ -397,18 +383,18 @@ export default function PusdalopCreate() {
             </View>
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
-                onChangeText={handleLatitudeChange}
-                value={stateMap.latitude}
+                onChangeText={handleChangeLat}
+                value={latitude}
                 placeholder="Latitude"
                 keyboardType="numeric"
                 style={{marginRight: 30}}
               />
 
               <TextInput
-                onChangeText={handleLongitudeChange}
+                onChangeText={handleChangeLong}
                 keyboardType="numeric"
                 placeholder="Longitude"
-                value={stateMap.longitude}
+                value={longitude}
                 style={{marginRight: 10}}
               />
               <Pressable style={style.buttonSearchMap} onPress={handleSearch}>
@@ -437,15 +423,23 @@ export default function PusdalopCreate() {
                     marginRight: 5,
                     width: 150,
                   }}
+                  onChangeText={handleChangeNama}
+                  value={dataNama}
                 />
               </View>
               <View>
-                <SelectList
-                  setSelected={key => setkeyKecamatan(key)}
-                  data={desaOPtion}
-                  save="key"
-                  itemKey="key"
-                  itemLabel="name"
+                <TextInput
+                  placeholder="Masukan No telp"
+                  style={{
+                    borderWidth: 2,
+                    borderColor: 'Black',
+                    borderRadius: 10,
+                    marginRight: 5,
+                    width: 150,
+                  }}
+                  onChangeText={handleChangeNo}
+                  value={dataTelp}
+                  keyboardType="numeric"
                 />
               </View>
             </View>
@@ -493,6 +487,8 @@ export default function PusdalopCreate() {
               <TextInput
                 placeholder="Masukan Alamat"
                 style={{borderWidth: 3, borderColor: 'black', borderRadius: 10}}
+                onChangeText={handleChangeALamat}
+                value={dataAlamat}
               />
             </View>
           </View>
