@@ -255,9 +255,6 @@ export default function PusdalopCreate() {
   const handleChangeForm = text => {
     setForm(text);
   };
-  const handleChangeName = text => {
-    setForm(text);
-  };
 
   const dataPusdalop = {
     id_jenis_bencana: selected,
