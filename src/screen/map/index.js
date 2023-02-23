@@ -1,112 +1,140 @@
 import React, {useEffect, useState} from 'react';
-import {TextInput, View, Text, Button, StyleSheet} from 'react-native';
-import {Marker} from 'react-native-maps';
-import MapView from 'react-native-maps';
-// import {set} from 'react-native-reanimated';r
+import {View, Text, StyleSheet, PermissionsAndroid} from 'react-native';
+// import MapView, {Marker} from 'react-native-maps';
+import Geolocation from '@react-native-community/geolocation';
+import MapView, {Marker} from 'react-native-maps';
+// import Geocoder from 'react-native-geocoding';
 
+// Geocoder.init('AIzaSyDehHQYXFEqHlt9I8uBsQ_f3hNMPeKAwmU');
 export default function Map(props) {
-  const [stateMap, setStateMap] = useState({
-    latitude: null || -7.431391,
-    longitude: null || 109.247833,
-  });
-  const [mapRegion, setMapRegion] = useState({
-    latitude: stateMap.latitude || -7.431391,
-    longitude: stateMap.longitude || 109.247833,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
-  // console.log(stateMap);
-  const handleLatitudeChange = latitude => {
-    setStateMap({...stateMap, latitude: parseFloat(latitude)});
+  // NEW MAP
+  const userLocation = {
+    coords: {
+      accurancy: 0,
+      alttitude: 0,
+      heading: 0,
+      latitude: 0,
+      longtitude: 0,
+      speed: 0,
+    },
+    mocked: false,
+    timestamp: 0,
   };
-  const handleLongitudeChange = longitude => {
-    setStateMap({...stateMap, longitude: parseFloat(longitude)});
-  };
-  const handleSearch = () => {
-    setMapRegion({
-      ...mapRegion,
-      latitude: stateMap.latitude,
-      longitude: stateMap.longitude,
-    });
+  // console.log('INI USERLOCATION', userLocation);
+  const [address, setAddress] = useState();
+  console.log('INI DATA ADDRESS', address);
+  useEffect(() => {
+    requestLocationPermission();
+    // Geolocation.getCurrentPosition(info => setAddress({userLocation: info}));
+  }, []);
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'IJIN LOKASI',
+          message: 'ijin LOKASI ',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('SUDAH BISA ');
+        Geolocation.getCurrentPosition(
+          posisi => {
+            let posisiAwal = JSON.stringify(posisi);
+            setAddress(posisiAwal);
+          },
+          error => alert('lokasi tidak ditemukan', JSON.stringify(error)),
+          {enableHighAccuracy: true, timeout: 2000, maximumAge: 1000},
+        );
+      } else {
+        console.log('GA BISA');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   };
 
-  useEffect(() => {
-    if (stateMap.latitude && stateMap.longitude) {
-      setMapRegion({
-        latitude: stateMap.latitude,
-        longitude: stateMap.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-    }
-  }, [stateMap.latitude, stateMap.longitude]);
+  // END NEW MAP
+
   return (
     <View>
-      <View style={style.container}>
-        <View style={{position: 'absolute', zIndex: 10}}>
-          <Text>Latitude:</Text>
-          <TextInput
-            onChangeText={handleLatitudeChange}
-            value={stateMap.latitude}
-            placeholder="Latitude"
-            keyboardType="numeric"
-          />
-          <Text>Longitude:</Text>
-          <TextInput
-            onChangeText={handleLongitudeChange}
-            keyboardType="numeric"
-            placeholder="Longitude"
-            value={stateMap.longitude}
-          />
-          <Button title="Search" onPress={handleSearch} />
-        </View>
-
-        {stateMap.latitude && stateMap.longitude && (
-          <MapView style={style.map} initialRegion={mapRegion}>
+      <View style={styles.container}>
+        {/* <MapView
+          style={styles.map}
+          region={region}
+          onRegionChangeComplete={region => setRegion(region)}>
+          {region && (
             <Marker
-              draggable
               coordinate={{
-                latitude: stateMap.latitude,
-                longitude: stateMap.longitude,
+                latitude: region.latitude,
+                longitude: region.longitude,
               }}
-              onDragEnd={e =>
-                setStateMap({
-                  ...stateMap,
-                  latitude: e.nativeEvent.coordinate.latitude,
-                  longitude: e.nativeEvent.coordinate.longitude,
-                })
-              }
+              onPress={() => {
+                Geocoder.from(region.latitude, region.longitude)
+                  .then(json => {
+                    setAddress(json.results[0].formatted_address);
+                  })
+                  .catch(error => console.warn(error));
+              }}
             />
-            {/* <Marker
-              coordinate={{
-                latitude: stateMap.latitude,
-                longitude: stateMap.longitude,
-              }}
-            /> */}
-          </MapView>
-        )}
-        {/* <Button title="Update" onPress={handleUpdate} /> */}
+          )}
+        </MapView> */}
+        {/* <TextInput
+          style={styles.address}
+          placeholder="Address"
+          value={address}
+          onChangeText={text => setAddress(text)}
+        /> */}
+      </View>
+      <View>
+        <MapView
+          style={{height: 300}}
+          region={{
+            latitude: -7.431391,
+            longitude: 109.247833,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}>
+          <Marker
+            coordinate={{latitude: -7.431391, longitude: 109.247833}}
+            // title={lokasi}
+          />
+          {/* <Marker
+            key={user}
+            coordinate={{
+              latitude: address.coords.latitude,
+              longitude: address.coords.longitude,
+            }}
+            pinColor={'#212121'}
+            title={'lokasi saya'}
+          /> */}
+        </MapView>
+        <Text>{address}</Text>
       </View>
     </View>
   );
 }
 
-const style = StyleSheet.create({
-  map: {
-    position: 'absolute',
-    flex: 1,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    minWidth: '50%',
-    minHeight: '50%',
-  },
+const styles = StyleSheet.create({
   container: {
+    // ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  map: {
+    // ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    marginTop: 100,
+    height: 100,
+    width: 100,
+  },
+  address: {
+    height: 40,
     width: '100%',
-    height: '100%',
-    backgroundColor: '#fff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 10,
   },
 });
