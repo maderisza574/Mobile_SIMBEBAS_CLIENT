@@ -4,6 +4,10 @@ export const getDataPusdalop = () => ({
   type: 'GET_PUSDALOP',
   payload: axios.get('/v1/pusdalops?page=1&perPage=5'),
 });
+export const getDataPusdalopById = (pusdalopid, config) => ({
+  type: 'GET_PUSDALOP_BY_ID',
+  payload: axios.get(`/v1/pusdalops/${pusdalopid}`, config),
+});
 
 export const createDataPusdalop = (dataPusdalop, config) => ({
   type: 'CREATE_PUSDALOP',

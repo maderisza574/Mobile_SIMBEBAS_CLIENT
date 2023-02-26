@@ -2,15 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const axiosApiIntances = axios.create({
-  // baseURL: 'https://event-organizing-backend.vercel.app/api/',
-  // baseURL: 'https://creative-signal-backend.vercel.app/api/',
-  // ipdevice: 3001,
-  // baseURL: 'http://192.168.43.51:3001/api',
-  // baseURL: 'http://192.168.73.39:5000/api',
-  // baseURL: 'http://192.168.43.51:5000/api',
-  // baseURL: 'http://10.11.3.61:5000/api',
-  // baseURL: 'http://192.168.73.65:5000/api',
-  baseURL: 'http://192.168.43.146:5000/api',
+  baseURL: 'http://192.168.8.114:5000/api',
 });
 
 // Add a request interceptor

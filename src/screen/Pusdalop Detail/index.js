@@ -18,11 +18,15 @@ import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
-import {deleteDataPusdalop} from '../../stores/actions/pusdalop';
-import {useDispatch} from 'react-redux';
+import {
+  deleteDataPusdalop,
+  getDataPusdalopById,
+} from '../../stores/actions/pusdalop';
+import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function PusdalopDetail(props) {
   const dispatch = useDispatch();
+  const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
   const [form, setForm] = useState({});
   const [image, setImage] = useState();
   const [inputs, setInputs] = useState([{value: '', image: null}]);
@@ -33,11 +37,33 @@ export default function PusdalopDetail(props) {
   const [selected, setSelected] = React.useState('');
   const [latitude, setlatitude] = useState();
   const [longitude, setlongiude] = useState();
-
+  const pusdalopid = props.route.params.pusdalopId;
+  const pusdalopId = props.route.params.pusdalopId;
+  // console.log('INI DATA PUSDALOP ID', pusdalopid);
+  useEffect(() => {
+    handlegetPusdalopId();
+  }, [handlegetPusdalopId]);
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
   };
-
+  const [dataById, setDataByID] = useState({});
+  console.log('ini data pusdalop', dataById?.data?.lng);
+  const handlegetPusdalopId = async () => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      const result = await axios.get(`/v1/pusdalops/${pusdalopid}`, config);
+      setDataByID(result.data);
+    } catch (error) {
+      alert('gagal mendapat kan data');
+      console.log(error);
+    }
+  };
   const handleInputChange = (text, index) => {
     const newInputs = [...inputs];
     newInputs[index].value = text;
@@ -162,7 +188,7 @@ export default function PusdalopDetail(props) {
       longitude: stateMap.longitude,
     });
   };
-  const pusdalopId = props.route.params.pusdalopId;
+
   const handleDeletePusdalop = async () => {
     try {
       const datauser = await AsyncStorage.getItem('token');
@@ -212,8 +238,9 @@ export default function PusdalopDetail(props) {
         </View>
         <View style={style.containerInput}>
           <Text style={{marginBottom: 10, fontSize: 16}}>
-            Silahkan isi beberapa data untuk melapor
+            Edit beberapa data
           </Text>
+
           <View style={{padding: 5}}>
             <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
 
@@ -235,6 +262,7 @@ export default function PusdalopDetail(props) {
               save="key"
               itemKey="key"
               itemLabel="name"
+              // onSelect={dataById.data.data.id_tindakan}
             />
           </View>
           <View>
@@ -247,8 +275,7 @@ export default function PusdalopDetail(props) {
               itemKey="id"
               itemLabel="name"
               defaultOption={bencanaOptions}
-              // onSelect={() => se}
-              // disabled={!selectedTindakan}
+              placeholder={dataById?.data?.bencana?.sub_jenis.toString()}
             />
           </View>
           <View>
@@ -280,7 +307,7 @@ export default function PusdalopDetail(props) {
           <View>
             <Text>Isi Aduan</Text>
             <TextInput
-              placeholder="Masukan Isi Aduan"
+              placeholder={dataById?.data?.isi_aduan.toString()}
               style={style.inputAduan}
             />
           </View>
@@ -310,7 +337,7 @@ export default function PusdalopDetail(props) {
               <TextInput
                 onChangeText={handleLatitudeChange}
                 value={stateMap.latitude}
-                placeholder="Latitude"
+                placeholder={dataById?.data?.lat}
                 keyboardType="numeric"
                 style={{marginRight: 30}}
               />
@@ -318,7 +345,7 @@ export default function PusdalopDetail(props) {
               <TextInput
                 onChangeText={handleLongitudeChange}
                 keyboardType="numeric"
-                placeholder="Longitude"
+                placeholder={dataById?.data?.lng}
                 value={stateMap.longitude}
                 style={{marginRight: 10}}
               />

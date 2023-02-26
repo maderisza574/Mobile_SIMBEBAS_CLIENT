@@ -17,7 +17,7 @@ export default function Pusdalop(props) {
   };
   const navPusdalop = id => {
     // setDataPusdalop(id);
-    console.log('ini id flat list', id);
+    // console.log('ini id flat list', id);
     props.navigation.navigate('PusdalopDetail', {pusdalopId: id});
   };
 
