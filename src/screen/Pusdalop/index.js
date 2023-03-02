@@ -51,38 +51,39 @@ export default function Pusdalop(props) {
             </Pressable>
           </View>
         </View>
-        <FlatList
-          data={pusdalop}
-          renderItem={({item}) => (
-            <View style={style.card}>
-              <View style={{flexDirection: 'row'}}>
-                {/* <Image
+        <View style={style.containerFlat}>
+          <FlatList
+            data={pusdalop}
+            renderItem={({item}) => (
+              <View style={style.card}>
+                <View style={{flexDirection: 'row'}}>
+                  {/* <Image
                   source={{uri: `${item.image}`}}
                   style={{width: 100, height: 100}}
                 /> */}
-                <View>
-                  <Text style={{marginLeft: 10}}>{item.nama}</Text>
-                  <Text style={{marginLeft: 10}}>{item.alamat}</Text>
-                  <Text style={{marginLeft: 10}}>{item.tanggal}</Text>
-                </View>
-                <View
-                  style={{
-                    marginLeft: 250,
-                    flexDirection: 'row',
-                    position: 'absolute',
-                  }}>
-                  <Pressable
+                  <View>
+                    <Text style={{marginLeft: 10}}>{item.nama}</Text>
+                    <Text style={{marginLeft: 10}}>{item.alamat}</Text>
+                    <Text style={{marginLeft: 10}}>{item.tanggal}</Text>
+                  </View>
+                  <View
                     style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                      marginRight: 5,
-                    }}
-                    onPress={() => navPusdalop(item.id)}>
-                    <Text style={{marginLeft: 10}}>Lihat</Text>
-                  </Pressable>
-                  {/* <Pressable
+                      paddingLeft: 280,
+                      flexDirection: 'row',
+                      position: 'absolute',
+                    }}>
+                    <Pressable
+                      style={{
+                        backgroundColor: '#FF6A16',
+                        color: '#FFFF',
+                        width: 50,
+                        borderRadius: 10,
+                        marginRight: 5,
+                      }}
+                      onPress={() => navPusdalop(item.id)}>
+                      <Text style={{marginLeft: 10}}>Lihat</Text>
+                    </Pressable>
+                    {/* <Pressable
                     style={{
                       backgroundColor: '#FF6A16',
                       color: '#FFFF',
@@ -92,12 +93,13 @@ export default function Pusdalop(props) {
                     onPress={handleDeleteBencana(item.id)}>
                     <Text style={{marginLeft: 8}}>Delete</Text>
                   </Pressable> */}
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
-          keyExtractor={item => item.id}
-        />
+            )}
+            keyExtractor={item => item.id}
+          />
+        </View>
       </View>
     </View>
   );
@@ -148,5 +150,8 @@ const style = StyleSheet.create({
     marginTop: 20,
     backgroundColor: 'Blue',
     borderColor: 'Black',
+  },
+  containerFlat: {
+    height: 550,
   },
 });

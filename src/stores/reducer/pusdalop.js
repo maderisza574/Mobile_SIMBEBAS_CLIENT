@@ -67,6 +67,29 @@ const pusdalopReducer = (state = initialState, action) => {
         message: 'SUKSES',
       };
     }
+    case 'UPDATE_PUSDALOP_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    }
+    case 'UPDATE_PUSDALOP_FULFILLED': {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+        message: 'SUKSES',
+      };
+    }
+    case 'UPDATE_PUSDALOP_REJECTED': {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+        message: 'GAGAl',
+      };
+    }
     case 'DELETE_PUSDALOP_PENDING': {
       return {
         ...state,

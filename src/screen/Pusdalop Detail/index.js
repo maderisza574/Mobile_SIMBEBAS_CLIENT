@@ -21,6 +21,7 @@ import axios from '../../utils/axios';
 import {
   deleteDataPusdalop,
   getDataPusdalopById,
+  updateDataPusdalop,
 } from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,18 +29,81 @@ export default function PusdalopDetail(props) {
   const dispatch = useDispatch();
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
   const [form, setForm] = useState({});
+  const [dataNama, setDataNama] = useState('');
   const [image, setImage] = useState();
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [date, setDate] = useState(new Date());
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [open, setOpen] = useState(false);
   const [bencanaOptions, setBencanaOptions] = useState([]);
+  const [keybencana, setKeyBencana] = useState(0);
   const [selected, setSelected] = React.useState('');
-  const [latitude, setlatitude] = useState();
+  const [latitude, setlatitude] = useState('');
+  console.log(latitude);
   const [longitude, setlongiude] = useState();
+  const [kecamatanOption, setKecamatanOption] = useState([]);
+  const [keykecamatan, setkeyKecamatan] = useState(0);
+  const [desaOPtion, setDesaOption] = useState([]);
+  const [keyDesa, setKeyDesa] = useState(0);
+  const [dataAlamat, setDataAlamat] = useState('');
+  const [dataTelp, setdataTelp] = useState(0);
+  const [isiaduan, setIsiAduan] = useState('');
   const pusdalopid = props.route.params.pusdalopId;
   const pusdalopId = props.route.params.pusdalopId;
-  // console.log('INI DATA PUSDALOP ID', pusdalopid);
+
+  const dataUpdatePusdalop = {
+    id_jenis_bencana: selected,
+    id_tindakan: keykecamatan,
+    user_pemohon: dataNama,
+    isi_aduan: isiaduan,
+    no_telepon: dataTelp,
+    nama: dataNama,
+    alamat: dataAlamat,
+    id_desa: keyDesa,
+    id_kecamatan: keykecamatan,
+    lng: longitude,
+    lat: latitude,
+    tindakan_trc: true,
+    logpal: true,
+    tanggal: date,
+  };
+  // console.log('INI DATA UPDATE', updateDataPusdalop);
+
+  const handleChangeNama = text => {
+    setDataNama(text);
+  };
+  const handleChangeIsi = text => {
+    setIsiAduan(text);
+  };
+  const handleChangeNo = text => {
+    setdataTelp(text);
+  };
+  const handleUpdatePusdalop = async () => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      console.log(
+        'INI DATA PUSDALOP ID',
+        dataUpdatePusdalop,
+        config,
+        pusdalopid,
+      );
+      await dispatch(
+        updateDataPusdalop(dataUpdatePusdalop, config, pusdalopid),
+      );
+      alert('SUKSES');
+      props.navigation.navigate('Pusdalop');
+    } catch (error) {
+      console.log('GAGAL UPDATE');
+      alert('GAGAL UPDATE');
+      props.navigation.navigate('Pusdalop');
+    }
+  };
   useEffect(() => {
     handlegetPusdalopId();
   }, [handlegetPusdalopId]);
@@ -47,7 +111,34 @@ export default function PusdalopDetail(props) {
     setInputs([...inputs, {value: '', image: null}]);
   };
   const [dataById, setDataByID] = useState({});
-  console.log('ini data pusdalop', dataById?.data?.lng);
+  // console.log('ini data pusdalop', dataById?.data?.no_telpon);
+  const handleChangeALamat = text => {
+    setDataAlamat(text);
+  };
+  useEffect(() => {
+    axios
+      .get(`/v1/kecamatan?page=1&perPage=27`)
+      .then(res => {
+        let newArray = res.data.rows.map(item => {
+          return {key: item.id, value: item.kecamatan};
+        });
+        setKecamatanOption(newArray);
+      })
+      .catch(error => console.error(error));
+  }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      axios
+        .get(`/v1/desa?page=1&perPage=27`)
+        .then(res => {
+          let newArray = res.data.rows.map(item => {
+            return {key: item.id, value: item.desa};
+          });
+          setDesaOption(newArray);
+        })
+        .catch(error => console.error(error));
+    }, 3000);
+  }, []);
   const handlegetPusdalopId = async () => {
     try {
       const datauser = await AsyncStorage.getItem('token');
@@ -175,11 +266,13 @@ export default function PusdalopDetail(props) {
     longitudeDelta: 0.0421,
   });
   // console.log(stateMap);
-  const handleLatitudeChange = latitude => {
-    setStateMap({...stateMap, latitude: parseFloat(latitude)});
+  const handleLatitudeChange = text => {
+    // setStateMap({...stateMap, latitude: parseFloat(latitude)});
+    setlatitude(text);
   };
-  const handleLongitudeChange = longitude => {
-    setStateMap({...stateMap, longitude: parseFloat(longitude)});
+  const handleLongitudeChange = text => {
+    // setStateMap({...stateMap, longitude: parseFloat(longitude)});
+    setlongiude(text);
   };
   const handleSearch = () => {
     setMapRegion({
@@ -262,6 +355,7 @@ export default function PusdalopDetail(props) {
               save="key"
               itemKey="key"
               itemLabel="name"
+              placeholder={dataById?.data?.id_tindakan}
               // onSelect={dataById.data.data.id_tindakan}
             />
           </View>
@@ -276,12 +370,13 @@ export default function PusdalopDetail(props) {
               itemLabel="name"
               defaultOption={bencanaOptions}
               placeholder={dataById?.data?.bencana?.sub_jenis.toString()}
+              setSelected={key => setKeyBencana(key)}
             />
           </View>
           <View>
             <Text>Tanggal Kejadian</Text>
             <TextInput
-              placeholder={date.toLocaleDateString()}
+              placeholder={dataById?.data?.tanggal}
               style={{borderWidth: 1, borderRadius: 10}}
             />
             <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
@@ -309,6 +404,8 @@ export default function PusdalopDetail(props) {
             <TextInput
               placeholder={dataById?.data?.isi_aduan.toString()}
               style={style.inputAduan}
+              onChangeText={handleChangeIsi}
+              value={isiaduan}
             />
           </View>
           <View style={{marginTop: 10}}>
@@ -354,6 +451,99 @@ export default function PusdalopDetail(props) {
               </Pressable>
             </View>
           </View>
+          <View style={{flexDirection: 'row', marginTop: 10}}>
+            <View>
+              <Text>Pelapor:</Text>
+            </View>
+            <View style={{marginLeft: 30}}>
+              <Text>Nama</Text>
+            </View>
+            <View style={{marginLeft: 110}}>
+              <Text>No TELP/HP</Text>
+            </View>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <View style={{marginLeft: 80}}>
+              <TextInput
+                placeholder={dataById?.data?.user_pemohon}
+                style={{
+                  borderWidth: 2,
+                  borderColor: 'Black',
+                  borderRadius: 10,
+                  marginRight: 5,
+                  width: 150,
+                }}
+                onChangeText={handleChangeNama}
+                value={dataNama}
+              />
+            </View>
+            <View>
+              <TextInput
+                placeholder={dataById?.data?.no_telpon}
+                style={{
+                  borderWidth: 2,
+                  borderColor: 'Black',
+                  borderRadius: 10,
+                  marginRight: 5,
+                  width: 150,
+                }}
+                onChangeText={handleChangeNo}
+                value={dataTelp}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+          {/* Kecamatan */}
+          <View style={{marginTop: 20}}>
+            <View>
+              <Text>Kecamatan:</Text>
+            </View>
+            <View>
+              <View style={{marginLeft: 10}}>
+                <SelectList
+                  setSelected={key => setkeyKecamatan(key)}
+                  data={kecamatanOption}
+                  save="key"
+                  itemKey="key"
+                  itemLabel="name"
+                  placeholder={dataById?.data?.kecamatan?.kecamatan}
+                />
+              </View>
+            </View>
+          </View>
+          {/* end Kecamatan */}
+          {/* Desa */}
+          <View style={{marginTop: 20}}>
+            <View>
+              <Text>Desa</Text>
+            </View>
+            <View>
+              <SelectList
+                setSelected={key => setKeyDesa(key)}
+                data={desaOPtion}
+                save="key"
+                itemKey="key"
+                itemLabel="name"
+                placeholder={dataById?.data?.desa?.desa}
+              />
+            </View>
+          </View>
+          {/* End Desa */}
+          {/* Alamat */}
+          <View style={{marginTop: 10}}>
+            <View>
+              <Text>Alamat</Text>
+            </View>
+            <View>
+              <TextInput
+                placeholder={dataById?.data?.alamat}
+                style={{borderWidth: 3, borderColor: 'black', borderRadius: 10}}
+                onChangeText={handleChangeALamat}
+                value={dataAlamat}
+              />
+            </View>
+          </View>
+          {/* End Alamat */}
           <View style={{marginTop: 20}}>
             <Text>Upload gambar</Text>
           </View>
@@ -375,7 +565,7 @@ export default function PusdalopDetail(props) {
                   <View style={{marginRight: 60}}>
                     <Text>Preview Image</Text>
                     <Image
-                      source={{uri: image}}
+                      source={{uri: dataById?.data?.risalah[0]?.file}}
                       style={{width: 200, height: 200}}
                     />
                   </View>
@@ -399,13 +589,14 @@ export default function PusdalopDetail(props) {
                 <View>
                   <Text>Keterangan</Text>
                   <TextInput
-                    placeholder="Masukan Keterangan gambar"
+                    placeholder={dataById?.data?.risalah[0]?.ket}
                     style={{
                       height: 100,
                       width: 350,
                       borderWidth: 1,
                       marginLeft: 15,
                       marginTop: 5,
+                      marginBottom: 10,
                     }}
                     value={input.value}
                     onChangeText={text => handleInputChange(text, index)}
@@ -424,7 +615,7 @@ export default function PusdalopDetail(props) {
           </View>
           {/* end input loop image */}
           <View style={{marginTop: 10}}>
-            <Pressable style={style.buttonLogin}>
+            <Pressable style={style.buttonLogin} onPress={handleUpdatePusdalop}>
               <Text style={style.textLogin}>Perbaiki</Text>
             </Pressable>
             <Pressable style={style.buttonBatal} onPress={handleDeletePusdalop}>
