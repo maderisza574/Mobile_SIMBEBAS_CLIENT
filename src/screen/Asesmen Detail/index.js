@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,16 +10,27 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import axios from '../../utils/axios';
 import Icon from 'react-native-vector-icons/AntDesign';
 import DatePicker from 'react-native-date-picker';
 import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {SelectList} from 'react-native-dropdown-select-list';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-export default function AsesmenDetail() {
+import {getDataPusdalopById} from '../../stores/actions/pusdalop';
+import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export default function AsesmenDetail(props) {
+  const dispatch = useDispatch();
+  const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [namaBarang, setnamaBarang] = useState('');
+  const [dataById, setDataByID] = useState({});
+  console.log('INI DATA PUSDALOP', dataById?.data?.tanggal);
+  const pusdalopid = props.route.params.pusdalopId;
+  // console.log(pusdalopid);
   //  for map
   const [latitude, setlatitude] = useState();
   const [longitude, setlongiude] = useState();
@@ -33,6 +44,26 @@ export default function AsesmenDetail() {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+
+  const handlegetPusdalopId = async () => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      const result = await axios.get(`/v1/pusdalops/${pusdalopid}`, config);
+      setDataByID(result.data);
+    } catch (error) {
+      alert('gagal mendapat kan data');
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    handlegetPusdalopId();
+  }, []);
   // untuk data barang
   const dataBarang = [
     {
@@ -150,7 +181,7 @@ export default function AsesmenDetail() {
           <View style={{marginTop: 10}}>
             <Text>Jenis Bencana</Text>
             <TextInput
-              placeholder="Tanah Longsor"
+              placeholder={dataById?.data?.tindakan?.jenis_tindakan}
               editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
@@ -158,7 +189,7 @@ export default function AsesmenDetail() {
           <View style={{marginTop: 10}}>
             <Text>Tanggal Kejadian</Text>
             <TextInput
-              placeholder={date.toLocaleDateString()}
+              placeholder={dataById?.data?.tanggal}
               style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
               editable={false}
             />

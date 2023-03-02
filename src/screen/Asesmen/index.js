@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,19 @@ import {
   Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
+import {getDataPusdalop} from '../../stores/actions/pusdalop';
+import {useDispatch, useSelector} from 'react-redux';
 
 export default function Asesmen(props) {
-  const navAsesmenDetail = () => {
-    props.navigation.navigate('AsesmenDetail');
+  const pusdalop = useSelector(state => state.pusdalop.data);
+
+  // console.log('INI DATA PUSDALOP', pusdalop);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getDataPusdalop());
+  }, []);
+  const navAsesmenDetail = id => {
+    props.navigation.navigate('AsesmenDetail', {pusdalopId: id});
   };
   const [people, setPeople] = useState([
     {
@@ -92,6 +101,53 @@ export default function Asesmen(props) {
           <Text>Riwayat Bencana</Text>
         </View>
         <FlatList
+          data={pusdalop}
+          renderItem={({item}) => (
+            <View style={style.card}>
+              <View style={{flexDirection: 'row'}}>
+                {/* <Image
+                  source={{uri: `${item.image}`}}
+                  style={{width: 100, height: 100}}
+                /> */}
+                <View>
+                  <Text style={{marginLeft: 10}}>{item.nama}</Text>
+                  <Text style={{marginLeft: 10}}>{item.alamat}</Text>
+                  <Text style={{marginLeft: 10}}>{item.tanggal}</Text>
+                </View>
+                <View
+                  style={{
+                    paddingLeft: 280,
+                    flexDirection: 'row',
+                    position: 'absolute',
+                  }}>
+                  <Pressable
+                    style={{
+                      backgroundColor: '#FF6A16',
+                      color: '#FFFF',
+                      width: 50,
+                      borderRadius: 10,
+                      marginRight: 5,
+                    }}
+                    onPress={() => navAsesmenDetail(item.id)}>
+                    <Text style={{marginLeft: 10}}>Lihat</Text>
+                  </Pressable>
+                  {/* <Pressable
+                    style={{
+                      backgroundColor: '#FF6A16',
+                      color: '#FFFF',
+                      width: 50,
+                      borderRadius: 10,
+                    }}
+                    onPress={handleDeleteBencana(item.id)}>
+                    <Text style={{marginLeft: 8}}>Delete</Text>
+                  </Pressable> */}
+                </View>
+              </View>
+            </View>
+          )}
+          keyExtractor={item => item.id}
+        />
+        {/* <FlatList
           data={people}
           keyExtractor={item => item.key}
           renderItem={({item}) => (
@@ -139,7 +195,7 @@ export default function Asesmen(props) {
               </View>
             </View>
           )}
-        />
+        /> */}
         <Text>Asesmen</Text>
       </View>
     </View>
