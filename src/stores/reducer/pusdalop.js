@@ -17,7 +17,7 @@ const pusdalopReducer = (state = initialState, action) => {
         ...state,
         errorMessage: null,
         isLoading: false,
-        data: action.payload.data.rows,
+        data: action.payload.data?.rows,
       };
     case 'GET_PUSDALOP_REJECTED':
       return {
@@ -64,7 +64,7 @@ const pusdalopReducer = (state = initialState, action) => {
         ...state,
         isLoading: true,
         isError: false,
-        message: 'SUKSES',
+        message: 'GAGAL',
       };
     }
     case 'UPDATE_PUSDALOP_PENDING': {

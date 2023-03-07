@@ -22,18 +22,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
 
-export default function PusdalopCreate() {
+export default function PusdalopCreate(props) {
   // redux
   const dispatch = useDispatch();
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
   // end redux
-  const [image, setImage] = useState();
+  const [images, setImages] = useState(null);
+  // console.log('INI DATA IMAGE CREATE', image);
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [open, setOpen] = useState(false);
   const [latitude, setlatitude] = useState(0);
   const [longitude, setlongiude] = useState(0);
   const [form, setForm] = useState();
-  const [dataNama, setDataNama] = useState('');
+  const [dataNama, setDataNama] = useState('tes');
   const [dataTelp, setdataTelp] = useState(0);
   const [dataAlamat, setDataAlamat] = useState('');
   const [bencanaOptions, setBencanaOptions] = useState('');
@@ -46,6 +47,47 @@ export default function PusdalopCreate() {
   const [keyDesa, setKeyDesa] = useState(0);
   const [isiaduan, setIsiAduan] = useState('');
   const [inputs, setInputs] = useState([{value: '', image: null}]);
+  const [keteranganImage, setKeteranganImage] = useState([]);
+  const [image, setImage] = useState([]);
+
+  // const formHandler = (value, name) => {
+  //   setForm({...form, [name]: value});
+  // };
+  // NEW DECLARE
+  // const dataPusdalopNew = new FormData();
+  // dataPusdalopNew.append('id_jenis_bencana', selected);
+  // dataPusdalopNew.append('id_tindakan', keybencana);
+  // dataPusdalopNew.append('user_pemohon', dataNama);
+  // dataPusdalopNew.append('isi_aduan', form);
+  // dataPusdalopNew.append('no_telepon', dataTelp);
+  // dataPusdalopNew.append('nama', dataNama);
+  // dataPusdalopNew.append('alamat', dataAlamat);
+  // dataPusdalopNew.append('id_desa', keyDesa);
+  // dataPusdalopNew.append('id_kecamatan', keykecamatan);
+  // dataPusdalopNew.append('lng', longitude);
+  // dataPusdalopNew.append('lat', latitude);
+  // dataPusdalopNew.append('tindakan_trc', 'true');
+  // dataPusdalopNew.append('logpal', 'true');
+  // dataPusdalopNew.append('tanggal', date);
+  // images.forEach((image, index) => {
+  //   dataPusdalopNew.append(`image${index}`, {
+  //     uri: image.uri,
+  //     type: image.type,
+  //     name: image.fileName,
+  //   });
+  // });
+  // if (images[0]) {
+  //   dataPusdalopNew.append('image', {
+  //     uri: image[0].uri,
+  //     type: image[0].type,
+  //     name: image[0].fileName,
+  //   });
+  // }
+  // if (ketGambar[0]) {
+  //   dataPusdalopNew.append('keteranganGambar', ketGambar[0]);
+  // }
+  // console.log('INI DATA PUSDALOP', dataPusdalopNew);
+  //  END NEW DECLARE
 
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
@@ -65,6 +107,9 @@ export default function PusdalopCreate() {
   const handleChangeALamat = text => {
     setDataAlamat(text);
   };
+  // const handleChangeKet = text => {
+  //   setKetGambar(text);
+  // };
   const handleInputChange = (text, index) => {
     const newInputs = [...inputs];
     newInputs[index].value = text;
@@ -76,8 +121,42 @@ export default function PusdalopCreate() {
   const handleImageChange = (image, index) => {
     const newInputs = [...inputs];
     newInputs[index].image = image;
+
     setInputs(newInputs);
   };
+  const handleSelect = key => {
+    setDataPusdalop(prevData => ({
+      ...prevData,
+      id_jenis_bencana: key,
+    }));
+  };
+  const handleJenis = key => {
+    setDataPusdalop(prevData => ({
+      ...prevData,
+      id_tindakan: key,
+    }));
+  };
+  const handleKecamatan = key => {
+    setDataPusdalop(prevData => ({
+      ...prevData,
+      id_kecamatan: key,
+    }));
+  };
+  const handleDesa = key => {
+    setDataPusdalop(prevData => ({
+      ...prevData,
+      id_desa: key,
+    }));
+  };
+  // const handleChangeKet = key => {
+  //   setDataPusdalop(prevData => ({
+  //     ...prevData,
+  //     id_desa: key,
+  //     // const keteranganImage = prevState.keteranganImage || []; // check if keteranganImage exists in prevState
+  //     // keteranganImage[index] = text;
+  //     // return {...prevState, keteranganImage};
+  //   }));
+  // };
   //  end multiple input
 
   const dataJenis = [
@@ -123,29 +202,40 @@ export default function PusdalopCreate() {
 
   const handleCreatePusdalop = async () => {
     try {
-      // let formData = new FormData();
-      // for (let key in dataPusdalop) {
-      //   formData.append(key, dataPusdalop[key]);
-      //   console.log('INI DATA DALAM FUNGSI', formData);
-      // }
       const datauser = await AsyncStorage.getItem('token');
       // console.log(datauser);
 
       const config = {
+        method: 'post',
+        body: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: 'Bearer ' + datauser,
         },
       };
-      await dispatch(createDataPusdalop(dataPusdalop, config));
+      // console.log('INI DATA PUSDALOP DALAM', dataPusdalop);
+      // console.log(dataPusdalop);
+      const result = await axios.post(
+        'http://10.100.0.106:5000/api/v1/pusdalops',
+        dataPusdalop,
+        config,
+      );
+      console.log(result);
+      // await dispatch(createDataPusdalop(dataPusdalop, config));
       alert('Sukses Membuat Laporan');
-      props.navigation.navigate('Pusdalop');
+      // props.navigation.navigate('Pusdalop');
 
       // const response = await axios.post('/v1/pusdalops', formData, config);
       // console.log(response.data);
     } catch (error) {
       alert('GAGAL');
     }
+  };
+  const handleChangeKet = text => {
+    setDataPusdalop(prevState => ({
+      ...prevState,
+      ['keteranganImage[0]']: text,
+    }));
   };
 
   // for camera
@@ -176,14 +266,22 @@ export default function PusdalopCreate() {
             if (response.errorCode) {
               console.log('ImagePicker Error: ', response.errorMessage);
             }
-            if (response.assets) {
-              const source = {
-                uri: response.assets[0].uri,
-                type: response.assets[0].type,
+            if (response.assets && response.assets.length > 0) {
+              const formData = new FormData();
+              formData.append('image', {
                 name: response.assets[0].fileName,
-              };
-              setImage(response.assets[0].uri);
-              // setImage({...image, image: source});
+                type: response.assets[0].type,
+                uri: response.assets[0].uri,
+              });
+              formData.append('array', []);
+              // console.log('INI DATA IMAGE', formData._parts);
+              setDataPusdalop(prevState => ({
+                ...prevState,
+                [`image[0]`]: formData._parts,
+              }));
+              // console.log(dataPusdalopNew);
+            } else {
+              console.log('No image selected');
             }
           },
         );
@@ -205,7 +303,7 @@ export default function PusdalopCreate() {
       type: photo.assets[0].type,
       uri: photo.assets[0].uri,
     });
-    setImage(photo.assets[0].uri);
+    setImages(photo.assets[0].uri);
   };
 
   const [stateMap, setStateMap] = useState({
@@ -243,29 +341,66 @@ export default function PusdalopCreate() {
       });
     }
   }, [stateMap.latitude, stateMap.longitude]);
-  const handleChangeForm = text => {
-    setForm(text);
+  const handleChangeForm = (value, name) => {
+    setDataPusdalop({...dataPusdalop, [name]: value});
   };
 
-  const dataPusdalop = {
-    id_jenis_bencana: selected,
-    id_tindakan: keybencana,
+  const [dataPusdalop, setDataPusdalop] = useState({
+    id_jenis_bencana: '', // initialize with empty string
+    id_tindakan: '',
     user_pemohon: dataNama,
-    isi_aduan: form,
-    no_telepon: dataTelp,
-    nama: dataNama,
-    alamat: dataAlamat,
-    id_desa: keyDesa,
-    id_kecamatan: keykecamatan,
-    lng: longitude,
-    lat: latitude,
+    isi_aduan: '',
+    no_telepon: '',
+    nama: '',
+    alamat: '',
+    id_desa: '',
+    id_kecamatan: '',
+    lng: '',
+    lat: '',
     tindakan_trc: 'true',
     logpal: 'true',
-    //ke:tessss
-    //keteranganGambar[1]:tosss
     tanggal: date,
-  };
+    // keteranganImage: [],
+    // image: [],
+    // [image[0]] :
+    // keteranganImage: [],
+    // keteraganImage: [],
+  });
+  console.log('INI DATA PUSDALOP', dataPusdalop);
+
+  // setDataPusdalop(prevData => ({
+  //   ...prevData,
+  //   keteranganImage: [...prevData.keteranganImage, keteranganImage],
+  //   image: [...prevData.image, image],
+  // }));
+  // const dataPusdalop = {
+  //   id_jenis_bencana: selected,
+  //   id_tindakan: keybencana,
+  //   user_pemohon: dataNama,
+  //   isi_aduan: form,
+  //   no_telepon: dataTelp,
+  //   nama: dataNama,
+  //   alamat: dataAlamat,
+  //   id_desa: keyDesa,
+  //   id_kecamatan: keykecamatan,
+  //   lng: longitude,
+  //   lat: latitude,
+  //   tindakan_trc: 'true',
+  //   logpal: 'true',
+  //   tanggal: date,
+  //   // ...[image[0]]: images,
+  //   // ...(image[0] && {gambar: image[0]}),
+  //   // ...(ketGambar[0] && {keteranganGambar: ketGambar[0]}),
+  //   //ke:tessss
+  //   //keteranganGambar[1]:tosss
+  // };
   // console.log('INI DATA PUSDALOP', dataPusdalop);
+
+  // IF URI no provide
+  // const {uri} = props;
+  // console.log(uri);
+
+  // end uri no provide
 
   return (
     <View>
@@ -294,7 +429,8 @@ export default function PusdalopCreate() {
             <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
 
             <SelectList
-              setSelected={key => setSelected(key)}
+              setSelected={handleSelect}
+              // setSelected={key => setSelected(key)}
               data={dataJenis}
               save="key"
               itemKey="key"
@@ -310,7 +446,8 @@ export default function PusdalopCreate() {
               itemKey="id"
               itemLabel="name"
               defaultOption={bencanaOptions}
-              setSelected={key => setKeyBencana(key)}
+              // setSelected={key => setKeyBencana(key)}
+              setSelected={handleJenis}
             />
           </View>
           <View>
@@ -340,7 +477,9 @@ export default function PusdalopCreate() {
             <TextInput
               placeholder="Masukan Isi Aduan"
               style={style.inputAduan}
-              onChangeText={handleChangeForm}
+              onChangeText={dataPusdalop =>
+                handleChangeForm(dataPusdalop, 'isi_aduan')
+              }
               value={form}
             />
           </View>
@@ -368,7 +507,9 @@ export default function PusdalopCreate() {
             </View>
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
-                onChangeText={handleChangeLat}
+                onChangeText={dataPusdalop =>
+                  handleChangeForm(dataPusdalop, 'lat')
+                }
                 value={latitude}
                 placeholder="Latitude"
                 keyboardType="numeric"
@@ -376,7 +517,9 @@ export default function PusdalopCreate() {
               />
 
               <TextInput
-                onChangeText={handleChangeLong}
+                onChangeText={dataPusdalop =>
+                  handleChangeForm(dataPusdalop, 'lng')
+                }
                 keyboardType="numeric"
                 placeholder="Longitude"
                 value={longitude}
@@ -408,8 +551,10 @@ export default function PusdalopCreate() {
                     marginRight: 5,
                     width: 150,
                   }}
-                  onChangeText={handleChangeNama}
-                  value={dataNama}
+                  onChangeText={dataPusdalop =>
+                    handleChangeForm(dataPusdalop, 'nama')
+                  }
+                  // value={dataNama}
                 />
               </View>
               <View>
@@ -422,8 +567,10 @@ export default function PusdalopCreate() {
                     marginRight: 5,
                     width: 150,
                   }}
-                  onChangeText={handleChangeNo}
-                  value={dataTelp}
+                  onChangeText={dataPusdalop =>
+                    handleChangeForm(dataPusdalop, 'no_telepon')
+                  }
+                  // value={dataTelp}
                   keyboardType="numeric"
                 />
               </View>
@@ -437,7 +584,7 @@ export default function PusdalopCreate() {
             <View>
               <View style={{marginLeft: 10}}>
                 <SelectList
-                  setSelected={key => setkeyKecamatan(key)}
+                  setSelected={handleKecamatan}
                   data={kecamatanOption}
                   save="key"
                   itemKey="key"
@@ -454,7 +601,7 @@ export default function PusdalopCreate() {
             </View>
             <View>
               <SelectList
-                setSelected={key => setKeyDesa(key)}
+                setSelected={handleDesa}
                 data={desaOPtion}
                 save="key"
                 itemKey="key"
@@ -472,8 +619,10 @@ export default function PusdalopCreate() {
               <TextInput
                 placeholder="Masukan Alamat"
                 style={{borderWidth: 3, borderColor: 'black', borderRadius: 10}}
-                onChangeText={handleChangeALamat}
-                value={dataAlamat}
+                onChangeText={dataPusdalop =>
+                  handleChangeForm(dataPusdalop, 'alamat')
+                }
+                // value={dataAlamat}
               />
             </View>
           </View>
@@ -498,10 +647,15 @@ export default function PusdalopCreate() {
                 <View style={{flexDirection: 'row', padding: 10}}>
                   <View style={{marginRight: 60}}>
                     <Text>Preview Image</Text>
-                    <Image
-                      source={{uri: image}}
-                      style={{width: 200, height: 200}}
-                    />
+                    {dataPusdalop[`image[0]`]?.uri ? (
+                      <Image
+                        source={{uri: dataPusdalop['image[0]'].uri}}
+                        // source={{uri: images}}
+                        style={{width: 200, height: 200}}
+                      />
+                    ) : (
+                      <Text>No image</Text>
+                    )}
                   </View>
                 </View>
                 <View style={{flexDirection: 'row'}}>
@@ -522,8 +676,10 @@ export default function PusdalopCreate() {
                 </View>
                 <View>
                   <Text>Keterangan</Text>
+                  {/* {keteranganImage.map((text, index) => ( */}
                   <TextInput
                     placeholder="Masukan Keterangan gambar"
+                    key={index}
                     style={{
                       height: 100,
                       width: 350,
@@ -532,9 +688,10 @@ export default function PusdalopCreate() {
                       marginTop: 5,
                       marginBottom: 10,
                     }}
-                    value={input.value}
-                    onChangeText={text => handleInputChange(text, index)}
+                    // value={text}
+                    onChangeText={text => handleChangeKet(text, index)}
                   />
+                  {/* ))} */}
                   <Button
                     title="Remove"
                     onPress={() => handleRemoveInput(index)}

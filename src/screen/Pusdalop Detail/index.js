@@ -111,7 +111,7 @@ export default function PusdalopDetail(props) {
     setInputs([...inputs, {value: '', image: null}]);
   };
   const [dataById, setDataByID] = useState({});
-  // console.log('ini data pusdalop', dataById?.data?.no_telpon);
+  console.log('ini data pusdalop', dataById?.data?.risalah[0]?.file);
   const handleChangeALamat = text => {
     setDataAlamat(text);
   };
@@ -337,25 +337,13 @@ export default function PusdalopDetail(props) {
           <View style={{padding: 5}}>
             <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
 
-            {/* <SelectList
-              items={tindakanOptions}
-              onChange={value => setSelectedTindakan(value)}
-              selectedValue={setSelectedTindakan}
-              labelExtractor={({jenis_tindakan}) => jenis_tindakan}
-              valueExtractor={({id}) => id}
-            /> */}
-            {/* <SelectList
-              setSelected={setSelected}
-              data={tindakanOptions}
-              onSelect={() => alert(selected)}
-            /> */}
             <SelectList
               setSelected={key => setSelected(key)}
               data={dataJenis}
               save="key"
               itemKey="key"
               itemLabel="name"
-              placeholder={dataById?.data?.id_tindakan}
+              placeholder={dataById?.data?.tindakan.jenis_tindakan}
               // onSelect={dataById.data.data.id_tindakan}
             />
           </View>

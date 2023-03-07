@@ -8,130 +8,73 @@ import {
   Pressable,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
+import {black} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 import Logo from '../../assets/img/BPBD.png';
 // import Foto from '../../assets/img/';
 
 export default function Home() {
   const Foto = '../../assets/img/';
-  const [people, setPeople] = useState([
-    {
-      name: 'Shaun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '1',
-    },
-    {
-      name: 'San',
-      image: 'https://via.placeholder.com/100x100',
-      key: '2',
-    },
-    {
-      name: 'Sun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '3',
-    },
-    {
-      name: 'dab',
-      image: 'https://via.placeholder.com/100x100',
-      key: '4',
-    },
-    {
-      name: 'dun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '5',
-    },
-    {
-      name: 'dor',
-      image: 'https://via.placeholder.com/100x100',
-      key: '6',
-    },
-    {
-      name: 'dur',
-      image: 'https://via.placeholder.com/100x100',
-      key: '7',
-    },
-    {
-      name: 'der',
-      image: 'https://via.placeholder.com/100x100',
-      key: '8',
-    },
-    {
-      name: 'doel',
-      image: 'https://via.placeholder.com/100x100',
-      key: '9',
-    },
-    {
-      name: 'doer',
-      image: 'https://via.placeholder.com/100x100',
-      key: '10',
-    },
-  ]);
+
   // const Item = ({image}) => {
   //   return <Image source={{uri: image}} style={{width: 100, height: 100}} />;
   // };
 
   return (
-    <View style={{flex: 1}}>
-      <View style={style.cardWelcome}>
-        <View style={{marginLeft: 20, marginTop: 15, position: 'absolute'}}>
-          <Image source={Logo} style={{width: 100, height: 100}} />
+    <View>
+      <View style={style.containerTop}></View>
+      <View style={style.containerButton}>
+        <View style={style.cardWelcome}>
+          <View style={{marginLeft: 20, marginTop: 15, position: 'absolute'}}>
+            <Image source={Logo} style={{width: 100, height: 100}} />
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginLeft: 30,
+              marginTop: 115,
+              position: 'absolute',
+            }}>
+            <Text style={style.textSim}>SIM</Text>
+            <Text style={style.textBebas}>BEBAS</Text>
+          </View>
+          <View style={{marginLeft: 130, marginTop: 30, width: 200}}>
+            <Text>
+              Selamat Datang di aplikasi SIMBEBAS, untuk memulai tombol menu
+              berada di kiri {'\n'} atas
+            </Text>
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginLeft: 30,
-            marginTop: 115,
-            position: 'absolute',
-          }}>
-          <Text style={style.textSim}>SIM</Text>
-          <Text style={style.textBebas}>BEBAS</Text>
+        <View style={style.grupButton}>
+          <View>
+            <Icon name="filetext1" color={'black'} size={50} />
+            <Text>Pusdalop</Text>
+          </View>
+          <View>
+            <Icon name="Safety" color={'black'} size={50} />
+            <Text>Asesmen</Text>
+          </View>
+          <View>
+            <Icon name="team" color={'black'} size={50} />
+            <Text>Verifikator</Text>
+          </View>
         </View>
-        <View style={{marginLeft: 130, marginTop: 30, width: 200}}>
-          <Text>
-            Selamat Datang di aplikasi SIMBEBAS, untuk memulai tombol menu
-            berada di kiri {'\n'} atas
-          </Text>
+        <View style={style.grupButton2}>
+          <View>
+            <Icon name="inbox" color={'black'} size={50} />
+            <Text>Logpal</Text>
+          </View>
+          <View>
+            <Icon name="flag" color={'black'} size={50} />
+            <Text>TRC</Text>
+          </View>
+          <View>
+            <Icon name="exception1" color={'black'} size={50} />
+            <Text>LogCepat</Text>
+          </View>
         </View>
-      </View>
-      <View style={{marginLeft: 10, marginTop: 10}}>
-        <Text>Riwayat Data Terakhir</Text>
-      </View>
-      <View>
         {/* <FlatList
-          data={people}
-          style={{
-            width: '100%',
-            height: 500,
-            backgroundColor: '#FFFFFF',
-            top: 40,
-            position: 'absolute',
-            zIndex: 10,
-          }}
-          renderItem={({item}) => <Text style={style.item}>{item.name}</Text>}
-        /> */}
-        {/* <FlatList
-          horizontal={true}
-          data={people}
-          renderItem={({item}) => (
-            <View style={style.card}>
-              onPress={() => handleDetail(item.eventid)}>
-              <Text>{item.name}</Text>
-              <Image
-                source={require(item.image)}
-                style={{width: '100%', height: '100%', borderRadius: 30}}
-              />
-              <View style={{position: 'absolute', bottom: 30, left: 25}}>
-                <Text style={{color: 'white'}}>{item.dateTimeShow}</Text>
-                <Text style={{color: 'white'}}>{item.name}</Text>
-                <TouchableOpacity>
-                  <Text>GO</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-          keyExtractor={item => item.key}
-        /> */}
-        <FlatList
           data={people}
           keyExtractor={item => item.key}
           renderItem={({item}) => (
@@ -163,39 +106,6 @@ export default function Home() {
               </View>
             </View>
           )}
-        />
-        {/* <FlatList
-          data={people}
-          renderItem={({item}) => (
-            <View>
-              <Image
-                source={require(item.image)}
-                style={{width: 100, height: 100}}
-              />
-              <Text>{item.name}</Text>
-            </View>
-          )}
-          keyExtractor={item => item.key}
-        /> */}
-        {/* <FlatList
-          data={people}
-          renderItem={({item}) => (
-            <View>
-              <Text>{item.image}</Text>
-              <Image
-                source={`require(${item.image})`}
-                style={{width: 100, height: 100, borderColor: 'Blue'}}
-              />
-              <Text>{item.name}</Text>
-            </View>
-          )}
-          keyExtractor={item => item.key}
-        /> */}
-        {/* <FlatList
-          horizontal={false}
-          data={DATA}
-          renderItem={({item}) => <Item title={item.title} />}
-          keyExtractor={item => item.id}
         /> */}
       </View>
     </View>
@@ -214,12 +124,16 @@ const style = StyleSheet.create({
     fontSize: 32,
   },
   cardWelcome: {
-    marginTop: 20,
+    marginTop: -80,
     width: 370,
     backgroundColor: '#ffffff',
     height: 140,
-    marginHorizontal: 15,
+    marginHorizontal: 11,
     borderRadius: 20,
+    zIndex: 999,
+    borderWidth: 1,
+    borderColor: '#FF6A16',
+    // position: 'absolute',
   },
   textSim: {
     color: '#0000ff',
@@ -235,5 +149,31 @@ const style = StyleSheet.create({
     marginTop: 20,
     backgroundColor: 'Blue',
     borderColor: 'Black',
+  },
+  containerButton: {
+    backgroundColor: 'white',
+    width: '100%',
+    height: '100%',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    position: 'relative',
+    marginTop: -30,
+  },
+  containerTop: {
+    backgroundColor: '#FF6A16',
+    width: '100%',
+    height: '20%',
+  },
+  grupButton: {
+    flexDirection: 'row',
+    paddingHorizontal: 40,
+    justifyContent: 'space-between',
+    marginTop: '20%',
+  },
+  grupButton2: {
+    flexDirection: 'row',
+    paddingHorizontal: 40,
+    justifyContent: 'space-between',
+    marginTop: '15%',
   },
 });

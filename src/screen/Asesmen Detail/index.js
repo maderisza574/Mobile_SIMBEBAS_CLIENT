@@ -20,15 +20,17 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {getDataPusdalopById} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createDataAssesmen} from '../../stores/actions/asesmen';
 
 export default function AsesmenDetail(props) {
   const dispatch = useDispatch();
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
+
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [namaBarang, setnamaBarang] = useState('');
   const [dataById, setDataByID] = useState({});
-  console.log('INI DATA PUSDALOP', dataById?.data?.tanggal);
+  console.log('INI DATA PUSDALOP', dataById?.data?.alamat);
   const pusdalopid = props.route.params.pusdalopId;
   // console.log(pusdalopid);
   //  for map
@@ -151,6 +153,30 @@ export default function AsesmenDetail(props) {
     });
     setImage(photo.assets[0].uri);
   };
+  const dataAssesmen = {
+    rumahrusak_rr: 'testing',
+    rumahrusak_rs: 'tos',
+    rumahrusak_rb: 'tos',
+    potensi_susulan: 'tos',
+    petugas: 'tos',
+    kerugianrp: 'tos',
+    korban_jiwa: 'tos',
+    waktu_assesment: '2023 - 03 - 12',
+    unsur_terlibat: 'tos',
+    kebutuhan_mendesak: 'tos',
+    cakupan: 'tos',
+    deskripsi_kronologis: 'tos',
+    peralatan_dibutuhkan: 'tos',
+    tindakan: 'tosing',
+    luka_berat: 'ora',
+    luka_sedang: 'iya',
+    luka_ringan: 'betul',
+    dampak: 'tidak',
+    kerusakan_fasum: 'iya',
+    // barang[0][id_barang]:1,
+    // barang[0][qty]:1,
+    // keteranganImage[0]:tes,
+  };
   return (
     <View>
       <ScrollView>
@@ -181,7 +207,7 @@ export default function AsesmenDetail(props) {
           <View style={{marginTop: 10}}>
             <Text>Jenis Bencana</Text>
             <TextInput
-              placeholder={dataById?.data?.tindakan?.jenis_tindakan}
+              placeholder={dataById?.data?.bencana?.sub_jenis}
               editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
@@ -220,7 +246,7 @@ export default function AsesmenDetail(props) {
           <View style={{marginTop: 200}}>
             <Text>Kecamatan</Text>
             <TextInput
-              placeholder="Kemrajen"
+              placeholder={dataById?.data?.kecamatan?.kecamatan}
               editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
@@ -228,7 +254,7 @@ export default function AsesmenDetail(props) {
           <View style={{marginTop: 10}}>
             <Text>Desa</Text>
             <TextInput
-              placeholder="Desa Sibrama"
+              placeholder={dataById?.data?.desa?.desa}
               editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
@@ -236,7 +262,7 @@ export default function AsesmenDetail(props) {
           <View style={{marginTop: 10}}>
             <Text>Alamat</Text>
             <TextInput
-              placeholder="Sibrama,Kec Kemrajen,Kabupaten Banyumas,Jawatengah"
+              placeholder={dataById?.data?.alamat}
               editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
@@ -247,21 +273,7 @@ export default function AsesmenDetail(props) {
               placeholder={date.toLocaleDateString()}
               style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
             />
-            <DatePicker
-              modal
-              open={open}
-              date={date}
-              onConfirm={date => {
-                setOpen(false);
-                setDate(date);
-              }}
-              onCancel={() => {
-                setOpen(false);
-              }}
-            />
-            <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
-              <Text style={style.textLogin}>Pilih Tanggal dan waktu</Text>
-            </Pressable>
+
             {/* <TextInput
               placeholder="Tanah Longsor"
               editable={false}
