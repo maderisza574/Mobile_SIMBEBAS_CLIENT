@@ -1,140 +1,175 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, PermissionsAndroid} from 'react-native';
-// import MapView, {Marker} from 'react-native-maps';
+import {
+  View,
+  Text,
+  StyleSheet,
+  PermissionsAndroid,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, {Marker} from 'react-native-maps';
-// import Geocoder from 'react-native-geocoding';
 
-// Geocoder.init('AIzaSyDehHQYXFEqHlt9I8uBsQ_f3hNMPeKAwmU');
 export default function Map(props) {
-  // NEW MAP
-  const userLocation = {
-    coords: {
-      accurancy: 0,
-      alttitude: 0,
-      heading: 0,
-      latitude: 0,
-      longtitude: 0,
-      speed: 0,
-    },
-    mocked: false,
-    timestamp: 0,
-  };
-  // console.log('INI USERLOCATION', userLocation);
-  const [address, setAddress] = useState();
-  console.log('INI DATA ADDRESS', address);
+  const [latitudedata, setLatitude] = useState('');
+  const [longitudedata, setLongitude] = useState('');
+  const [address, setAddress] = useState('');
+  const [addresscoder, setAddressCoder] = useState('');
+  const [region, setRegion] = useState({
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
+
   useEffect(() => {
     requestLocationPermission();
-    // Geolocation.getCurrentPosition(info => setAddress({userLocation: info}));
   }, []);
+
   const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: 'IJIN LOKASI',
-          message: 'ijin LOKASI ',
+          title: 'Location Permission',
+          message: 'This app needs access to your location',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('SUDAH BISA ');
         Geolocation.getCurrentPosition(
-          posisi => {
-            let posisiAwal = JSON.stringify(posisi);
-            setAddress(posisiAwal);
+          position => {
+            setRegion({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            });
           },
-          error => alert('lokasi tidak ditemukan', JSON.stringify(error)),
-          {enableHighAccuracy: true, timeout: 2000, maximumAge: 1000},
+          error => {
+            if (error.code === error.TIMEOUT) {
+              Alert.alert(
+                'Error',
+                'Position unavailable. Please try again later.',
+              );
+            } else {
+              Alert.alert(
+                'Error',
+                'An error occurred while retrieving your location.',
+              );
+            }
+          },
+          {enableHighAccuracy: true, timeout: 5000},
         );
       } else {
-        console.log('GA BISA');
+        Alert.alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
       }
     } catch (err) {
       console.warn(err);
     }
   };
 
-  // END NEW MAP
-
+  const search = () => {
+    // console.log('INI DATA LAT', latitude);
+    // console.log('INI DATA LONG', longitude);
+    // const latitude = parseFloat(address.split(',')[0]);
+    // const longitude = parseFloat(address.split(',')[1]);
+    const latitude = parseFloat(latitudedata);
+    const longitude = parseFloat(longitudedata);
+    setRegion({
+      latitude: latitude,
+      longitude: longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+  };
+  const getAddressFromLatLng = async (lat, lng) => {
+    try {
+      const response = await Geocoder.from(lat, lng);
+      const address = response.results[0].formatted_address;
+      setAddressCoder(address);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <View>
-      <View style={styles.container}>
-        {/* <MapView
-          style={styles.map}
-          region={region}
-          onRegionChangeComplete={region => setRegion(region)}>
-          {region && (
-            <Marker
-              coordinate={{
-                latitude: region.latitude,
-                longitude: region.longitude,
-              }}
-              onPress={() => {
-                Geocoder.from(region.latitude, region.longitude)
-                  .then(json => {
-                    setAddress(json.results[0].formatted_address);
-                  })
-                  .catch(error => console.warn(error));
-              }}
-            />
-          )}
-        </MapView> */}
-        {/* <TextInput
-          style={styles.address}
-          placeholder="Address"
+    <View style={{flex: 1}}>
+      <View style={styles.searchBarContainer}>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Latitude, Longitude"
           value={address}
           onChangeText={text => setAddress(text)}
-        /> */}
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={() => search()}>
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Latitude"
+          value={latitudedata}
+          onChangeText={text => setLatitude(text)}
+        />
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Longitude"
+          value={longitudedata}
+          onChangeText={text => setLongitude(text)}
+        />
       </View>
-      <View>
-        <MapView
-          style={{height: 300}}
-          region={{
-            latitude: -7.431391,
-            longitude: 109.247833,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}>
-          <Marker
-            coordinate={{latitude: -7.431391, longitude: 109.247833}}
-            // title={lokasi}
-          />
-          {/* <Marker
-            key={user}
-            coordinate={{
-              latitude: address.coords.latitude,
-              longitude: address.coords.longitude,
-            }}
-            pinColor={'#212121'}
-            title={'lokasi saya'}
-          /> */}
-        </MapView>
-        <Text>{address}</Text>
-      </View>
+      <MapView style={styles.map} region={region}>
+        <Marker
+          coordinate={region}
+          onDragEnd={e =>
+            getAddressFromLatLng(
+              e.nativeEvent.coordinate.latitude,
+              e.nativeEvent.coordinate.longitude,
+            )
+          }
+          draggable
+        />
+      </MapView>
+      <Text style={styles.address}>{addresscoder}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
+  searchBarContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 5,
+    margin: 10,
+  },
+  searchBar: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 10,
+  },
+  searchButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#2196F3',
+    borderRadius: 5,
+    margin: 10,
+  },
+  searchButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   map: {
-    // ...StyleSheet.absoluteFillObject,
-    position: 'absolute',
-    marginTop: 100,
-    height: 100,
-    width: 100,
+    flex: 1,
   },
   address: {
-    height: 40,
-    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: 'white',
-    paddingHorizontal: 10,
+    padding: 10,
+    fontSize: 18,
   },
 });
