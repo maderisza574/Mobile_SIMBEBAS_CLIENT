@@ -18,6 +18,7 @@ import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
+// import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
@@ -27,7 +28,7 @@ export default function PusdalopCreate(props) {
   const dispatch = useDispatch();
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
   // end redux
-  const [images, setImages] = useState(null);
+
   // console.log('INI DATA IMAGE CREATE', image);
   const [tindakanOptions, setTindakanOptions] = useState([]);
   const [open, setOpen] = useState(false);
@@ -48,46 +49,8 @@ export default function PusdalopCreate(props) {
   const [isiaduan, setIsiAduan] = useState('');
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [keteranganImage, setKeteranganImage] = useState([]);
-  const [image, setImage] = useState([]);
-
-  // const formHandler = (value, name) => {
-  //   setForm({...form, [name]: value});
-  // };
-  // NEW DECLARE
-  // const dataPusdalopNew = new FormData();
-  // dataPusdalopNew.append('id_jenis_bencana', selected);
-  // dataPusdalopNew.append('id_tindakan', keybencana);
-  // dataPusdalopNew.append('user_pemohon', dataNama);
-  // dataPusdalopNew.append('isi_aduan', form);
-  // dataPusdalopNew.append('no_telepon', dataTelp);
-  // dataPusdalopNew.append('nama', dataNama);
-  // dataPusdalopNew.append('alamat', dataAlamat);
-  // dataPusdalopNew.append('id_desa', keyDesa);
-  // dataPusdalopNew.append('id_kecamatan', keykecamatan);
-  // dataPusdalopNew.append('lng', longitude);
-  // dataPusdalopNew.append('lat', latitude);
-  // dataPusdalopNew.append('tindakan_trc', 'true');
-  // dataPusdalopNew.append('logpal', 'true');
-  // dataPusdalopNew.append('tanggal', date);
-  // images.forEach((image, index) => {
-  //   dataPusdalopNew.append(`image${index}`, {
-  //     uri: image.uri,
-  //     type: image.type,
-  //     name: image.fileName,
-  //   });
-  // });
-  // if (images[0]) {
-  //   dataPusdalopNew.append('image', {
-  //     uri: image[0].uri,
-  //     type: image[0].type,
-  //     name: image[0].fileName,
-  //   });
-  // }
-  // if (ketGambar[0]) {
-  //   dataPusdalopNew.append('keteranganGambar', ketGambar[0]);
-  // }
-  // console.log('INI DATA PUSDALOP', dataPusdalopNew);
-  //  END NEW DECLARE
+  const [images, setImages] = useState([]);
+  // console.log(images);
 
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
@@ -107,9 +70,6 @@ export default function PusdalopCreate(props) {
   const handleChangeALamat = text => {
     setDataAlamat(text);
   };
-  // const handleChangeKet = text => {
-  //   setKetGambar(text);
-  // };
   const handleInputChange = (text, index) => {
     const newInputs = [...inputs];
     newInputs[index].value = text;
@@ -125,6 +85,7 @@ export default function PusdalopCreate(props) {
     setInputs(newInputs);
   };
   const handleSelect = key => {
+    setSelected(key);
     setDataPusdalop(prevData => ({
       ...prevData,
       id_jenis_bencana: key,
@@ -148,16 +109,6 @@ export default function PusdalopCreate(props) {
       id_desa: key,
     }));
   };
-  // const handleChangeKet = key => {
-  //   setDataPusdalop(prevData => ({
-  //     ...prevData,
-  //     id_desa: key,
-  //     // const keteranganImage = prevState.keteranganImage || []; // check if keteranganImage exists in prevState
-  //     // keteranganImage[index] = text;
-  //     // return {...prevState, keteranganImage};
-  //   }));
-  // };
-  //  end multiple input
 
   const dataJenis = [
     {key: '1', value: 'PENCEGAHAN'},
@@ -199,43 +150,49 @@ export default function PusdalopCreate(props) {
         .catch(error => console.error(error));
     }, 3000);
   }, []);
-
   const handleCreatePusdalop = async () => {
     try {
-      const datauser = await AsyncStorage.getItem('token');
-      // console.log(datauser);
+      const formData = new FormData();
+      formData.append('id_jenis_bencana', dataPusdalop.id_jenis_bencana);
+      formData.append('id_tindakan', dataPusdalop.id_tindakan);
+      formData.append('user_pemohon', dataPusdalop.user_pemohon);
+      formData.append('isi_aduan', dataPusdalop.isi_aduan);
+      formData.append('no_telepon', dataPusdalop.no_telepon);
+      formData.append('nama', dataPusdalop.nama);
+      formData.append('alamat', dataPusdalop.alamat);
+      formData.append('id_desa', dataPusdalop.id_desa);
+      formData.append('id_kecamatan', dataPusdalop.id_kecamatan);
+      formData.append('lng', dataPusdalop.lng);
+      formData.append('lat', dataPusdalop.lat);
+      formData.append('tindakan_trc', dataPusdalop.tindakan_trc);
+      formData.append('logpal', dataPusdalop.logpal);
+      formData.append('tanggal', dataPusdalop.tanggal);
+      formData.append('keteranganImage[0]', dataPusdalop.keteranganImage);
 
-      const config = {
-        method: 'post',
-        body: formData,
+      images.length > 0 &&
+        images.forEach((v, k) => {
+          formData.append(`image[${k}]`, {
+            name: v[k].fileName,
+            type: v[k].type,
+            uri: v[k].uri,
+          });
+        });
+      const result = axios({
+        url: 'http://10.100.0.47:5000/api/v1/pusdalops',
+        method: 'POST',
+        data: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + datauser,
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUxNjksImlhdCI6MTY3NjQ0MjQxMH0.eUaMZVhw5RBQVh0h6_YsA4VBMABdlIGLIVNSBm2T01Y',
         },
-      };
-      // console.log('INI DATA PUSDALOP DALAM', dataPusdalop);
-      // console.log(dataPusdalop);
-      const result = await axios.post(
-        'http://10.100.0.106:5000/api/v1/pusdalops',
-        dataPusdalop,
-        config,
-      );
+      });
       console.log(result);
-      // await dispatch(createDataPusdalop(dataPusdalop, config));
-      alert('Sukses Membuat Laporan');
-      // props.navigation.navigate('Pusdalop');
-
-      // const response = await axios.post('/v1/pusdalops', formData, config);
-      // console.log(response.data);
+      alert('SUKSES MEMBUAT LAPORAN');
+      props.navigation.navigate('Pusdalop');
     } catch (error) {
-      alert('GAGAL');
+      console.log(error);
     }
-  };
-  const handleChangeKet = text => {
-    setDataPusdalop(prevState => ({
-      ...prevState,
-      ['keteranganImage[0]']: text,
-    }));
   };
 
   // for camera
@@ -267,19 +224,34 @@ export default function PusdalopCreate(props) {
               console.log('ImagePicker Error: ', response.errorMessage);
             }
             if (response.assets && response.assets.length > 0) {
-              const formData = new FormData();
-              formData.append('image', {
-                name: response.assets[0].fileName,
-                type: response.assets[0].type,
-                uri: response.assets[0].uri,
-              });
-              formData.append('array', []);
+              const source = [
+                {
+                  uri: response.assets[0].uri,
+                  type: response.assets[0].type,
+                  name: response.assets[0].fileName,
+                },
+              ];
+              // console.log('INI DATA GAMBAR', source);
+              // const formData = new FormData();
+              // formData.append({
+              //   name: response.assets[0].fileName,
+              //   type: response.assets[0].type,
+              //   uri: response.assets[0].uri,
+              // });
+              // console.log('INI DATA GAMBAR', response.assets);
+              // formData.append('array', []);
               // console.log('INI DATA IMAGE', formData._parts);
-              setDataPusdalop(prevState => ({
-                ...prevState,
-                [`image[0]`]: formData._parts,
-              }));
-              // console.log(dataPusdalopNew);
+              // setDataImage({...dataimage, image: source});
+              setImages(prevImages => [...prevImages, response.assets]);
+              setDataPusdalop({
+                ...dataPusdalop,
+                //   // image: [...dataPusdalop.image, ...dataimage],
+                //   // image: [...dataPusdalop.image, ...source],
+                image: [...dataPusdalop.image, response.assets],
+              });
+
+              // setImage(formData._parts[0].uri);
+              // // console.log(dataPusdalopNew);
             } else {
               console.log('No image selected');
             }
@@ -292,18 +264,20 @@ export default function PusdalopCreate(props) {
       console.log(error);
     }
   };
+  console.log();
   const handleLaunchImageLibrary = async () => {
     const photo = await launchImageLibrary({
       mediaType: 'photo',
       maxWidth: 100,
     });
-    const formData = new FormData();
-    formData.append('image', {
-      name: photo.assets[0].fileName,
-      type: photo.assets[0].type,
-      uri: photo.assets[0].uri,
-    });
-    setImages(photo.assets[0].uri);
+    if (photo) {
+      setFormData({
+        ...dataPusdalop,
+        images: [...dataPusdalop.images, ...photo.assets],
+      });
+    }
+    // console.log('INI IMAGE LIBRARY', formData._parts[0]);
+    // setImages(photo.assets[0].uri);
   };
 
   const [stateMap, setStateMap] = useState({
@@ -360,47 +334,10 @@ export default function PusdalopCreate(props) {
     tindakan_trc: 'true',
     logpal: 'true',
     tanggal: date,
-    // keteranganImage: [],
-    // image: [],
-    // [image[0]] :
-    // keteranganImage: [],
-    // keteraganImage: [],
+    image: images,
+    keteranganImage: [],
   });
-  console.log('INI DATA PUSDALOP', dataPusdalop);
-
-  // setDataPusdalop(prevData => ({
-  //   ...prevData,
-  //   keteranganImage: [...prevData.keteranganImage, keteranganImage],
-  //   image: [...prevData.image, image],
-  // }));
-  // const dataPusdalop = {
-  //   id_jenis_bencana: selected,
-  //   id_tindakan: keybencana,
-  //   user_pemohon: dataNama,
-  //   isi_aduan: form,
-  //   no_telepon: dataTelp,
-  //   nama: dataNama,
-  //   alamat: dataAlamat,
-  //   id_desa: keyDesa,
-  //   id_kecamatan: keykecamatan,
-  //   lng: longitude,
-  //   lat: latitude,
-  //   tindakan_trc: 'true',
-  //   logpal: 'true',
-  //   tanggal: date,
-  //   // ...[image[0]]: images,
-  //   // ...(image[0] && {gambar: image[0]}),
-  //   // ...(ketGambar[0] && {keteranganGambar: ketGambar[0]}),
-  //   //ke:tessss
-  //   //keteranganGambar[1]:tosss
-  // };
   // console.log('INI DATA PUSDALOP', dataPusdalop);
-
-  // IF URI no provide
-  // const {uri} = props;
-  // console.log(uri);
-
-  // end uri no provide
 
   return (
     <View>
@@ -455,6 +392,7 @@ export default function PusdalopCreate(props) {
             <TextInput
               placeholder={date.toLocaleDateString()}
               style={{borderWidth: 1, borderRadius: 10}}
+              editable={false}
             />
             <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
               <Text style={style.textLogin}>Pilih Tanggal dan waktu</Text>
@@ -472,15 +410,19 @@ export default function PusdalopCreate(props) {
               }}
             />
           </View>
-          <View>
+          <View style={{marginTop: 10}}>
             <Text>Isi Aduan</Text>
             <TextInput
               placeholder="Masukan Isi Aduan"
               style={style.inputAduan}
-              onChangeText={dataPusdalop =>
-                handleChangeForm(dataPusdalop, 'isi_aduan')
+              multiline={true}
+              onChangeText={text =>
+                setDataPusdalop({
+                  ...dataPusdalop,
+                  isi_aduan: text,
+                })
               }
-              value={form}
+              value={dataPusdalop.isi_aduan}
             />
           </View>
           <View style={{marginTop: 10}}>
@@ -647,14 +589,15 @@ export default function PusdalopCreate(props) {
                 <View style={{flexDirection: 'row', padding: 10}}>
                   <View style={{marginRight: 60}}>
                     <Text>Preview Image</Text>
-                    {dataPusdalop[`image[0]`]?.uri ? (
+                    {dataPusdalop.image[0]?.uri && (
                       <Image
-                        source={{uri: dataPusdalop['image[0]'].uri}}
-                        // source={{uri: images}}
-                        style={{width: 200, height: 200}}
+                        source={{
+                          uri: dataPusdalop.image[0]
+                            ? dataPusdalop.image[0]?.uri
+                            : null,
+                        }}
+                        style={{height: 200, width: 200}}
                       />
-                    ) : (
-                      <Text>No image</Text>
                     )}
                   </View>
                 </View>
@@ -688,8 +631,13 @@ export default function PusdalopCreate(props) {
                       marginTop: 5,
                       marginBottom: 10,
                     }}
-                    // value={text}
-                    onChangeText={text => handleChangeKet(text, index)}
+                    value={dataPusdalop.keteranganImage}
+                    onChangeText={text =>
+                      setDataPusdalop({
+                        ...dataPusdalop,
+                        keteranganImage: [text],
+                      })
+                    }
                   />
                   {/* ))} */}
                   <Button
@@ -721,11 +669,11 @@ export default function PusdalopCreate(props) {
 
 const style = StyleSheet.create({
   inputAduan: {
-    width: 380,
-    height: 200,
+    width: '100%',
     borderWidth: 1,
-    marginLeft: 5,
-    marginTop: 10,
+    marginTop: 5,
+    borderRadius: 10,
+    borderColor: '#b8b894',
   },
   titleScreen: {
     backgroundColor: '#FF6A16',

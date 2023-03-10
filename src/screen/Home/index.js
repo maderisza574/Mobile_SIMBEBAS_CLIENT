@@ -7,19 +7,36 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {black} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import Logo from '../../assets/img/BPBD.png';
 // import Foto from '../../assets/img/';
 
-export default function Home() {
+export default function Home(props) {
   const Foto = '../../assets/img/';
 
   // const Item = ({image}) => {
   //   return <Image source={{uri: image}} style={{width: 100, height: 100}} />;
   // };
+  const navPusdalop = () => {
+    props.navigation.navigate('PusdalopCreate');
+  };
+  const navAsesmen = () => {
+    props.navigation.navigate('Asesmen');
+  };
+  const navVerifikator = () => {
+    props.navigation.navigate('Verifikator');
+  };
+  const navLogpal = () => {
+    props.navigation.navigate('Gudang Logpal');
+  };
+  const navTrc = () => {
+    props.navigation.navigate('TindakanTRC');
+  };
+  const navLogCepat = () => {
+    props.navigation.navigate('LogpalCepat');
+  };
+  // const nav
 
   return (
     <View>
@@ -48,65 +65,128 @@ export default function Home() {
         </View>
         <View style={style.grupButton}>
           <View>
-            <Icon name="filetext1" color={'black'} size={50} />
-            <Text>Pusdalop</Text>
+            <View
+              style={{
+                backgroundColor: '#FF6A16',
+                width: 90,
+                height: 90,
+                borderRadius: 44 / 1,
+              }}>
+              <TouchableOpacity
+                onPress={navPusdalop}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 5,
+                }}>
+                <Icon name="filetext1" color={'white'} size={50} />
+                <Text style={{color: 'white'}}>PUSDALOP</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View>
-            <Icon name="Safety" color={'black'} size={50} />
-            <Text>Asesmen</Text>
+            <View
+              style={{
+                backgroundColor: '#FF6A16',
+                width: 90,
+                height: 90,
+                borderRadius: 44 / 1,
+              }}>
+              <TouchableOpacity
+                onPress={navAsesmen}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 5,
+                }}>
+                <Icon name="Safety" color={'white'} size={50} />
+                <Text style={{color: 'white'}}>Asesmen</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View>
-            <Icon name="team" color={'black'} size={50} />
-            <Text>Verifikator</Text>
+            <View
+              style={{
+                backgroundColor: '#FF6A16',
+                width: 90,
+                height: 90,
+                borderRadius: 44 / 1,
+              }}>
+              <TouchableOpacity
+                onPress={navVerifikator}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 5,
+                }}>
+                <Icon name="team" color={'white'} size={50} />
+                <Text style={{color: 'white'}}>Verifikator</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <View style={style.grupButton2}>
           <View>
-            <Icon name="inbox" color={'black'} size={50} />
-            <Text>Logpal</Text>
+            <View
+              style={{
+                backgroundColor: '#FF6A16',
+                width: 90,
+                height: 90,
+                borderRadius: 44 / 1,
+              }}>
+              <TouchableOpacity
+                onPress={navLogpal}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 5,
+                }}>
+                <Icon name="inbox" color={'white'} size={50} />
+                <Text style={{color: 'white'}}>Logpal</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View>
-            <Icon name="flag" color={'black'} size={50} />
-            <Text>TRC</Text>
+            <View
+              style={{
+                backgroundColor: '#FF6A16',
+                width: 90,
+                height: 90,
+                borderRadius: 44 / 1,
+              }}>
+              <TouchableOpacity
+                onPress={navTrc}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 5,
+                }}>
+                <Icon name="flag" color={'white'} size={50} />
+                <Text style={{color: 'white'}}>TRC</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View>
-            <Icon name="exception1" color={'black'} size={50} />
-            <Text>LogCepat</Text>
+            <View
+              style={{
+                backgroundColor: '#FF6A16',
+                width: 90,
+                height: 90,
+                borderRadius: 44 / 1,
+              }}>
+              <TouchableOpacity
+                onPress={navLogCepat}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 5,
+                }}>
+                <Icon name="exception1" color={'white'} size={50} />
+                <Text style={{color: 'white'}}>LogCepat</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-        {/* <FlatList
-          data={people}
-          keyExtractor={item => item.key}
-          renderItem={({item}) => (
-            <View style={style.card}>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  source={{uri: `${item.image}`}}
-                  style={{width: 100, height: 100}}
-                />
-                <View>
-                  <Text style={{marginLeft: 10}}>Bencana</Text>
-                  <Text style={{marginLeft: 10}}>Location</Text>
-                  <Text style={{marginLeft: 10}}>Butuh asesment</Text>
-                  <Text style={{marginLeft: 10}}>
-                    lorem ipsum lorem lorem lorem lorem lorem lorem
-                  </Text>
-                </View>
-                <View style={{marginLeft: -40}}>
-                  <Pressable
-                    style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                    }}>
-                    <Text style={{marginLeft: 10}}>Lihat</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          )}
-        /> */}
       </View>
     </View>
   );

@@ -27,6 +27,7 @@ import TindakanTRC from '../screen/TindakanTrc';
 import LogpalCepat from '../screen/Logpal Cepat';
 import LogpalCepatDetail from '../screen/Logpal Cepat Detail';
 import VerifikatorDetail from '../screen/Verifikator Detail';
+import Coba from '../screen/coba';
 function MenuNavigator() {
   return (
     // DAFTARKAN MENU YANG NANTINYA AKAN MASUK KE DALAM DRAWER DISINI
@@ -124,6 +125,16 @@ function MenuNavigator() {
           ),
         }}
       />
+      {/* <Drawer.Screen
+        name="Coba"
+        component={Coba}
+        options={{
+          header: props => <HeaderDefault {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="enviroment" color={color} size={size} />
+          ),
+        }}
+      /> */}
     </Drawer.Navigator>
   );
 }

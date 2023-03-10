@@ -9,11 +9,10 @@ const axiosApiIntances = axios.create({
 axiosApiIntances.interceptors.request.use(
   async function (config) {
     // Do something before request is sent
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
     const token = await AsyncStorage.getItem('token');
+    console.log('TOKEN DI AXIOS', token);
     config.headers = {
-      Authorization: `Bearer ${token}`,
-      refreshtoken: refreshToken,
+      Authorization: 'Bearer ' + token,
     };
     return config;
   },

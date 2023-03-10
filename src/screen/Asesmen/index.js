@@ -11,11 +11,10 @@ import {
 import Icon from 'react-native-vector-icons/AntDesign';
 import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Asesmen(props) {
   const pusdalop = useSelector(state => state.pusdalop.data);
-
-  // console.log('INI DATA PUSDALOP', pusdalop);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getDataPusdalop());
@@ -105,10 +104,13 @@ export default function Asesmen(props) {
           renderItem={({item}) => (
             <View style={style.card}>
               <View style={{flexDirection: 'row'}}>
-                {/* <Image
-                  source={{uri: `${item.image}`}}
+                <Image
+                  // source={{
+                  //   uri: 'https://static.banyumaskab.go.id//simasbabe/fileupload/pusdalop/1.png',
+                  // }}
+                  source={{uri: `${item.risalah[0]?.file}`}}
                   style={{width: 100, height: 100}}
-                /> */}
+                />
                 <View>
                   <Text style={{marginLeft: 10}}>{item.nama}</Text>
                   <Text style={{marginLeft: 10}}>{item.alamat}</Text>
