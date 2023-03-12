@@ -14,15 +14,16 @@ import {
 import Icon from 'react-native-vector-icons/Entypo';
 import {SelectList} from 'react-native-dropdown-select-list';
 import DatePicker from 'react-native-date-picker';
-import MapView from 'react-native-maps';
-import {Marker} from 'react-native-maps';
+import MapView, {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
 // import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
-
+import Geolocation from '@react-native-community/geolocation';
+import Geocoder from 'react-native-geocoding';
+Geocoder.init('AIzaSyDJn6Nsc_kU477Symn0acKq1Js7C-1ALbIs');
 export default function PusdalopCreate(props) {
   // redux
   const dispatch = useDispatch();
@@ -50,6 +51,102 @@ export default function PusdalopCreate(props) {
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [keteranganImage, setKeteranganImage] = useState([]);
   const [images, setImages] = useState([]);
+  // NEW DECLARE MAP
+  const [latitudedata, setLatitude] = useState('');
+  const [longitudedata, setLongitude] = useState('');
+  const [address, setAddress] = useState('');
+  const [addresscoder, setAddressCoder] = useState('');
+  const [region, setRegion] = useState({
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
+  // END DECLARE MAP
+  // NEW USE EFFECT MAP
+  useEffect(() => {
+    requestLocationPermission();
+    // getAddressFromLatLng();
+  }, []);
+  // END USE EFFECT MAP
+  //  NEW FUNCTION MAP
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'This app needs access to your location',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        Geolocation.getCurrentPosition(
+          position => {
+            setRegion({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            });
+          },
+          error => {
+            if (error.code === error.TIMEOUT) {
+              alert('Position unavailable. Please try again later.');
+            } else {
+              alert('An error occurred while retrieving your location.');
+            }
+          },
+          {enableHighAccuracy: true, timeout: 10000},
+        );
+      } else {
+        alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+  const search = () => {
+    // console.log('INI DATA LAT', latitude);
+    // console.log('INI DATA LONG', longitude);
+    // const latitude = parseFloat(address.split(',')[0]);
+    // const longitude = parseFloat(address.split(',')[1]);
+    const latitude = parseFloat(latitudedata);
+    const longitude = parseFloat(longitudedata);
+    setRegion({
+      latitude: latitude,
+      longitude: longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+    getAddressFromLatLng();
+  };
+  const getAddressFromLatLng = async () => {
+    try {
+      // const latitude = parseFloat(latitudedata);
+      // const longitude = parseFloat(longitudedata);
+      const response = await Geocoder.from(latitudedata, longitudedata);
+      const address = response.results[0].formatted_address;
+      console.log(address);
+      // setAddressCoder(address);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onMarkerDragEnd = e => {
+    const newRegion = {
+      latitude: e.nativeEvent.coordinate.latitude,
+      longitude: e.nativeEvent.coordinate.longitude,
+      latitudeDelta: region.latitudeDelta,
+      longitudeDelta: region.longitudeDelta,
+    };
+    setRegion(newRegion);
+  };
+
+  //  END NEW FUNCION MAP
   // console.log(images);
 
   const handleAddInput = () => {
@@ -128,7 +225,7 @@ export default function PusdalopCreate(props) {
   // END DROPDWON
   useEffect(() => {
     axios
-      .get(`/v1/kecamatan?page=1&perPage=27`)
+      .get(`/v1/kecamatan?page=1&perPage=30`)
       .then(res => {
         let newArray = res.data.rows.map(item => {
           return {key: item.id, value: item.kecamatan};
@@ -427,7 +524,7 @@ export default function PusdalopCreate(props) {
           </View>
           <View style={{marginTop: 10}}>
             <Text>Titik Lokasi Terjadinya Bencana</Text>
-            <View>
+            {/* <View>
               <MapView
                 initialRegion={mapRegion}
                 style={{flex: 1, height: 200, width: 380}}>
@@ -446,9 +543,37 @@ export default function PusdalopCreate(props) {
                   }
                 />
               </MapView>
+            </View> */}
+            <View>
+              <MapView
+                style={{flex: 1, height: 200, width: 380}}
+                region={region}
+                onRegionChangeComplete={setRegion}
+                onPress={e => console.log(e.nativeEvent.coordinate)}>
+                <Marker
+                  draggable
+                  coordinate={{
+                    latitude: region.latitude,
+                    longitude: region.longitude,
+                  }}
+                  onDragEnd={onMarkerDragEnd}
+                />
+              </MapView>
             </View>
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
+                // style={styles.searchBar}
+                placeholder="Latitude"
+                value={latitudedata}
+                onChangeText={text => setLatitude(text)}
+              />
+              <TextInput
+                // style={styles.searchBar}
+                placeholder="Longitude"
+                value={longitudedata}
+                onChangeText={text => setLongitude(text)}
+              />
+              {/* <TextInput
                 onChangeText={dataPusdalop =>
                   handleChangeForm(dataPusdalop, 'lat')
                 }
@@ -456,9 +581,9 @@ export default function PusdalopCreate(props) {
                 placeholder="Latitude"
                 keyboardType="numeric"
                 style={{marginRight: 30}}
-              />
+              /> */}
 
-              <TextInput
+              {/* <TextInput
                 onChangeText={dataPusdalop =>
                   handleChangeForm(dataPusdalop, 'lng')
                 }
@@ -466,8 +591,8 @@ export default function PusdalopCreate(props) {
                 placeholder="Longitude"
                 value={longitude}
                 style={{marginRight: 10}}
-              />
-              <Pressable style={style.buttonSearchMap} onPress={handleSearch}>
+              /> */}
+              <Pressable style={style.buttonSearchMap} onPress={() => search()}>
                 <Text style={style.textSearchMap}>Cari</Text>
               </Pressable>
             </View>

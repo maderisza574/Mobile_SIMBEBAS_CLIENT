@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SplashScreen(props) {
   console.log(props);
-  // const token = false;
+  const token = false;
   useEffect(() => {
     checkToken();
   }, []);

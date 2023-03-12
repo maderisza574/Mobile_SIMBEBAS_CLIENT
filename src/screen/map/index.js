@@ -9,12 +9,15 @@ import {
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, {Marker} from 'react-native-maps';
+import Geocoder from 'react-native-geocoding';
+Geocoder.init('AIzaSyDJn6Nsc_kU477Symn0acKq1Js7C-1ALbIs');
 
 export default function Map(props) {
   const [latitudedata, setLatitude] = useState('');
   const [longitudedata, setLongitude] = useState('');
   const [address, setAddress] = useState('');
   const [addresscoder, setAddressCoder] = useState('');
+  console.log(addresscoder);
   const [region, setRegion] = useState({
     latitude: 0,
     longitude: 0,
@@ -24,6 +27,7 @@ export default function Map(props) {
 
   useEffect(() => {
     requestLocationPermission();
+    // getAddressFromLatLng();
   }, []);
 
   const requestLocationPermission = async () => {
@@ -50,21 +54,15 @@ export default function Map(props) {
           },
           error => {
             if (error.code === error.TIMEOUT) {
-              Alert.alert(
-                'Error',
-                'Position unavailable. Please try again later.',
-              );
+              alert('Position unavailable. Please try again later.');
             } else {
-              Alert.alert(
-                'Error',
-                'An error occurred while retrieving your location.',
-              );
+              alert('An error occurred while retrieving your location.');
             }
           },
-          {enableHighAccuracy: true, timeout: 5000},
+          {enableHighAccuracy: true, timeout: 10000},
         );
       } else {
-        Alert.alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
+        alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
       }
     } catch (err) {
       console.warn(err);
@@ -84,15 +82,29 @@ export default function Map(props) {
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     });
+    getAddressFromLatLng();
   };
-  const getAddressFromLatLng = async (lat, lng) => {
+  const getAddressFromLatLng = async () => {
     try {
-      const response = await Geocoder.from(lat, lng);
+      // const latitude = parseFloat(latitudedata);
+      // const longitude = parseFloat(longitudedata);
+      const response = await Geocoder.from(latitudedata, longitudedata);
       const address = response.results[0].formatted_address;
-      setAddressCoder(address);
+      console.log(address);
+      // setAddressCoder(address);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const onMarkerDragEnd = e => {
+    const newRegion = {
+      latitude: e.nativeEvent.coordinate.latitude,
+      longitude: e.nativeEvent.coordinate.longitude,
+      latitudeDelta: region.latitudeDelta,
+      longitudeDelta: region.longitudeDelta,
+    };
+    setRegion(newRegion);
   };
   return (
     <View style={{flex: 1}}>
@@ -103,6 +115,9 @@ export default function Map(props) {
           value={address}
           onChangeText={text => setAddress(text)}
         />
+        <View>
+          <Text style={styles.address}>{addresscoder}</Text>
+        </View>
         <TouchableOpacity style={styles.searchButton} onPress={() => search()}>
           <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
@@ -119,8 +134,20 @@ export default function Map(props) {
           onChangeText={text => setLongitude(text)}
         />
       </View>
-      <MapView style={styles.map} region={region}>
+      <MapView
+        style={styles.map}
+        region={region}
+        onRegionChangeComplete={setRegion}
+        onPress={e => console.log(e.nativeEvent.coordinate)}>
         <Marker
+          draggable
+          coordinate={{
+            latitude: region.latitude,
+            longitude: region.longitude,
+          }}
+          onDragEnd={onMarkerDragEnd}
+        />
+        {/* <Marker
           coordinate={region}
           onDragEnd={e =>
             getAddressFromLatLng(
@@ -129,9 +156,8 @@ export default function Map(props) {
             )
           }
           draggable
-        />
+        /> */}
       </MapView>
-      <Text style={styles.address}>{addresscoder}</Text>
     </View>
   );
 }
