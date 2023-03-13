@@ -5,6 +5,8 @@ import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 
 export default function Pusdalop(props) {
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const pusdalop = useSelector(state => state.pusdalop.data);
   const dispatch = useDispatch();
 
@@ -20,7 +22,16 @@ export default function Pusdalop(props) {
     // console.log('ini id flat list', id);
     props.navigation.navigate('PusdalopDetail', {pusdalopId: id});
   };
-
+  const handleRefresh = () => {
+    setRefreshing(true);
+    dispatch(getDataPusdalop()).finally(() => setRefreshing(false));
+  };
+  const handleEndReached = () => {
+    dispatch(getDataPusdalop());
+  };
+  const renderItem = ({item}) => {
+    // render your item here
+  };
   return (
     <View>
       <View style={style.titleScreen}>
@@ -54,6 +65,10 @@ export default function Pusdalop(props) {
         <View style={style.containerFlat}>
           <FlatList
             data={pusdalop}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.5}
             renderItem={({item}) => (
               <View style={style.card}>
                 <View style={{flexDirection: 'row'}}>

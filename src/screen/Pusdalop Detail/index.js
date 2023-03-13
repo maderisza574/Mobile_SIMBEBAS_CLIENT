@@ -18,6 +18,7 @@ import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
+// import axios from 'axios';
 import {
   deleteDataPusdalop,
   getDataPusdalopById,
@@ -30,7 +31,6 @@ export default function PusdalopDetail(props) {
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
   const [form, setForm] = useState({});
   const [dataNama, setDataNama] = useState('');
-  const [image, setImage] = useState();
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [date, setDate] = useState(new Date());
   const [tindakanOptions, setTindakanOptions] = useState([]);
@@ -39,7 +39,6 @@ export default function PusdalopDetail(props) {
   const [keybencana, setKeyBencana] = useState(0);
   const [selected, setSelected] = React.useState('');
   const [latitude, setlatitude] = useState('');
-  console.log(latitude);
   const [longitude, setlongiude] = useState();
   const [kecamatanOption, setKecamatanOption] = useState([]);
   const [keykecamatan, setkeyKecamatan] = useState(0);
@@ -50,24 +49,26 @@ export default function PusdalopDetail(props) {
   const [isiaduan, setIsiAduan] = useState('');
   const pusdalopid = props.route.params.pusdalopId;
   const pusdalopId = props.route.params.pusdalopId;
+  const [latitudeData, setLatitudeData] = useState('');
+  const [longitudeData, setLongitudeData] = useState('');
 
-  const dataUpdatePusdalop = {
-    id_jenis_bencana: selected,
-    id_tindakan: keykecamatan,
-    user_pemohon: dataNama,
-    isi_aduan: isiaduan,
-    no_telepon: dataTelp,
-    nama: dataNama,
-    alamat: dataAlamat,
-    id_desa: keyDesa,
-    id_kecamatan: keykecamatan,
-    lng: longitude,
-    lat: latitude,
+  const [dataUpdatePusdalop, setDataUpdatePusdalop] = useState({
+    id_jenis_bencana: '',
+    id_tindakan: '',
+    // user_pemohon: '',
+    isi_aduan: '',
+    no_telepon: '',
+    nama: '',
+    alamat: '',
+    id_desa: '',
+    id_kecamatan: '',
+    lng: longitudeData,
+    lat: latitudeData,
     tindakan_trc: true,
     logpal: true,
     tanggal: date,
-  };
-  // console.log('INI DATA UPDATE', updateDataPusdalop);
+  });
+  // console.log('INI DATA UPDATE', dataUpdatePusdalop);
 
   const handleChangeNama = text => {
     setDataNama(text);
@@ -78,32 +79,7 @@ export default function PusdalopDetail(props) {
   const handleChangeNo = text => {
     setdataTelp(text);
   };
-  const handleUpdatePusdalop = async () => {
-    try {
-      const datauser = await AsyncStorage.getItem('token');
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + datauser,
-        },
-      };
-      console.log(
-        'INI DATA PUSDALOP ID',
-        dataUpdatePusdalop,
-        config,
-        pusdalopid,
-      );
-      await dispatch(
-        updateDataPusdalop(dataUpdatePusdalop, config, pusdalopid),
-      );
-      alert('SUKSES');
-      props.navigation.navigate('Pusdalop');
-    } catch (error) {
-      console.log('GAGAL UPDATE');
-      alert('GAGAL UPDATE');
-      props.navigation.navigate('Pusdalop');
-    }
-  };
+
   useEffect(() => {
     handlegetPusdalopId();
   }, [handlegetPusdalopId]);
@@ -111,7 +87,7 @@ export default function PusdalopDetail(props) {
     setInputs([...inputs, {value: '', image: null}]);
   };
   const [dataById, setDataByID] = useState({});
-  console.log('ini data pusdalop', dataById?.data?.risalah[0]?.file);
+  // console.log('ini data pusdalop', dataById?.data?.lat);
   const handleChangeALamat = text => {
     setDataAlamat(text);
   };
@@ -149,7 +125,15 @@ export default function PusdalopDetail(props) {
         },
       };
       const result = await axios.get(`/v1/pusdalops/${pusdalopid}`, config);
+      // console.log('INI DATA PUSDALOP DALAM', result.data.data.lat);
       setDataByID(result.data);
+      setMapRegion(prevMapRegion => ({
+        ...prevMapRegion,
+        latitude: parseFloat(result.data.data.lat),
+        longitude: parseFloat(result.data.data.lng),
+      }));
+      // setLatitudeData(result.data.data.lat);
+      // setLongitudeData(result.data.data.lng);
     } catch (error) {
       alert('gagal mendapat kan data');
       console.log(error);
@@ -186,15 +170,34 @@ export default function PusdalopDetail(props) {
       .catch(error => console.error(error));
   }, [selected]);
 
-  const handleChangeForm = (name, value) => {
-    if (name === 'image') {
-      setForm({...form, [name]: value});
-      setImage({uri: value});
-    } else {
-      setForm({...form, [name]: value});
-    }
+  const handleChangeForm = (value, name) => {
+    setDataUpdatePusdalop({...dataUpdatePusdalop, [name]: value});
   };
-
+  const handleSelect = key => {
+    setSelected(key);
+    setDataUpdatePusdalop(prevData => ({
+      ...prevData,
+      id_jenis_bencana: key,
+    }));
+  };
+  const handleJenis = key => {
+    setDataUpdatePusdalop(prevData => ({
+      ...prevData,
+      id_tindakan: key,
+    }));
+  };
+  const handleKecamatan = key => {
+    setDataUpdatePusdalop(prevData => ({
+      ...prevData,
+      id_kecamatan: key,
+    }));
+  };
+  const handleDesa = key => {
+    setDataUpdatePusdalop(prevData => ({
+      ...prevData,
+      id_desa: key,
+    }));
+  };
   // for camera
   const handleLaunchCamera = async () => {
     try {
@@ -256,32 +259,50 @@ export default function PusdalopDetail(props) {
   };
 
   const [stateMap, setStateMap] = useState({
-    latitude: null || -7.431391,
-    longitude: null || 109.247833,
+    latitude: -7.431391,
+    longitude: 109.247833,
   });
   const [mapRegion, setMapRegion] = useState({
-    latitude: stateMap.latitude || -7.431391,
-    longitude: stateMap.longitude || 109.247833,
+    latitude: -7.431391,
+    longitude: 109.247833,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+  // console.log('INI DATA MAP', mapRegion);
   // console.log(stateMap);
   const handleLatitudeChange = text => {
     // setStateMap({...stateMap, latitude: parseFloat(latitude)});
-    setlatitude(text);
+    setLatitudeData(text);
+    setDataUpdatePusdalop({
+      ...dataUpdatePusdalop,
+      lat: text,
+    });
   };
   const handleLongitudeChange = text => {
     // setStateMap({...stateMap, longitude: parseFloat(longitude)});
-    setlongiude(text);
-  };
-  const handleSearch = () => {
-    setMapRegion({
-      ...mapRegion,
-      latitude: stateMap.latitude,
-      longitude: stateMap.longitude,
+    setLongitudeData(text);
+    setDataUpdatePusdalop({
+      ...dataUpdatePusdalop,
+      lng: text,
     });
   };
-
+  // const handleSearch = () => {
+  //   setMapRegion({
+  //     ...mapRegion,
+  //     latitude: stateMap.latitude,
+  //     longitude: stateMap.longitude,
+  //   });
+  // };
+  const search = () => {
+    const latitude = parseFloat(latitudeData);
+    const longitude = parseFloat(longitudeData);
+    setMapRegion({
+      latitude: latitude,
+      longitude: longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+  };
   const handleDeletePusdalop = async () => {
     try {
       const datauser = await AsyncStorage.getItem('token');
@@ -309,6 +330,39 @@ export default function PusdalopDetail(props) {
       });
     }
   }, [stateMap.latitude, stateMap.longitude]);
+  const handleUpdatePusdalop = async () => {
+    try {
+      console.log('INI DATA PUSDALOP DALAM', dataUpdatePusdalop);
+      const result = await axios({
+        method: 'patch',
+        url: `http://10.100.0.106:5000/api/v1/pusdalops/${pusdalopid}`,
+        data: dataUpdatePusdalop,
+      });
+      console.log(result);
+      // const datauser = await AsyncStorage.getItem('token');
+      // const config = {
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded',
+      //     Authorization: 'Bearer ' + datauser,
+      //   },
+      // };
+      // console.log(
+      //   'INI DATA PUSDALOP ID',
+      //   dataUpdatePusdalop,
+      //   config,
+      //   pusdalopid,
+      // );
+      // await dispatch(
+      //   updateDataPusdalop(dataUpdatePusdalop, config, pusdalopid),
+      // );
+      alert('SUKSES');
+      // props.navigation.navigate('Pusdalop');
+    } catch (error) {
+      console.log(error);
+      alert('GAGAL UPDATE');
+      props.navigation.navigate('Pusdalop');
+    }
+  };
   return (
     <View>
       <ScrollView>
@@ -338,12 +392,16 @@ export default function PusdalopDetail(props) {
             <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
 
             <SelectList
-              setSelected={key => setSelected(key)}
+              setSelected={handleSelect}
               data={dataJenis}
               save="key"
               itemKey="key"
               itemLabel="name"
-              placeholder={dataById?.data?.tindakan.jenis_tindakan}
+              placeholder={
+                dataById?.data?.tindakan?.jenis_tindakan
+                  ? dataById?.data?.tindakan?.jenis_tindakan
+                  : 'BELUM ADA'
+              }
               // onSelect={dataById.data.data.id_tindakan}
             />
           </View>
@@ -358,7 +416,7 @@ export default function PusdalopDetail(props) {
               itemLabel="name"
               defaultOption={bencanaOptions}
               placeholder={dataById?.data?.bencana?.sub_jenis.toString()}
-              setSelected={key => setKeyBencana(key)}
+              setSelected={handleJenis}
             />
           </View>
           <View>
@@ -392,25 +450,31 @@ export default function PusdalopDetail(props) {
             <TextInput
               placeholder={dataById?.data?.isi_aduan.toString()}
               style={style.inputAduan}
-              onChangeText={handleChangeIsi}
-              value={isiaduan}
+              multiline={true}
+              onChangeText={text =>
+                setDataUpdatePusdalop({
+                  ...dataUpdatePusdalop,
+                  isi_aduan: text,
+                })
+              }
+              // value={isiaduan}adsddasdsad
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Titik Lokasi Terjadinya Bencana</Text>
             <View>
               <MapView
-                initialRegion={mapRegion}
+                region={mapRegion}
                 style={{flex: 1, height: 200, width: 380}}>
                 <Marker
                   draggable
                   coordinate={{
-                    latitude: stateMap.latitude,
-                    longitude: stateMap.longitude,
+                    latitude: mapRegion.latitude,
+                    longitude: mapRegion.longitude,
                   }}
                   onDragEnd={e =>
-                    setStateMap({
-                      ...stateMap,
+                    setMapRegion({
+                      ...mapRegion,
                       latitude: e.nativeEvent.coordinate.latitude,
                       longitude: e.nativeEvent.coordinate.longitude,
                     })
@@ -421,7 +485,7 @@ export default function PusdalopDetail(props) {
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <TextInput
                 onChangeText={handleLatitudeChange}
-                value={stateMap.latitude}
+                // value={mapRegion.latitude}
                 placeholder={dataById?.data?.lat}
                 keyboardType="numeric"
                 style={{marginRight: 30}}
@@ -431,10 +495,10 @@ export default function PusdalopDetail(props) {
                 onChangeText={handleLongitudeChange}
                 keyboardType="numeric"
                 placeholder={dataById?.data?.lng}
-                value={stateMap.longitude}
+                // value={mapRegion.longitude}
                 style={{marginRight: 10}}
               />
-              <Pressable style={style.buttonSearchMap} onPress={handleSearch}>
+              <Pressable style={style.buttonSearchMap} onPress={() => search()}>
                 <Text style={style.textSearchMap}>Cari</Text>
               </Pressable>
             </View>
@@ -461,8 +525,14 @@ export default function PusdalopDetail(props) {
                   marginRight: 5,
                   width: 150,
                 }}
-                onChangeText={handleChangeNama}
-                value={dataNama}
+                // onChangeText={handleChangeNama}
+                onChangeText={text =>
+                  setDataUpdatePusdalop({
+                    ...dataUpdatePusdalop,
+                    nama: text,
+                  })
+                }
+                value={dataUpdatePusdalop.nama}
               />
             </View>
             <View>
@@ -475,7 +545,13 @@ export default function PusdalopDetail(props) {
                   marginRight: 5,
                   width: 150,
                 }}
-                onChangeText={handleChangeNo}
+                onChangeText={text =>
+                  setDataUpdatePusdalop({
+                    ...dataUpdatePusdalop,
+                    no_telepon: text,
+                  })
+                }
+                // onChangeText={handleChangeNo}
                 value={dataTelp}
                 keyboardType="numeric"
               />
@@ -489,7 +565,7 @@ export default function PusdalopDetail(props) {
             <View>
               <View style={{marginLeft: 10}}>
                 <SelectList
-                  setSelected={key => setkeyKecamatan(key)}
+                  setSelected={handleKecamatan}
                   data={kecamatanOption}
                   save="key"
                   itemKey="key"
@@ -507,7 +583,7 @@ export default function PusdalopDetail(props) {
             </View>
             <View>
               <SelectList
-                setSelected={key => setKeyDesa(key)}
+                setSelected={handleDesa}
                 data={desaOPtion}
                 save="key"
                 itemKey="key"
@@ -526,82 +602,15 @@ export default function PusdalopDetail(props) {
               <TextInput
                 placeholder={dataById?.data?.alamat}
                 style={{borderWidth: 3, borderColor: 'black', borderRadius: 10}}
-                onChangeText={handleChangeALamat}
-                value={dataAlamat}
+                onChangeText={dataUpdatePusdalop =>
+                  handleChangeForm(dataUpdatePusdalop, 'alamat')
+                }
+                // onChangeText={handleChangeALamat}
+                // value={dat}dasd
               />
             </View>
           </View>
           {/* End Alamat */}
-          <View style={{marginTop: 20}}>
-            <Text>Upload gambar</Text>
-          </View>
-
-          <View
-            style={{
-              marginBottom: 10,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          />
-
-          {/* loop image input */}
-          <View>
-            {inputs.map((input, index) => (
-              <View key={index}>
-                <View style={{flexDirection: 'row', padding: 10}}>
-                  <View style={{marginRight: 60}}>
-                    <Text>Preview Image</Text>
-                    <Image
-                      source={{uri: dataById?.data?.risalah[0]?.file}}
-                      style={{width: 200, height: 200}}
-                    />
-                  </View>
-                </View>
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
-                    style={{marginRight: 10, width: 60}}
-                    onPress={handleLaunchCamera}>
-                    <Icon name="camera" size={20} style={{marginLeft: 10}} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{marginRight: 10, width: 60}}
-                    onPress={handleLaunchImageLibrary}>
-                    <Icon
-                      name="folder-images"
-                      size={20}
-                      style={{marginLeft: 10}}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View>
-                  <Text>Keterangan</Text>
-                  <TextInput
-                    placeholder={dataById?.data?.risalah[0]?.ket}
-                    style={{
-                      height: 100,
-                      width: 350,
-                      borderWidth: 1,
-                      marginLeft: 15,
-                      marginTop: 5,
-                      marginBottom: 10,
-                    }}
-                    value={input.value}
-                    onChangeText={text => handleInputChange(text, index)}
-                  />
-                  <Button
-                    title="Remove"
-                    onPress={() => handleRemoveInput(index)}
-                  />
-                </View>
-              </View>
-            ))}
-            <Button
-              title="Tambahkan Beberapa Gambar"
-              onPress={handleAddInput}
-            />
-          </View>
-          {/* end input loop image */}
           <View style={{marginTop: 10}}>
             <Pressable style={style.buttonLogin} onPress={handleUpdatePusdalop}>
               <Text style={style.textLogin}>Perbaiki</Text>
@@ -618,11 +627,11 @@ export default function PusdalopDetail(props) {
 
 const style = StyleSheet.create({
   inputAduan: {
-    width: 380,
-    height: 200,
+    width: '100%',
     borderWidth: 1,
-    marginLeft: 5,
-    marginTop: 10,
+    marginTop: 5,
+    borderRadius: 10,
+    borderColor: '#b8b894',
   },
   titleScreen: {
     backgroundColor: '#FF6A16',

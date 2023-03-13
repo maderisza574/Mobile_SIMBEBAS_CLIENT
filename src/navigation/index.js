@@ -11,8 +11,8 @@ import AppScreen from './app';
 export default function MainStackNavigator() {
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator initialRouteName="SplashScreen"> */}
-      <Stack.Navigator initialRouteName="AppScreen">
+      <Stack.Navigator initialRouteName="SplashScreen">
+        {/* <Stack.Navigator initialRouteName="AppScreen"> */}
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}

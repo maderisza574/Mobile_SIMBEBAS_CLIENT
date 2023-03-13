@@ -22,8 +22,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
 import Geolocation from '@react-native-community/geolocation';
-import Geocoder from 'react-native-geocoding';
-Geocoder.init('AIzaSyDJn6Nsc_kU477Symn0acKq1Js7C-1ALbIs');
 export default function PusdalopCreate(props) {
   // redux
   const dispatch = useDispatch();
@@ -31,31 +29,17 @@ export default function PusdalopCreate(props) {
   // end redux
 
   // console.log('INI DATA IMAGE CREATE', image);
-  const [tindakanOptions, setTindakanOptions] = useState([]);
+
   const [open, setOpen] = useState(false);
-  const [latitude, setlatitude] = useState(0);
-  const [longitude, setlongiude] = useState(0);
-  const [form, setForm] = useState();
   const [dataNama, setDataNama] = useState('tes');
-  const [dataTelp, setdataTelp] = useState(0);
-  const [dataAlamat, setDataAlamat] = useState('');
   const [bencanaOptions, setBencanaOptions] = useState('');
-  const [keybencana, setKeyBencana] = useState(0);
   const [selected, setSelected] = React.useState(0);
   const [date, setDate] = useState(new Date());
   const [kecamatanOption, setKecamatanOption] = useState([]);
-  const [keykecamatan, setkeyKecamatan] = useState(0);
   const [desaOPtion, setDesaOption] = useState([]);
-  const [keyDesa, setKeyDesa] = useState(0);
-  const [isiaduan, setIsiAduan] = useState('');
   const [inputs, setInputs] = useState([{value: '', image: null}]);
-  const [keteranganImage, setKeteranganImage] = useState([]);
   const [images, setImages] = useState([]);
   // NEW DECLARE MAP
-  const [latitudedata, setLatitude] = useState('');
-  const [longitudedata, setLongitude] = useState('');
-  const [address, setAddress] = useState('');
-  const [addresscoder, setAddressCoder] = useState('');
   const [region, setRegion] = useState({
     latitude: 0,
     longitude: 0,
@@ -76,7 +60,7 @@ export default function PusdalopCreate(props) {
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
           title: 'Location Permission',
-          message: 'This app needs access to your location',
+          message: 'SIMBEBAS MEMBUTUHKAN LOKASI ANDA',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
@@ -109,31 +93,14 @@ export default function PusdalopCreate(props) {
     }
   };
   const search = () => {
-    // console.log('INI DATA LAT', latitude);
-    // console.log('INI DATA LONG', longitude);
-    // const latitude = parseFloat(address.split(',')[0]);
-    // const longitude = parseFloat(address.split(',')[1]);
-    const latitude = parseFloat(latitudedata);
-    const longitude = parseFloat(longitudedata);
+    const latitude = parseFloat(dataPusdalop.lat);
+    const longitude = parseFloat(dataPusdalop.lng);
     setRegion({
       latitude: latitude,
       longitude: longitude,
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     });
-    getAddressFromLatLng();
-  };
-  const getAddressFromLatLng = async () => {
-    try {
-      // const latitude = parseFloat(latitudedata);
-      // const longitude = parseFloat(longitudedata);
-      const response = await Geocoder.from(latitudedata, longitudedata);
-      const address = response.results[0].formatted_address;
-      console.log(address);
-      // setAddressCoder(address);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const onMarkerDragEnd = e => {
@@ -152,35 +119,10 @@ export default function PusdalopCreate(props) {
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
   };
-  const handleChangeLat = text => {
-    setlatitude(text);
-  };
-  const handleChangeLong = text => {
-    setlongiude(text);
-  };
-  const handleChangeNama = text => {
-    setDataNama(text);
-  };
-  const handleChangeNo = text => {
-    setdataTelp(text);
-  };
-  const handleChangeALamat = text => {
-    setDataAlamat(text);
-  };
-  const handleInputChange = (text, index) => {
-    const newInputs = [...inputs];
-    newInputs[index].value = text;
-    setInputs(newInputs);
-  };
   const handleRemoveInput = index => {
     setInputs(inputs.filter((input, i) => i !== index));
   };
-  const handleImageChange = (image, index) => {
-    const newInputs = [...inputs];
-    newInputs[index].image = image;
 
-    setInputs(newInputs);
-  };
   const handleSelect = key => {
     setSelected(key);
     setDataPusdalop(prevData => ({
@@ -274,14 +216,14 @@ export default function PusdalopCreate(props) {
             uri: v[k].uri,
           });
         });
-      const result = axios({
+      const datauser = await AsyncStorage.getItem('token');
+      const result = await axios({
         url: 'http://10.100.0.47:5000/api/v1/pusdalops',
         method: 'POST',
         data: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUxNjksImlhdCI6MTY3NjQ0MjQxMH0.eUaMZVhw5RBQVh0h6_YsA4VBMABdlIGLIVNSBm2T01Y',
+          Authorization: 'Bearer ' + datauser,
         },
       });
       console.log(result);
@@ -298,8 +240,8 @@ export default function PusdalopCreate(props) {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
-          title: 'Cool Photo App Camera Permission',
-          message: 'Cool Photo App needs access to your camera ',
+          title: 'IZIN KAMERA',
+          message: 'SIMBEBAS MEMBUTUHKAN AKSES KAMERA ',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
@@ -328,27 +270,11 @@ export default function PusdalopCreate(props) {
                   name: response.assets[0].fileName,
                 },
               ];
-              // console.log('INI DATA GAMBAR', source);
-              // const formData = new FormData();
-              // formData.append({
-              //   name: response.assets[0].fileName,
-              //   type: response.assets[0].type,
-              //   uri: response.assets[0].uri,
-              // });
-              // console.log('INI DATA GAMBAR', response.assets);
-              // formData.append('array', []);
-              // console.log('INI DATA IMAGE', formData._parts);
-              // setDataImage({...dataimage, image: source});
               setImages(prevImages => [...prevImages, response.assets]);
               setDataPusdalop({
                 ...dataPusdalop,
-                //   // image: [...dataPusdalop.image, ...dataimage],
-                //   // image: [...dataPusdalop.image, ...source],
                 image: [...dataPusdalop.image, response.assets],
               });
-
-              // setImage(formData._parts[0].uri);
-              // // console.log(dataPusdalopNew);
             } else {
               console.log('No image selected');
             }
@@ -388,19 +314,6 @@ export default function PusdalopCreate(props) {
     longitudeDelta: 0.0421,
   });
   // console.log(stateMap);
-  const handleLatitudeChange = latitude => {
-    setStateMap({...stateMap, latitude: parseFloat(latitude)});
-  };
-  const handleLongitudeChange = longitude => {
-    setStateMap({...stateMap, longitude: parseFloat(longitude)});
-  };
-  const handleSearch = () => {
-    setMapRegion({
-      ...mapRegion,
-      latitude: stateMap.latitude,
-      longitude: stateMap.longitude,
-    });
-  };
 
   useEffect(() => {
     if (stateMap.latitude && stateMap.longitude) {
@@ -564,14 +477,22 @@ export default function PusdalopCreate(props) {
               <TextInput
                 // style={styles.searchBar}
                 placeholder="Latitude"
-                value={latitudedata}
-                onChangeText={text => setLatitude(text)}
+                value={dataPusdalop.lat}
+                // onChangeText={text => setLatitude(text)}
+                onChangeText={dataPusdalop =>
+                  handleChangeForm(dataPusdalop, 'lat')
+                }
+                keyboardtype="numeric"
               />
               <TextInput
                 // style={styles.searchBar}
                 placeholder="Longitude"
-                value={longitudedata}
-                onChangeText={text => setLongitude(text)}
+                value={dataPusdalop.lng}
+                // onChangeText={text => setLongitude(text)}
+                onChangeText={dataPusdalop =>
+                  handleChangeForm(dataPusdalop, 'lng')
+                }
+                keyboardtype="numeric"
               />
               {/* <TextInput
                 onChangeText={dataPusdalop =>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import {BASE_URL} from '@env';
 
 const axiosApiIntances = axios.create({
   baseURL: 'http://10.100.0.106:5000/api',
@@ -9,10 +10,11 @@ const axiosApiIntances = axios.create({
 axiosApiIntances.interceptors.request.use(
   async function (config) {
     // Do something before request is sent
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
     const token = await AsyncStorage.getItem('token');
-    console.log('TOKEN DI AXIOS', token);
     config.headers = {
-      Authorization: 'Bearer ' + token,
+      Authorization: `Bearer ${token}`,
+      refreshtoken: refreshToken,
     };
     return config;
   },
@@ -33,9 +35,12 @@ axiosApiIntances.interceptors.response.use(
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     if (error.response.status === 403) {
-      if (error.response.data.message === 'jwt expired') {
+      if (
+        error.response.data.message ===
+        'Please sign in again, your token is expired'
+      ) {
         axiosApiIntances
-          .post('auth/refresh')
+          .post('/api/auth/refresh')
           .then(async res => {
             await AsyncStorage.setItem('token', res.data.data.token);
             await AsyncStorage.setItem(
