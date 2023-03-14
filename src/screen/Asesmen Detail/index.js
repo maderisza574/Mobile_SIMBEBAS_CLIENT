@@ -28,9 +28,11 @@ export default function AsesmenDetail(props) {
 
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  const [dataStokBrang, setDataStokBarang] = useState('');
+  // console.log('INI DATA GET BARANG', dataStokBrang);
   const [namaBarang, setnamaBarang] = useState('');
   const [dataById, setDataByID] = useState({});
-  console.log('INI DATA PUSDALOP', dataById?.data?.alamat);
+  // console.log('INI DATA PUSDALOP', dataById?.data?.alamat);
   const pusdalopid = props.route.params.pusdalopId;
   // console.log(pusdalopid);
   //  for map
@@ -66,35 +68,21 @@ export default function AsesmenDetail(props) {
   useEffect(() => {
     handlegetPusdalopId();
   }, []);
+  useEffect(() => {
+    axios
+      .get(`/v1/barang?page=1&perPage=5`)
+      .then(res => {
+        let newArray = res.data.rows.map(item => {
+          return {key: item.namaBarang.id, value: item.namaBarang.nama_barang};
+        });
+        setDataStokBarang(newArray);
+      })
+      .catch(error => console.error(error));
+  }, []);
   // untuk data barang
-  const dataBarang = [
-    {
-      key: '1',
-      value: 'Air Mineral',
-    },
-    {
-      key: '2',
-      value: 'Air Mineral 29622',
-    },
-    {
-      key: '3',
-      value: 'Air Mineral 7122022',
-    },
-    {
-      key: '4',
-      value: 'Alat Deteksi',
-    },
-    {
-      key: '4',
-      value: 'Alat Kebersihan',
-    },
-    {
-      key: '5',
-      value: 'Alat Kesehatan',
-    },
-  ];
+
   // Image
-  const [image, setImage] = useState();
+  const [images, setImages] = useState([]);
   const handleLaunchCamera = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -122,13 +110,17 @@ export default function AsesmenDetail(props) {
             if (response.errorCode) {
               console.log('ImagePicker Error: ', response.errorMessage);
             }
-            if (response.assets) {
+            if (response.assets && response.assets.length > 0) {
               const source = {
                 uri: response.assets[0].uri,
                 type: response.assets[0].type,
                 name: response.assets[0].fileName,
               };
-              setImage(response.assets[0].uri);
+              setImages(prevImages => [...prevImages, response.assets]);
+              setDataAsesemen({
+                ...dataAssesmen,
+                image: [...dataAssesmen.image, response.assets],
+              });
               // setImage({...image, image: source});
             }
           },
@@ -153,30 +145,101 @@ export default function AsesmenDetail(props) {
     });
     setImage(photo.assets[0].uri);
   };
-  const dataAssesmen = {
-    rumahrusak_rr: 'testing',
-    rumahrusak_rs: 'tos',
-    rumahrusak_rb: 'tos',
-    potensi_susulan: 'tos',
-    petugas: 'tos',
-    kerugianrp: 'tos',
-    korban_jiwa: 'tos',
-    waktu_assesment: '2023 - 03 - 12',
-    unsur_terlibat: 'tos',
-    kebutuhan_mendesak: 'tos',
-    cakupan: 'tos',
-    deskripsi_kronologis: 'tos',
-    peralatan_dibutuhkan: 'tos',
-    tindakan: 'tosing',
-    luka_berat: 'ora',
-    luka_sedang: 'iya',
-    luka_ringan: 'betul',
-    dampak: 'tidak',
-    kerusakan_fasum: 'iya',
-    // barang[0][id_barang]:1,
-    // barang[0][qty]:1,
-    // keteranganImage[0]:tes,
+  const [dataAssesmen, setDataAsesemen] = useState({
+    rumahrusak_rr: '',
+    rumahrusak_rs: '',
+    rumahrusak_rb: '',
+    potensi_susulan: '',
+    petugas: '',
+    kerugianrp: '',
+    korban_jiwa: '',
+    waktu_assesment: '',
+    unsur_terlibat: '',
+    kebutuhan_mendesak: '',
+    cakupan: '',
+    deskripsi_kronologis: '',
+    peralatan_dibutuhkan: '',
+    tindakan: '',
+    luka_berat: '',
+    luka_sedang: '',
+    luka_ringan: '',
+    dampak: '',
+    kerusakan_fasum: '',
+    keteranganImage: [],
+    id_barang: [],
+    qty: [],
+    image: images,
+  });
+
+  console.log('INI DATA ASESMEN', dataAssesmen);
+  const handleChangeForm = (value, name) => {
+    setDataAsesemen({...dataAssesmen, [name]: value});
   };
+  const handleDataBarang = key => {
+    setDataAsesemen(prevData => ({
+      ...prevData,
+      id_barang: [key],
+    }));
+  };
+  const handleCreateAsesmen = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('rumahrusak_rr', dataAssesmen.rumahrusak_rr);
+      formData.append('rumahrusak_rs', dataAssesmen.rumahrusak_rs);
+      formData.append('rumahrusak_rb', dataAssesmen.rumahrusak_rb);
+      formData.append('potensi_susulan', dataAssesmen.potensi_susulan);
+      formData.append('petugas', dataAssesmen.petugas);
+      formData.append('kerugianrp', dataAssesmen.kerugianrp);
+      formData.append('korban_jiwa', dataAssesmen.korban_jiwa);
+      formData.append('waktu_assesment', dataAssesmen.waktu_assesment);
+      formData.append('unsur_terlibat', dataAssesmen.unsur_terlibat);
+      formData.append('kebutuhan_mendesak', dataAssesmen.kebutuhan_mendesak);
+      formData.append('cakupan', dataAssesmen.cakupan);
+      formData.append(
+        'deskripsi_kronologis',
+        dataAssesmen.deskripsi_kronologis,
+      );
+      formData.append(
+        'peralatan_dibutuhkan',
+        dataAssesmen.peralatan_dibutuhkan,
+      );
+      formData.append('tindakan', dataAssesmen.tindakan);
+      formData.append('luka_berat', dataAssesmen.luka_berat);
+      formData.append('luka_sedang', dataAssesmen.luka_sedang);
+      formData.append('luka_ringan', dataAssesmen.luka_ringan);
+      formData.append('dampak', dataAssesmen.dampak);
+      formData.append('kerusakan_fasum', dataAssesmen.kerusakan_fasum);
+      formData.append('keteranganImage[0]', dataAssesmen.keteranganImage);
+      formData.append('barang[0][qty]', dataAssesmen.qty);
+      formData.append('barang[0][id_barang]', dataAssesmen.id_barang);
+      // formData.append('', dataAssesmen.);
+      images.length > 0 &&
+        images.forEach((v, k) => {
+          formData.append(`Image[${k}]`, {
+            name: v[k].fileName,
+            type: v[k].type,
+            uri: v[k].uri,
+          });
+        });
+      const datauser = await AsyncStorage.getItem('token');
+      console.log('INI DATA ASESMENT DALAM', formData);
+      const result = await axios({
+        url: `http://10.100.0.106:5000/api/v1/assesment/${pusdalopid}`,
+        method: 'PATCH',
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      });
+      console.log(result);
+      alert('SUKSES MEMBUAT ASSESMEN');
+      // props.navigation.navigate('Home');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View>
       <ScrollView>
@@ -208,7 +271,6 @@ export default function AsesmenDetail(props) {
             <Text>Jenis Bencana</Text>
             <TextInput
               placeholder={dataById?.data?.bencana?.sub_jenis}
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
           </View>
@@ -217,7 +279,6 @@ export default function AsesmenDetail(props) {
             <TextInput
               placeholder={dataById?.data?.tanggal}
               style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
-              editable={false}
             />
           </View>
           <View style={{marginTop: 10}}>
@@ -247,7 +308,6 @@ export default function AsesmenDetail(props) {
             <Text>Kecamatan</Text>
             <TextInput
               placeholder={dataById?.data?.kecamatan?.kecamatan}
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
           </View>
@@ -255,7 +315,6 @@ export default function AsesmenDetail(props) {
             <Text>Desa</Text>
             <TextInput
               placeholder={dataById?.data?.desa?.desa}
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
             />
           </View>
@@ -267,11 +326,25 @@ export default function AsesmenDetail(props) {
               style={{borderWidth: 1, borderRadius: 10}}
             />
           </View>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: '5%',
+              marginBottom: '5%',
+              backgroundColor: '#FF6A16',
+            }}>
+            <Text style={{color: 'white'}}>
+              Isi Beberapa Data Beikut untuk Asesemen
+            </Text>
+          </View>
           <View style={{marginTop: 10}}>
             <Text>Tanggal Asesmen</Text>
             <TextInput
+              value={date.toLocaleDateString()}
               placeholder={date.toLocaleDateString()}
               style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
+              onChangeText={text => setDate(new Date(text))}
             />
 
             {/* <TextInput
@@ -284,16 +357,26 @@ export default function AsesmenDetail(props) {
             <Text>Dampak</Text>
             <TextInput
               placeholder="Dampak"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  dampak: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Kerusakan Fasum</Text>
             <TextInput
               placeholder="Kerusakan Fasum"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  kerusakan_fasum: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
@@ -304,24 +387,39 @@ export default function AsesmenDetail(props) {
                 <Text>Rusak Ringan</Text>
                 <TextInput
                   placeholder="Ringan"
-                  editable={false}
                   style={{borderWidth: 1, borderRadius: 10}}
+                  onChangeText={text =>
+                    setDataAsesemen({
+                      ...dataAssesmen,
+                      rumahrusak_rr: text,
+                    })
+                  }
                 />
               </View>
               <View>
                 <Text>Rusak Sedang</Text>
                 <TextInput
                   placeholder="Sedang"
-                  editable={false}
                   style={{borderWidth: 1, borderRadius: 10}}
+                  onChangeText={text =>
+                    setDataAsesemen({
+                      ...dataAssesmen,
+                      rumahrusak_rs: text,
+                    })
+                  }
                 />
               </View>
               <View>
                 <Text>Rusak Berat</Text>
                 <TextInput
                   placeholder="Berat"
-                  editable={false}
                   style={{borderWidth: 1, borderRadius: 10}}
+                  onChangeText={text =>
+                    setDataAsesemen({
+                      ...dataAssesmen,
+                      rumahrusak_rb: text,
+                    })
+                  }
                 />
               </View>
             </View>
@@ -329,9 +427,14 @@ export default function AsesmenDetail(props) {
           <View style={{marginTop: 10}}>
             <Text>Kerugian</Text>
             <TextInput
-              placeholder="Tanah Longsor"
-              editable={false}
+              placeholder="Masukan Kerugian"
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  kerugianrp: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
@@ -342,24 +445,39 @@ export default function AsesmenDetail(props) {
                 <Text>Luka Ringan</Text>
                 <TextInput
                   placeholder="Ringan"
-                  editable={false}
                   style={{borderWidth: 1, borderRadius: 10}}
+                  onChangeText={text =>
+                    setDataAsesemen({
+                      ...dataAssesmen,
+                      luka_ringan: text,
+                    })
+                  }
                 />
               </View>
               <View>
                 <Text>Luka Sedang</Text>
                 <TextInput
                   placeholder="Sedang"
-                  editable={false}
                   style={{borderWidth: 1, borderRadius: 10}}
+                  onChangeText={text =>
+                    setDataAsesemen({
+                      ...dataAssesmen,
+                      luka_sedang: text,
+                    })
+                  }
                 />
               </View>
               <View>
                 <Text>Luka Berat</Text>
                 <TextInput
                   placeholder="Berat"
-                  editable={false}
                   style={{borderWidth: 1, borderRadius: 10}}
+                  onChangeText={text =>
+                    setDataAsesemen({
+                      ...dataAssesmen,
+                      luka_berat: text,
+                    })
+                  }
                 />
               </View>
             </View>
@@ -368,93 +486,147 @@ export default function AsesmenDetail(props) {
             <Text>Korban Jiwa</Text>
             <TextInput
               placeholder="Korban Jiwa"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  korban_jiwa: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Cakupan Bencana</Text>
             <TextInput
               placeholder="Cakupan Bencana"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  cakupan: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Potensi Bencana Susulan</Text>
             <TextInput
               placeholder="Potensi Bencana Susulan"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  potensi_susulan: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Deskripsi Kronologis</Text>
             <TextInput
               placeholder="Kronologis"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  deskripsi_kronologis: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Tindakan akan dilakukan</Text>
             <TextInput
               placeholder="Tindakan"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  tindakan: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Peralatan yang dibutuhkan</Text>
             <TextInput
               placeholder="Peralatan"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  peralatan_dibutuhkan: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Kebutuhan mendesak</Text>
             <TextInput
               placeholder="Kebutuhan Mendesak"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  kebutuhan_mendesak: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Unsur terlibat</Text>
             <TextInput
               placeholder="Unsur Terlibat"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  unsur_terlibat: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Petugas</Text>
             <TextInput
               placeholder="Petugas"
-              editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  petugas: text,
+                })
+              }
             />
           </View>
           <View style={{marginTop: 10}}>
             <Text>Data Barang Yang Di Butuhkan</Text>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View>
               <View>
                 <SelectList
-                  setSelected={val => setnamaBarang(val)}
-                  data={dataBarang}
+                  setSelected={handleDataBarang}
+                  data={dataStokBrang}
                   save="value"
                   placeholder="Pilih Barang"
                 />
               </View>
-              <View>
-                <TextInput
-                  placeholder="Qty"
-                  editable={false}
-                  style={{borderWidth: 1, borderRadius: 10, width: 80}}
-                />
-              </View>
+            </View>
+            <View>
+              <TextInput
+                placeholder="Qty"
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: '100%',
+                  marginTop: '5%',
+                }}
+                onChangeText={text =>
+                  setDataAsesemen({
+                    ...dataAssesmen,
+                    qty: [text],
+                  })
+                }
+              />
             </View>
           </View>
           <View style={{marginTop: 10}}>
@@ -462,10 +634,16 @@ export default function AsesmenDetail(props) {
             <View style={{flexDirection: 'row', padding: 10}}>
               <View style={{marginRight: 60}}>
                 <Text>Preview Image</Text>
-                <Image
-                  source={{uri: image}}
-                  style={{width: 200, height: 200}}
-                />
+                {dataAssesmen.image[0]?.uri && (
+                  <Image
+                    source={{
+                      uri: dataAssesmen.image[0]
+                        ? dataAssesmen.image[0]?.uri
+                        : null,
+                    }}
+                    style={{height: 200, width: 200}}
+                  />
+                )}
               </View>
             </View>
             <View
@@ -489,13 +667,18 @@ export default function AsesmenDetail(props) {
             <View>
               <TextInput
                 placeholder="Masukan Keterangan"
-                editable={false}
                 style={{borderWidth: 1, borderRadius: 10}}
+                onChangeText={text =>
+                  setDataAsesemen({
+                    ...dataAssesmen,
+                    keteranganImage: [text],
+                  })
+                }
               />
             </View>
           </View>
           <View>
-            <Pressable style={style.buttonSimpan}>
+            <Pressable style={style.buttonSimpan} onPress={handleCreateAsesmen}>
               <Text style={style.textLogin}>Simpan</Text>
             </Pressable>
             <Pressable style={style.buttonBatal}>
@@ -521,8 +704,8 @@ const style = StyleSheet.create({
     borderRadius: 30,
     padding: 6,
     width: '100%',
-    maxHeight: '100%',
-    // height: 2800,
+    maxHeight: '10000%',
+    // height: '1000%',
     position: 'relative',
     marginTop: -10,
   },

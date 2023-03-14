@@ -325,6 +325,7 @@ export default function PusdalopCreate(props) {
       });
     }
   }, [stateMap.latitude, stateMap.longitude]);
+
   const handleChangeForm = (value, name) => {
     setDataPusdalop({...dataPusdalop, [name]: value});
   };
