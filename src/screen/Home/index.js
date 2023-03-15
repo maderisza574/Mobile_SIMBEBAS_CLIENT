@@ -43,20 +43,21 @@ export default function Home(props) {
       <View style={style.containerTop}></View>
       <View style={style.containerButton}>
         <View style={style.cardWelcome}>
-          <View style={{marginLeft: 20, marginTop: 15, position: 'absolute'}}>
+          <View
+            style={{marginLeft: '5%', marginTop: '3%', position: 'absolute'}}>
             <Image source={Logo} style={{width: 100, height: 100}} />
           </View>
           <View
             style={{
               flexDirection: 'row',
-              marginLeft: 30,
-              marginTop: 115,
+              marginLeft: '10%',
+              marginTop: '30%',
               position: 'absolute',
             }}>
             <Text style={style.textSim}>SIM</Text>
             <Text style={style.textBebas}>BEBAS</Text>
           </View>
-          <View style={{marginLeft: 130, marginTop: 30, width: 200}}>
+          <View style={{marginLeft: '40%', marginTop: '10%', width: '50%'}}>
             <Text>
               Selamat Datang di aplikasi SIMBEBAS, untuk memulai tombol menu
               berada di kiri {'\n'} atas
@@ -204,10 +205,10 @@ const style = StyleSheet.create({
     fontSize: 32,
   },
   cardWelcome: {
-    marginTop: -80,
-    width: 370,
+    marginTop: '-20%',
+    width: '95%',
     backgroundColor: '#ffffff',
-    height: 140,
+    height: '18%',
     marginHorizontal: 11,
     borderRadius: 20,
     zIndex: 999,
@@ -223,10 +224,10 @@ const style = StyleSheet.create({
     color: '#ff0000',
   },
   card: {
-    width: 250,
-    height: 100,
-    marginHorizontal: 15,
-    marginTop: 20,
+    width: '100%',
+    height: '100%',
+    marginHorizontal: '10%',
+    marginTop: '20%',
     backgroundColor: 'Blue',
     borderColor: 'Black',
   },
@@ -246,13 +247,13 @@ const style = StyleSheet.create({
   },
   grupButton: {
     flexDirection: 'row',
-    paddingHorizontal: 40,
+    paddingHorizontal: '5%',
     justifyContent: 'space-between',
     marginTop: '20%',
   },
   grupButton2: {
     flexDirection: 'row',
-    paddingHorizontal: 40,
+    paddingHorizontal: '5%',
     justifyContent: 'space-between',
     marginTop: '15%',
   },
