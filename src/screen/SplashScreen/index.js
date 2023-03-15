@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SplashScreen(props) {
   console.log(props);
-  const token = false;
+  // const token = true;
   useEffect(() => {
     checkToken();
   }, []);
@@ -14,6 +14,7 @@ export default function SplashScreen(props) {
     setTimeout(async () => {
       try {
         const token = await AsyncStorage.getItem('token');
+        console.log('INI DATA TOKEN USER', token);
         if (token) {
           props.navigation.replace('AppScreen');
         } else {

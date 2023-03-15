@@ -12,6 +12,7 @@ axiosApiIntances.interceptors.request.use(
     // Do something before request is sent
     const refreshToken = await AsyncStorage.getItem('refreshToken');
     const token = await AsyncStorage.getItem('token');
+    console.log('INI DATA AUTH', refreshToken, token);
     config.headers = {
       Authorization: `Bearer ${token}`,
       refreshtoken: refreshToken,

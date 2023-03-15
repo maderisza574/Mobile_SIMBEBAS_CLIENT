@@ -111,11 +111,13 @@ export default function AsesmenDetail(props) {
               console.log('ImagePicker Error: ', response.errorMessage);
             }
             if (response.assets && response.assets.length > 0) {
-              const source = {
-                uri: response.assets[0].uri,
-                type: response.assets[0].type,
-                name: response.assets[0].fileName,
-              };
+              const source = [
+                {
+                  uri: response.assets[0].uri,
+                  type: response.assets[0].type,
+                  name: response.assets[0].fileName,
+                },
+              ];
               setImages(prevImages => [...prevImages, response.assets]);
               setDataAsesemen({
                 ...dataAssesmen,
@@ -153,7 +155,7 @@ export default function AsesmenDetail(props) {
     petugas: '',
     kerugianrp: '',
     korban_jiwa: '',
-    waktu_assesment: '',
+    waktu_assesment: new Date().toLocaleDateString(),
     unsur_terlibat: '',
     kebutuhan_mendesak: '',
     cakupan: '',
@@ -222,16 +224,14 @@ export default function AsesmenDetail(props) {
           });
         });
       const datauser = await AsyncStorage.getItem('token');
-      console.log('INI DATA ASESMENT DALAM', formData);
+      // console.log('INI DATA ASESMENT DALAM', formData);
+      // console.log('INI DATA PUSDALOP DALAM', dataUpdatePusdalop);
       const result = await axios({
+        method: 'patch',
         url: `http://10.100.0.106:5000/api/v1/assesment/${pusdalopid}`,
-        method: 'PATCH',
         data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + datauser,
-        },
       });
+
       console.log(result);
       alert('SUKSES MEMBUAT ASSESMEN');
       // props.navigation.navigate('Home');
@@ -344,7 +344,13 @@ export default function AsesmenDetail(props) {
               value={date.toLocaleDateString()}
               placeholder={date.toLocaleDateString()}
               style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
-              onChangeText={text => setDate(new Date(text))}
+              onChangeText={text =>
+                setDataAsesemen({
+                  ...dataAssesmen,
+                  waktu_assesment: text,
+                })
+              }
+              // onChangeText={text => setDate(new Date(text))}
             />
 
             {/* <TextInput
@@ -606,7 +612,9 @@ export default function AsesmenDetail(props) {
                 <SelectList
                   setSelected={handleDataBarang}
                   data={dataStokBrang}
-                  save="value"
+                  save="key"
+                  item="key"
+                  itemLabel="name"
                   placeholder="Pilih Barang"
                 />
               </View>

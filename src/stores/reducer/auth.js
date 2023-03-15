@@ -20,6 +20,7 @@ const login = (state = initialState, action) => {
         errorMessage: null,
         isLoading: false,
         token: action.payload.data.data.token,
+        refreshToken: action.payload.data.data.refreshToken,
       };
     }
     case 'LOGIN_REJECTED': {

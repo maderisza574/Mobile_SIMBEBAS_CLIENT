@@ -43,7 +43,10 @@ export default function Signin(props) {
         'token',
         result.action.payload.data.data.token,
       );
-
+      await AsyncStorage.setItem(
+        'refreshToken',
+        result.action.payload.data.data.refreshToken,
+      );
       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
       return;
     } catch (error) {

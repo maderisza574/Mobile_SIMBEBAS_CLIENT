@@ -105,10 +105,14 @@ export default function Asesmen(props) {
             <View style={style.card}>
               <View style={{flexDirection: 'row'}}>
                 <Image
-                  // source={{
-                  //   uri: 'https://static.banyumaskab.go.id//simasbabe/fileupload/pusdalop/1.png',
-                  // }}
-                  source={{uri: `${item.risalah[0]?.file}`}}
+                  source={
+                    item.risalah[0]?.file
+                      ? {
+                          uri: `${item.risalah[0]?.file}`,
+                        }
+                      : require('../../assets/img/bencana1.png')
+                  }
+                  // source={{uri: `${item.risalah[0]?.file}`}}
                   style={{width: 100, height: 100}}
                 />
                 <View>
