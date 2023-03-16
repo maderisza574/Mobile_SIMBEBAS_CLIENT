@@ -91,6 +91,7 @@ export default function PusdalopDetail(props) {
   const handleChangeALamat = text => {
     setDataAlamat(text);
   };
+
   useEffect(() => {
     axios
       .get(`/v1/kecamatan?page=1&perPage=27`)
@@ -100,7 +101,13 @@ export default function PusdalopDetail(props) {
         });
         setKecamatanOption(newArray);
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        if (error.response && error.response.status === 403) {
+          props.navigation.navigate('AuthScreen');
+        } else {
+          console.error(error);
+        }
+      });
   }, []);
   useEffect(() => {
     setTimeout(() => {

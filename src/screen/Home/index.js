@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState} from 'react';
 import {
   View,
@@ -58,7 +59,7 @@ export default function Home(props) {
             <Text style={style.textBebas}>BEBAS</Text>
           </View>
           <View style={{marginLeft: '40%', marginTop: '10%', width: '50%'}}>
-            <Text>
+            <Text style={style.textwelcome}>
               Selamat Datang di aplikasi SIMBEBAS, untuk memulai tombol menu
               berada di kiri {'\n'} atas
             </Text>
@@ -195,6 +196,9 @@ export default function Home(props) {
 
 const style = StyleSheet.create({
   // dummy style
+  textwelcome: {
+    color: 'black',
+  },
   item: {
     backgroundColor: '#ffffff',
     padding: 15,

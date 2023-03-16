@@ -72,14 +72,21 @@ export default function Pusdalop(props) {
             renderItem={({item}) => (
               <View style={style.card}>
                 <View style={{flexDirection: 'row'}}>
-                  {/* <Image
-                  source={{uri: `${item.image}`}}
-                  style={{width: 100, height: 100}}
-                /> */}
+                  <Image
+                    source={
+                      item.risalah[0]?.file
+                        ? {
+                            uri: `${item.risalah[0]?.file}`,
+                          }
+                        : require('../../assets/img/bencana1.png')
+                    }
+                    // source={{uri: `${item.risalah[0]?.file}`}}
+                    style={{width: 100, height: 100}}
+                  />
                   <View>
-                    <Text style={{marginLeft: 10}}>{item.nama}</Text>
-                    <Text style={{marginLeft: 10}}>{item.alamat}</Text>
-                    <Text style={{marginLeft: 10}}>{item.tanggal}</Text>
+                    <Text style={style.textFlatlist}>{item.nama}</Text>
+                    <Text style={style.textFlatlist}>{item.alamat}</Text>
+                    <Text style={style.textFlatlist}>{item.tanggal}</Text>
                   </View>
                   <View
                     style={{
@@ -124,6 +131,10 @@ const style = StyleSheet.create({
     backgroundColor: '#FF6A16',
     color: 'white',
     height: 100,
+  },
+  textFlatlist: {
+    color: 'black',
+    marginLeft: '10%',
   },
   containerInput: {
     backgroundColor: '#ffffff',

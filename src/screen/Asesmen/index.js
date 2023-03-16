@@ -116,13 +116,13 @@ export default function Asesmen(props) {
                   style={{width: 100, height: 100}}
                 />
                 <View>
-                  <Text style={{marginLeft: 10}}>{item.nama}</Text>
-                  <Text style={{marginLeft: 10}}>{item.alamat}</Text>
-                  <Text style={{marginLeft: 10}}>{item.tanggal}</Text>
+                  <Text style={style.textFlatlist}>{item.nama}</Text>
+                  <Text style={style.textFlatlist}>{item.alamat}</Text>
+                  <Text style={style.textFlatlist}>{item.tanggal}</Text>
                 </View>
                 <View
                   style={{
-                    paddingLeft: 280,
+                    paddingLeft: '200%',
                     flexDirection: 'row',
                     position: 'absolute',
                   }}>
@@ -209,6 +209,10 @@ export default function Asesmen(props) {
 }
 
 const style = StyleSheet.create({
+  textFlatlist: {
+    color: 'BLACK',
+    marginLeft: '5%',
+  },
   titleScreen: {
     backgroundColor: '#FF6A16',
     color: 'white',

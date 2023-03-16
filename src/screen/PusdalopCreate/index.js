@@ -39,7 +39,11 @@ export default function PusdalopCreate(props) {
   const [desaOPtion, setDesaOption] = useState([]);
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [images, setImages] = useState([]);
+  // console.log('INI DATA IMAGES', images[0][0].uri);
   // NEW DECLARE MAP
+  const navPusdalop = () => {
+    props.navigation.navigate('Pusdalop');
+  };
   const [region, setRegion] = useState({
     latitude: 0,
     longitude: 0,
@@ -218,7 +222,7 @@ export default function PusdalopCreate(props) {
         });
       const datauser = await AsyncStorage.getItem('token');
       const result = await axios({
-        url: 'http://10.100.0.47:5000/api/v1/pusdalops',
+        url: 'http://10.100.0.106:5000/api/v1/pusdalops',
         method: 'POST',
         data: formData,
         headers: {
@@ -348,7 +352,7 @@ export default function PusdalopCreate(props) {
     image: images,
     keteranganImage: [],
   });
-  // console.log('INI DATA PUSDALOP', dataPusdalop);
+  // console.log('INI DATA PUSDALOP', dataPusdalop.image[0]?.uri);
 
   return (
     <View>
@@ -370,11 +374,11 @@ export default function PusdalopCreate(props) {
           </View>
         </View>
         <View style={style.containerInput}>
-          <Text style={{marginBottom: 10, fontSize: 16}}>
+          <Text style={style.titleSilahkan}>
             Silahkan isi beberapa data untuk melapor
           </Text>
           <View style={{padding: 5}}>
-            <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
+            <Text style={style.titleOption}>Jenis Tindakan</Text>
 
             <SelectList
               setSelected={handleSelect}
@@ -384,25 +388,29 @@ export default function PusdalopCreate(props) {
               itemKey="key"
               itemLabel="name"
               onValueChange
+              boxStyles={{borderColor: 'black'}}
+              placeholder="Pilih Jenis Tindakan"
             />
           </View>
           <View>
-            <Text>Jenis Bencana</Text>
+            <Text style={style.titleOption}>Jenis Bencana</Text>
 
             <SelectList
               data={bencanaOptions}
               itemKey="id"
               itemLabel="name"
               defaultOption={bencanaOptions}
+              boxStyles={{borderColor: 'black'}}
               // setSelected={key => setKeyBencana(key)}
               setSelected={handleJenis}
+              placeholder="Pilih Jenis Bencana"
             />
           </View>
           <View>
-            <Text>Tanggal Kejadian</Text>
+            <Text style={style.titleOption}>Tanggal Kejadian</Text>
             <TextInput
               placeholder={date.toLocaleDateString()}
-              style={{borderWidth: 1, borderRadius: 10}}
+              style={style.inputTanggal}
               editable={false}
             />
             <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
@@ -422,7 +430,7 @@ export default function PusdalopCreate(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Isi Aduan</Text>
+            <Text style={style.titleOption}>Isi Aduan</Text>
             <TextInput
               placeholder="Masukan Isi Aduan"
               style={style.inputAduan}
@@ -437,27 +445,9 @@ export default function PusdalopCreate(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Titik Lokasi Terjadinya Bencana</Text>
-            {/* <View>
-              <MapView
-                initialRegion={mapRegion}
-                style={{flex: 1, height: 200, width: 380}}>
-                <Marker
-                  draggable
-                  coordinate={{
-                    latitude: stateMap.latitude,
-                    longitude: stateMap.longitude,
-                  }}
-                  onDragEnd={e =>
-                    setStateMap({
-                      ...stateMap,
-                      latitude: e.nativeEvent.coordinate.latitude,
-                      longitude: e.nativeEvent.coordinate.longitude,
-                    })
-                  }
-                />
-              </MapView>
-            </View> */}
+            <Text style={style.titleOption}>
+              Titik Lokasi Terjadinya Bencana
+            </Text>
             <View>
               <MapView
                 style={{flex: 1, height: 200, width: 380}}
@@ -474,7 +464,12 @@ export default function PusdalopCreate(props) {
                 />
               </MapView>
             </View>
-            <View style={{flexDirection: 'row', marginTop: 20}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 20,
+                justifyContent: 'space-between',
+              }}>
               <TextInput
                 // style={styles.searchBar}
                 placeholder="Latitude"
@@ -495,66 +490,47 @@ export default function PusdalopCreate(props) {
                 }
                 keyboardtype="numeric"
               />
-              {/* <TextInput
-                onChangeText={dataPusdalop =>
-                  handleChangeForm(dataPusdalop, 'lat')
-                }
-                value={latitude}
-                placeholder="Latitude"
-                keyboardType="numeric"
-                style={{marginRight: 30}}
-              /> */}
-
-              {/* <TextInput
-                onChangeText={dataPusdalop =>
-                  handleChangeForm(dataPusdalop, 'lng')
-                }
-                keyboardType="numeric"
-                placeholder="Longitude"
-                value={longitude}
-                style={{marginRight: 10}}
-              /> */}
               <Pressable style={style.buttonSearchMap} onPress={() => search()}>
                 <Text style={style.textSearchMap}>Cari</Text>
               </Pressable>
             </View>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
+            <View style={{flexDirection: 'row', marginTop: '5%'}}>
               <View>
-                <Text>Pelapor:</Text>
+                <Text style={style.titleColor}>Pelapor:</Text>
               </View>
-              <View style={{marginLeft: 30}}>
-                <Text>Nama</Text>
+              <View style={{marginLeft: '3%'}}>
+                <Text style={style.titleColor}>Nama</Text>
               </View>
-              <View style={{marginLeft: 110}}>
-                <Text>No TELP/HP</Text>
+              <View style={{marginLeft: '30%'}}>
+                <Text style={style.titleColor}>No TELP/HP</Text>
               </View>
             </View>
-            <View style={{flexDirection: 'row'}}>
-              <View style={{marginLeft: 80}}>
+            <View style={{marginLeft: '5%'}}>
+              <View style={{flexDirection: 'row', paddingHorizontal: '10%'}}>
                 <TextInput
                   placeholder="Masukan Nama"
                   style={{
-                    borderWidth: 2,
+                    borderWidth: 1,
                     borderColor: 'Black',
                     borderRadius: 10,
-                    marginRight: 5,
-                    width: 150,
+                    // marginRight: '10%',
+                    width: '50%',
                   }}
                   onChangeText={dataPusdalop =>
                     handleChangeForm(dataPusdalop, 'nama')
                   }
                   // value={dataNama}
                 />
-              </View>
-              <View>
+
                 <TextInput
                   placeholder="Masukan No telp"
                   style={{
-                    borderWidth: 2,
+                    borderWidth: 1,
                     borderColor: 'Black',
                     borderRadius: 10,
-                    marginRight: 5,
-                    width: 150,
+                    marginLeft: '3%',
+                    // marginRight: '1%',
+                    width: '50%',
                   }}
                   onChangeText={dataPusdalop =>
                     handleChangeForm(dataPusdalop, 'no_telepon')
@@ -568,16 +544,18 @@ export default function PusdalopCreate(props) {
           {/* Kecamatan */}
           <View style={{marginTop: 20}}>
             <View>
-              <Text>Kecamatan:</Text>
+              <Text style={style.titleOption}>Kecamatan</Text>
             </View>
             <View>
-              <View style={{marginLeft: 10}}>
+              <View>
                 <SelectList
                   setSelected={handleKecamatan}
                   data={kecamatanOption}
                   save="key"
                   itemKey="key"
                   itemLabel="name"
+                  boxStyles={{borderColor: 'black'}}
+                  placeholder="Pilih Kecamatan"
                 />
               </View>
             </View>
@@ -586,7 +564,7 @@ export default function PusdalopCreate(props) {
           {/* Desa */}
           <View style={{marginTop: 20}}>
             <View>
-              <Text>Desa</Text>
+              <Text style={style.titleOption}>Desa</Text>
             </View>
             <View>
               <SelectList
@@ -595,19 +573,21 @@ export default function PusdalopCreate(props) {
                 save="key"
                 itemKey="key"
                 itemLabel="name"
+                boxStyles={{borderColor: 'black'}}
+                placeholder="Pilih Desa"
               />
             </View>
           </View>
           {/* End Desa */}
           {/* Alamat */}
-          <View style={{marginTop: 10}}>
+          <View>
             <View>
-              <Text>Alamat</Text>
+              <Text style={style.titleOption}>Alamat</Text>
             </View>
             <View>
               <TextInput
                 placeholder="Masukan Alamat"
-                style={{borderWidth: 3, borderColor: 'black', borderRadius: 10}}
+                style={style.inputAduan}
                 onChangeText={dataPusdalop =>
                   handleChangeForm(dataPusdalop, 'alamat')
                 }
@@ -617,7 +597,7 @@ export default function PusdalopCreate(props) {
           </View>
           {/* End Alamat */}
           <View style={{marginTop: 20}}>
-            <Text>Upload gambar</Text>
+            <Text style={style.titleOption}>Upload gambar</Text>
           </View>
 
           <View
@@ -634,21 +614,23 @@ export default function PusdalopCreate(props) {
             {inputs.map((input, index) => (
               <View key={index}>
                 <View style={{flexDirection: 'row', padding: 10}}>
-                  <View style={{marginRight: 60}}>
-                    <Text>Preview Image</Text>
-                    {dataPusdalop.image[0]?.uri && (
+                  <View style={{marginRight: '30%'}}>
+                    {images && images[0] && images[0][0]?.uri && (
                       <Image
                         source={{
-                          uri: dataPusdalop.image[0]
-                            ? dataPusdalop.image[0]?.uri
-                            : null,
+                          uri: images[0][0].uri,
                         }}
                         style={{height: 200, width: 200}}
                       />
                     )}
                   </View>
                 </View>
-                <View style={{flexDirection: 'row'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
                   <TouchableOpacity
                     style={{marginRight: 10, width: 60}}
                     onPress={handleLaunchCamera}>
@@ -665,7 +647,7 @@ export default function PusdalopCreate(props) {
                   </TouchableOpacity>
                 </View>
                 <View>
-                  <Text>Keterangan</Text>
+                  <Text style={style.titleOption}>Keterangan</Text>
                   {/* {keteranganImage.map((text, index) => ( */}
                   <TextInput
                     placeholder="Masukan Keterangan gambar"
@@ -704,7 +686,7 @@ export default function PusdalopCreate(props) {
             <Pressable style={style.buttonLogin} onPress={handleCreatePusdalop}>
               <Text style={style.textLogin}>Kirim</Text>
             </Pressable>
-            <Pressable style={style.buttonBatal}>
+            <Pressable style={style.buttonBatal} onPress={navPusdalop}>
               <Text style={style.textLogin}>Batal</Text>
             </Pressable>
           </View>
@@ -718,9 +700,9 @@ const style = StyleSheet.create({
   inputAduan: {
     width: '100%',
     borderWidth: 1,
-    marginTop: 5,
+    marginTop: '1%',
     borderRadius: 10,
-    borderColor: '#b8b894',
+    borderColor: 'black',
   },
   titleScreen: {
     backgroundColor: '#FF6A16',
@@ -791,5 +773,26 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
+  },
+  titleSilahkan: {
+    color: 'black',
+    marginBottom: '5%',
+    fontSize: 16,
+  },
+  titleOption: {
+    color: 'black',
+    marginRight: '3%',
+    marginTop: '3%',
+    marginBottom: '2%',
+  },
+  titleColor: {
+    color: 'black',
+  },
+  inputTanggal: {
+    width: '100%',
+    borderWidth: 1,
+    marginTop: '1%',
+    borderRadius: 10,
+    borderColor: 'black',
   },
 });

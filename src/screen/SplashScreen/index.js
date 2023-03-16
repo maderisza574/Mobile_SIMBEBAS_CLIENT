@@ -14,8 +14,8 @@ export default function SplashScreen(props) {
     setTimeout(async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        console.log('INI DATA TOKEN USER', token);
-        if (token) {
+        const refreshToken = await AsyncStorage.getItem('refreshToken');
+        if (token && refreshToken) {
           props.navigation.replace('AppScreen');
         } else {
           props.navigation.replace('AuthScreen');
@@ -27,7 +27,7 @@ export default function SplashScreen(props) {
   return (
     <View style={style.splashContainer}>
       <Text style={style.splashText}>SIMBEBAS</Text>
-      <Image source={Logo} style={{width: 98, height: 98}} />
+      <Image source={Logo} style={{width: 100, height: 100}} />
       <View>
         <Text style={style.splashText2}>Banyumas Bebas Bencana</Text>
       </View>
@@ -48,8 +48,8 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
-    marginLeft: 10,
-    marginBottom: 10,
+    marginLeft: '3%',
+    marginBottom: '5%',
   },
   splashText2: {
     fontSize: 16,
