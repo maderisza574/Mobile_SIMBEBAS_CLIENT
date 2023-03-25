@@ -71,7 +71,7 @@ export default function PusdalopCreate(props) {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(
+        Geolocation.watchPosition(
           position => {
             setRegion({
               latitude: position.coords.latitude,
@@ -87,7 +87,7 @@ export default function PusdalopCreate(props) {
               alert('An error occurred while retrieving your location.');
             }
           },
-          {enableHighAccuracy: true, timeout: 10000},
+          {enableHighAccuracy: true, timeout: 1500, distanceFilter: 10},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
@@ -454,14 +454,14 @@ export default function PusdalopCreate(props) {
                 region={region}
                 onRegionChangeComplete={setRegion}
                 onPress={e => console.log(e.nativeEvent.coordinate)}>
-                <Marker
+                {/* <Marker
                   draggable
                   coordinate={{
                     latitude: region.latitude,
                     longitude: region.longitude,
                   }}
                   onDragEnd={onMarkerDragEnd}
-                />
+                /> */}
               </MapView>
             </View>
             <View

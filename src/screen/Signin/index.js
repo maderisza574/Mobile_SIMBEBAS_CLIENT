@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import Logo from '../../assets/img/BPBD.png';
 import {login} from '../../stores/actions/auth';
 import {useDispatch, useSelector} from 'react-redux';
@@ -18,6 +19,7 @@ import {ActivityIndicator} from 'react-native-paper';
 export default function Signin(props) {
   const dispatch = useDispatch();
   const [form, setForm] = useState({});
+  console.log('INI DATA FROM', form);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const auth = useSelector(state => state.auth);
@@ -32,24 +34,24 @@ export default function Signin(props) {
 
   const handleLogin = async () => {
     try {
-      setErrorMessage(' ');
+      setErrorMessage('Terjadi Gangguan Koneksi');
       setIsLoading(true);
       if (!form.username || !form.password) {
         setIsLoading(false);
         return setErrorMessage('Please fill in all required fields.');
       }
-      const result = await dispatch(login(form));
-      await AsyncStorage.setItem(
-        'token',
-        result.action.payload.data.data.token,
+      // const result = await dispatch(login(form));
+      const result = await axios.post(
+        'https://apisimbebas.banyumaskab.go.id/api/v1/login',
+        form,
       );
-      await AsyncStorage.setItem(
-        'refreshToken',
-        result.action.payload.data.data.refreshToken,
-      );
+      console.log(result);
+      await AsyncStorage.setItem('token', result.data.data.token);
+      await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
-      return;
+      alert('sukses');
     } catch (error) {
+      alert('gagal');
       setIsLoading(false);
     }
   };

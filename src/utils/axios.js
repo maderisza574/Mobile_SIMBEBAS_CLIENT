@@ -3,7 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // import {BASE_URL} from '@env';
 
 const axiosApiIntances = axios.create({
-  baseURL: 'http://10.100.0.106:5000/api',
+  baseURL: 'https://apisimbebas.banyumaskab.go.id/api',
+  // baseURL: 'http://10.10.16.189:5000/api',
 });
 
 // Add a request interceptor
@@ -12,7 +13,7 @@ axiosApiIntances.interceptors.request.use(
     // Do something before request is sent
     const refreshToken = await AsyncStorage.getItem('refreshToken');
     const token = await AsyncStorage.getItem('token');
-    console.log('INI DATA AUTH', refreshToken, token);
+    // console.log('INI DATA AUTH', refreshToken, token);
     config.headers = {
       Authorization: `Bearer ${token}`,
       refreshtoken: refreshToken,

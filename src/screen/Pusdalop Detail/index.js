@@ -26,6 +26,7 @@ import {
 } from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {black} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 export default function PusdalopDetail(props) {
   const dispatch = useDispatch();
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
@@ -87,7 +88,7 @@ export default function PusdalopDetail(props) {
     setInputs([...inputs, {value: '', image: null}]);
   };
   const [dataById, setDataByID] = useState({});
-  // console.log('ini data pusdalop', dataById?.data?.lat);
+  console.log('ini data pusdalop', dataById.data?.risalah);
   const handleChangeALamat = text => {
     setDataAlamat(text);
   };
@@ -340,10 +341,15 @@ export default function PusdalopDetail(props) {
   const handleUpdatePusdalop = async () => {
     try {
       console.log('INI DATA PUSDALOP DALAM', dataUpdatePusdalop);
+      const datauser = await AsyncStorage.getItem('token');
       const result = await axios({
         method: 'patch',
         url: `http://10.100.0.106:5000/api/v1/pusdalops/${pusdalopid}`,
         data: dataUpdatePusdalop,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + datauser,
+        },
       });
       console.log(result);
       // const datauser = await AsyncStorage.getItem('token');
@@ -391,12 +397,10 @@ export default function PusdalopDetail(props) {
           </View>
         </View>
         <View style={style.containerInput}>
-          <Text style={{marginBottom: 10, fontSize: 16}}>
-            Edit beberapa data
-          </Text>
+          <Text style={style.titleEdit}>Edit beberapa data</Text>
 
           <View style={{padding: 5}}>
-            <Text style={{marginRight: 5, marginTop: 6}}>Jenis Tindakan</Text>
+            <Text style={style.tittleOption}>Jenis Tindakan</Text>
 
             <SelectList
               setSelected={handleSelect}
@@ -404,6 +408,7 @@ export default function PusdalopDetail(props) {
               save="key"
               itemKey="key"
               itemLabel="name"
+              boxStyles={{borderColor: 'black'}}
               placeholder={
                 dataById?.data?.tindakan?.jenis_tindakan
                   ? dataById?.data?.tindakan?.jenis_tindakan
@@ -413,7 +418,7 @@ export default function PusdalopDetail(props) {
             />
           </View>
           <View>
-            <Text>Jenis Bencana</Text>
+            <Text style={style.tittleOption}>Jenis Bencana</Text>
             {/* <Button title="get" onPress={handleGetBencana} /> */}
 
             <SelectList
@@ -422,12 +427,13 @@ export default function PusdalopDetail(props) {
               itemKey="id"
               itemLabel="name"
               defaultOption={bencanaOptions}
+              boxStyles={{borderColor: 'black'}}
               placeholder={dataById?.data?.bencana?.sub_jenis.toString()}
               setSelected={handleJenis}
             />
           </View>
           <View>
-            <Text>Tanggal Kejadian</Text>
+            <Text style={style.tittleOption}>Tanggal Kejadian</Text>
             <TextInput
               placeholder={dataById?.data?.tanggal}
               style={{borderWidth: 1, borderRadius: 10}}
@@ -453,11 +459,12 @@ export default function PusdalopDetail(props) {
             />
           </View>
           <View>
-            <Text>Isi Aduan</Text>
+            <Text style={style.tittleOption}>Isi Aduan</Text>
             <TextInput
               placeholder={dataById?.data?.isi_aduan.toString()}
               style={style.inputAduan}
               multiline={true}
+              boxStyles={{borderColor: 'black'}}
               onChangeText={text =>
                 setDataUpdatePusdalop({
                   ...dataUpdatePusdalop,
@@ -467,8 +474,10 @@ export default function PusdalopDetail(props) {
               // value={isiaduan}adsddasdsad
             />
           </View>
-          <View style={{marginTop: 10}}>
-            <Text>Titik Lokasi Terjadinya Bencana</Text>
+          <View>
+            <Text style={style.tittleOption}>
+              Titik Lokasi Terjadinya Bencana
+            </Text>
             <View>
               <MapView
                 region={mapRegion}
@@ -512,12 +521,12 @@ export default function PusdalopDetail(props) {
           </View>
           <View style={{flexDirection: 'row', marginTop: 10}}>
             <View>
-              <Text>Pelapor:</Text>
+              <Text style={style.titleEditMar}>Pelapor:</Text>
             </View>
-            <View style={{marginLeft: 30}}>
+            <View style={style.titleEditMar2}>
               <Text>Nama</Text>
             </View>
-            <View style={{marginLeft: 110}}>
+            <View style={style.titleEditMar}>
               <Text>No TELP/HP</Text>
             </View>
           </View>
@@ -526,7 +535,7 @@ export default function PusdalopDetail(props) {
               <TextInput
                 placeholder={dataById?.data?.user_pemohon}
                 style={{
-                  borderWidth: 2,
+                  borderWidth: 1,
                   borderColor: 'Black',
                   borderRadius: 10,
                   marginRight: 5,
@@ -546,7 +555,7 @@ export default function PusdalopDetail(props) {
               <TextInput
                 placeholder={dataById?.data?.no_telpon}
                 style={{
-                  borderWidth: 2,
+                  borderWidth: 1,
                   borderColor: 'Black',
                   borderRadius: 10,
                   marginRight: 5,
@@ -567,12 +576,13 @@ export default function PusdalopDetail(props) {
           {/* Kecamatan */}
           <View style={{marginTop: 20}}>
             <View>
-              <Text>Kecamatan:</Text>
+              <Text style={style.tittleOption}>Kecamatan:</Text>
             </View>
             <View>
               <View style={{marginLeft: 10}}>
                 <SelectList
                   setSelected={handleKecamatan}
+                  boxStyles={{borderColor: 'black'}}
                   data={kecamatanOption}
                   save="key"
                   itemKey="key"
@@ -586,11 +596,12 @@ export default function PusdalopDetail(props) {
           {/* Desa */}
           <View style={{marginTop: 20}}>
             <View>
-              <Text>Desa</Text>
+              <Text style={style.tittleOption}>Desa</Text>
             </View>
             <View>
               <SelectList
                 setSelected={handleDesa}
+                boxStyles={{borderColor: 'black'}}
                 data={desaOPtion}
                 save="key"
                 itemKey="key"
@@ -603,12 +614,12 @@ export default function PusdalopDetail(props) {
           {/* Alamat */}
           <View style={{marginTop: 10}}>
             <View>
-              <Text>Alamat</Text>
+              <Text style={style.tittleOption}>Alamat</Text>
             </View>
             <View>
               <TextInput
                 placeholder={dataById?.data?.alamat}
-                style={{borderWidth: 3, borderColor: 'black', borderRadius: 10}}
+                style={{borderWidth: 1, borderColor: 'black', borderRadius: 10}}
                 onChangeText={dataUpdatePusdalop =>
                   handleChangeForm(dataUpdatePusdalop, 'alamat')
                 }
@@ -638,7 +649,7 @@ const style = StyleSheet.create({
     borderWidth: 1,
     marginTop: 5,
     borderRadius: 10,
-    borderColor: '#b8b894',
+    borderColor: 'black',
   },
   titleScreen: {
     backgroundColor: '#FF6A16',
@@ -709,5 +720,22 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
+  },
+  tittleOption: {
+    color: 'black',
+    marginRight: '3%',
+    marginTop: '3%',
+    marginBottom: '2%',
+  },
+  titleEdit: {
+    color: 'black',
+  },
+  titleEditMar: {
+    color: 'black',
+    marginRight: '10%',
+  },
+  titleEditMar2: {
+    color: 'black',
+    marginRight: '30%',
   },
 });

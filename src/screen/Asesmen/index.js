@@ -15,10 +15,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Asesmen(props) {
   const pusdalop = useSelector(state => state.pusdalop.data);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getDataPusdalop());
   }, []);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    dispatch(getDataPusdalop()).finally(() => setRefreshing(false));
+  };
+  const handleEndReached = () => {
+    dispatch(getDataPusdalop());
+  };
   const navAsesmenDetail = id => {
     props.navigation.navigate('AsesmenDetail', {pusdalopId: id});
   };
@@ -97,47 +106,52 @@ export default function Asesmen(props) {
       </View>
       <View style={style.containerInput}>
         <View>
-          <Text>Riwayat Bencana</Text>
+          <Text style={style.texttitle}>Riwayat Bencana</Text>
         </View>
-        <FlatList
-          data={pusdalop}
-          renderItem={({item}) => (
-            <View style={style.card}>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  source={
-                    item.risalah[0]?.file
-                      ? {
-                          uri: `${item.risalah[0]?.file}`,
-                        }
-                      : require('../../assets/img/bencana1.png')
-                  }
-                  // source={{uri: `${item.risalah[0]?.file}`}}
-                  style={{width: 100, height: 100}}
-                />
-                <View>
-                  <Text style={style.textFlatlist}>{item.nama}</Text>
-                  <Text style={style.textFlatlist}>{item.alamat}</Text>
-                  <Text style={style.textFlatlist}>{item.tanggal}</Text>
-                </View>
-                <View
-                  style={{
-                    paddingLeft: '200%',
-                    flexDirection: 'row',
-                    position: 'absolute',
-                  }}>
-                  <Pressable
+        <View style={style.containerFlat}>
+          <FlatList
+            data={pusdalop}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.5}
+            renderItem={({item}) => (
+              <View style={style.card}>
+                <View style={{flexDirection: 'row'}}>
+                  <Image
+                    source={
+                      item.risalah[0]?.file
+                        ? {
+                            uri: `${item.risalah[0]?.file}`,
+                          }
+                        : require('../../assets/img/bencana1.png')
+                    }
+                    // source={{uri: `${item.risalah[0]?.file}`}}
+                    style={{width: 100, height: 100}}
+                  />
+                  <View>
+                    <Text style={style.textFlatlist}>{item.nama}</Text>
+                    <Text style={style.textFlatlist}>{item.alamat}</Text>
+                    <Text style={style.textFlatlist}>{item.tanggal}</Text>
+                  </View>
+                  <View
                     style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                      marginRight: 5,
-                    }}
-                    onPress={() => navAsesmenDetail(item.id)}>
-                    <Text style={{marginLeft: 10}}>Lihat</Text>
-                  </Pressable>
-                  {/* <Pressable
+                      paddingLeft: 280,
+                      flexDirection: 'row',
+                      position: 'absolute',
+                    }}>
+                    <Pressable
+                      style={{
+                        backgroundColor: '#FF6A16',
+                        color: '#FFFF',
+                        width: 50,
+                        borderRadius: 10,
+                        marginRight: 5,
+                      }}
+                      onPress={() => navPusdalop(item.id)}>
+                      <Text style={{marginLeft: 10}}>Lihat</Text>
+                    </Pressable>
+                    {/* <Pressable
                     style={{
                       backgroundColor: '#FF6A16',
                       color: '#FFFF',
@@ -147,62 +161,13 @@ export default function Asesmen(props) {
                     onPress={handleDeleteBencana(item.id)}>
                     <Text style={{marginLeft: 8}}>Delete</Text>
                   </Pressable> */}
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
-          keyExtractor={item => item.id}
-        />
-        {/* <FlatList
-          data={people}
-          keyExtractor={item => item.key}
-          renderItem={({item}) => (
-            <View style={style.card}>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  source={{uri: `${item.image}`}}
-                  style={{width: 100, height: 100}}
-                />
-                <View>
-                  <Text style={{marginLeft: 10}}>Bencana</Text>
-                  <Text style={{marginLeft: 10}}>Location</Text>
-                  <Text style={{marginLeft: 10}}>Butuh asesment</Text>
-                  <Text style={{marginLeft: 10}}>
-                    lorem ipsum lorem lorem lorem lorem lorem lorem
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    marginLeft: 250,
-                    flexDirection: 'row',
-                    position: 'absolute',
-                  }}>
-                  <Pressable
-                    style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                      marginRight: 5,
-                    }}
-                    onPress={navAsesmenDetail}>
-                    <Text style={{marginLeft: 10}}>Lihat</Text>
-                  </Pressable>
-                  <Pressable
-                    style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                    }}>
-                    <Text style={{marginLeft: 5}}>Delete</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          )}
-        /> */}
-        <Text>Asesmen</Text>
+            )}
+            keyExtractor={item => item.id}
+          />
+        </View>
       </View>
     </View>
   );
@@ -210,7 +175,7 @@ export default function Asesmen(props) {
 
 const style = StyleSheet.create({
   textFlatlist: {
-    color: 'BLACK',
+    color: 'black',
     marginLeft: '5%',
   },
   titleScreen: {
@@ -258,5 +223,8 @@ const style = StyleSheet.create({
     marginTop: 20,
     backgroundColor: 'Blue',
     borderColor: 'Black',
+  },
+  texttitle: {
+    color: 'black',
   },
 });

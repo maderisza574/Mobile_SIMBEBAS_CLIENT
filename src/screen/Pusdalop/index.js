@@ -55,7 +55,7 @@ export default function Pusdalop(props) {
       </View>
       <View style={style.containerInput}>
         <View>
-          <Text>Riwayat Bencana</Text>
+          <Text style={style.texttitle}>Riwayat Bencana</Text>
           <View>
             <Pressable style={style.buttonLogin} onPress={navPusdalopDetail}>
               <Text style={style.textLogin}>Buat Laporan</Text>
@@ -179,5 +179,8 @@ const style = StyleSheet.create({
   },
   containerFlat: {
     height: 550,
+  },
+  texttitle: {
+    color: 'black',
   },
 });
