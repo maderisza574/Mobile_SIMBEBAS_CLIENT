@@ -136,7 +136,7 @@ export default function Signin(props) {
             </TouchableOpacity>
           </View>
           {/* </View> */}
-          <View style={{marginTop: 30}}>
+          <View style={{marginTop: '5%'}}>
             {/* <Button
               title="Masuk"
               onPress={handleLogin}
