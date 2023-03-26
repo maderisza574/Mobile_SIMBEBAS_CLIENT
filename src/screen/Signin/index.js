@@ -103,7 +103,7 @@ export default function Signin(props) {
                     style={style.button}
                   />
                 ) : (
-                  <Text style={style.button}>Log In</Text>
+                  <Text style={style.button}>Login</Text>
                 )}
               </View>
             </TouchableOpacity>
@@ -121,17 +121,17 @@ export default function Signin(props) {
               style={{
                 position: 'absolute',
                 // right: 0,
-                marginLeft: 320,
+                marginLeft: '90%',
                 height: '100%',
                 paddingHorizontal: 6,
                 justifyContent: 'center',
-                marginTop: -10,
+                marginTop: '-5%',
               }}
               onPress={() => setShowPassword(!showPassword)}>
               {showPassword ? (
-                <Icon name="eye-with-line" size={20} />
+                <Icon name="eye-with-line" size={20} color="black" />
               ) : (
-                <Icon name="eye" size={20} />
+                <Icon name="eye" size={20} color="black" />
               )}
             </TouchableOpacity>
           </View>
