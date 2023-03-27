@@ -48,6 +48,7 @@ export default function Signin(props) {
       console.log(result);
       await AsyncStorage.setItem('token', result.data.data.token);
       await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      await AsyncStorage.setItem('nama', result.data.data.username);
       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
       alert('sukses');
     } catch (error) {

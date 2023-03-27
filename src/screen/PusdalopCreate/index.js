@@ -10,14 +10,15 @@ import {
   PermissionsAndroid,
   Pressable,
   Image,
+  RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import {SelectList} from 'react-native-dropdown-select-list';
 import DatePicker from 'react-native-date-picker';
 import MapView, {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import axios from '../../utils/axios';
-// import axios from 'axios';
+import axioses from '../../utils/axios';
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
@@ -27,11 +28,8 @@ export default function PusdalopCreate(props) {
   const dispatch = useDispatch();
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
   // end redux
-
-  // console.log('INI DATA IMAGE CREATE', image);
-
   const [open, setOpen] = useState(false);
-  const [dataNama, setDataNama] = useState('tes');
+  const [dataNama, setDataNama] = useState('');
   const [bencanaOptions, setBencanaOptions] = useState('');
   const [selected, setSelected] = React.useState(0);
   const [date, setDate] = useState(new Date());
@@ -39,24 +37,109 @@ export default function PusdalopCreate(props) {
   const [desaOPtion, setDesaOption] = useState([]);
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [images, setImages] = useState([]);
-  // console.log('INI DATA IMAGES', images[0][0].uri);
-  // NEW DECLARE MAP
-  const navPusdalop = () => {
-    props.navigation.navigate('Pusdalop');
-  };
+  const [refreshing, setRefreshing] = useState(false);
+
   const [region, setRegion] = useState({
-    latitude: 0,
-    longitude: 0,
+    latitude: -7.431391,
+    longitude: 109.247833,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   });
-  // END DECLARE MAP
-  // NEW USE EFFECT MAP
+
+  const dataJenis = [
+    {key: '1', value: 'PENCEGAHAN'},
+    {key: '2', value: 'PENANGGULANGAN'},
+  ];
+  const navPusdalop = () => {
+    props.navigation.navigate('Pusdalop');
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    requestLocationPermission().finally(() => setRefreshing(false));
+  };
   useEffect(() => {
-    requestLocationPermission();
-    // getAddressFromLatLng();
+    getMyStringValue();
+  }, [getMyStringValue]);
+  const getMyStringValue = async () => {
+    try {
+      const result = await AsyncStorage.getItem('nama');
+      // console.log(result);
+      await setDataPusdalop({
+        ...dataPusdalop,
+        user_pemohon: result.toString(),
+      });
+      // setDataNama(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      requestLocationPermission();
+    } else {
+      Geolocation.getCurrentPosition(
+        position => {
+          setRegion({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+        },
+        error => {
+          if (error.code === error.PERMISSION_DENIED) {
+            alert(
+              'Location permission denied. Please enable it in your settings.',
+            );
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            alert('Position unavailable. Please try again later.');
+          } else {
+            alert('An error occurred while retrieving your location.');
+          }
+        },
+        {enableHighAccuracy: true, timeout: 1500},
+      );
+    }
+  }, [requestLocationPermission]);
+
+  useEffect(() => {
+    axioses
+      .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected || 1}`)
+      .then(res => {
+        let newArray = res.data.rows.map(item => {
+          return {key: item.id, value: item.sub_jenis};
+        });
+        setBencanaOptions(newArray);
+      })
+      .catch(error => console.error(error));
+  }, [selected]);
+  useEffect(() => {
+    axioses
+      .get(`/v1/kecamatan?page=1&perPage=30`)
+      .then(res => {
+        let newArray = res.data.rows.map(item => {
+          return {key: item.id, value: item.kecamatan};
+        });
+        setKecamatanOption(newArray);
+      })
+      .catch(error => console.error(error));
   }, []);
-  // END USE EFFECT MAP
+  useEffect(() => {
+    setTimeout(() => {
+      axioses
+        .get(`/v1/desa?page=1&perPage=27`)
+        .then(res => {
+          let newArray = res.data.rows.map(item => {
+            return {key: item.id, value: item.desa};
+          });
+          setDesaOption(newArray);
+        })
+        .catch(error => console.error(error));
+    }, 3000);
+  }, []);
+
   //  NEW FUNCTION MAP
   const requestLocationPermission = async () => {
     try {
@@ -71,7 +154,7 @@ export default function PusdalopCreate(props) {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.watchPosition(
+        await Geolocation.watchPosition(
           position => {
             setRegion({
               latitude: position.coords.latitude,
@@ -79,7 +162,13 @@ export default function PusdalopCreate(props) {
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             });
+            setDataPusdalop({
+              ...dataPusdalop,
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
           },
+
           error => {
             if (error.code === error.TIMEOUT) {
               alert('Position unavailable. Please try again later.');
@@ -87,7 +176,7 @@ export default function PusdalopCreate(props) {
               alert('An error occurred while retrieving your location.');
             }
           },
-          {enableHighAccuracy: true, timeout: 1500, distanceFilter: 10},
+          {enableHighAccuracy: true, timeout: 1500},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
@@ -96,29 +185,28 @@ export default function PusdalopCreate(props) {
       console.warn(err);
     }
   };
-  const search = () => {
-    const latitude = parseFloat(dataPusdalop.lat);
-    const longitude = parseFloat(dataPusdalop.lng);
-    setRegion({
-      latitude: latitude,
-      longitude: longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    });
-  };
-
   const onMarkerDragEnd = e => {
     const newRegion = {
       latitude: e.nativeEvent.coordinate.latitude,
       longitude: e.nativeEvent.coordinate.longitude,
-      latitudeDelta: region.latitudeDelta,
-      longitudeDelta: region.longitudeDelta,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
     };
-    setRegion(newRegion);
+    setRegion({
+      ...region,
+      latitude: newRegion.latitude,
+      longitude: newRegion.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+    setDataPusdalop({
+      ...dataPusdalop,
+      lat: newRegion.latitude.toString(),
+      lng: newRegion.longitude.toString(),
+    });
   };
 
   //  END NEW FUNCION MAP
-  // console.log(images);
 
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
@@ -153,46 +241,8 @@ export default function PusdalopCreate(props) {
     }));
   };
 
-  const dataJenis = [
-    {key: '1', value: 'PENCEGAHAN'},
-    {key: '2', value: 'PENANGGULANGAN'},
-  ];
-  useEffect(() => {
-    axios
-      .get(`/v1/bencana?page=1&perPage=10&tindakanId=${selected || 1}`)
-      .then(res => {
-        let newArray = res.data.rows.map(item => {
-          return {key: item.id, value: item.sub_jenis};
-        });
-        setBencanaOptions(newArray);
-      })
-      .catch(error => console.error(error));
-  }, [selected]);
   // END DROPDWON
-  useEffect(() => {
-    axios
-      .get(`/v1/kecamatan?page=1&perPage=30`)
-      .then(res => {
-        let newArray = res.data.rows.map(item => {
-          return {key: item.id, value: item.kecamatan};
-        });
-        setKecamatanOption(newArray);
-      })
-      .catch(error => console.error(error));
-  }, []);
-  useEffect(() => {
-    setTimeout(() => {
-      axios
-        .get(`/v1/desa?page=1&perPage=27`)
-        .then(res => {
-          let newArray = res.data.rows.map(item => {
-            return {key: item.id, value: item.desa};
-          });
-          setDesaOption(newArray);
-        })
-        .catch(error => console.error(error));
-    }, 3000);
-  }, []);
+
   const handleCreatePusdalop = async () => {
     try {
       const formData = new FormData();
@@ -205,36 +255,58 @@ export default function PusdalopCreate(props) {
       formData.append('alamat', dataPusdalop.alamat);
       formData.append('id_desa', dataPusdalop.id_desa);
       formData.append('id_kecamatan', dataPusdalop.id_kecamatan);
-      formData.append('lng', dataPusdalop.lng);
-      formData.append('lat', dataPusdalop.lat);
+      formData.append('lng', '109247833');
+      formData.append('lat', '7431391');
       formData.append('tindakan_trc', dataPusdalop.tindakan_trc);
       formData.append('logpal', dataPusdalop.logpal);
-      formData.append('tanggal', dataPusdalop.tanggal);
-      formData.append('keteranganImage[0]', dataPusdalop.keteranganImage);
+      formData.append('tanggal', '2023-03-12');
+      formData.append('keteranganImage[0]', 'tes');
+
+      // formData.append('id_jenis_bencana', 1);
+      // formData.append('id_tindakan', 1);
+      // formData.append('user_pemohon', 'johan');
+      // formData.append('isi_aduan', 'tes');
+      // formData.append('no_telepon', '0822');
+      // formData.append('nama', 'nama');
+      // formData.append('alamat', 'tes almat');
+      // formData.append('id_desa', 1);
+      // formData.append('id_kecamatan', 1);
+      // formData.append('lng', '109247833');
+      // formData.append('lat', '7431391');
+      // formData.append('tindakan_trc', true);
+      // formData.append('logpal', 'true');
+      // formData.append('tanggal', '2023-03-12');
+      // formData.append('keteranganImage[0]', 'tes');
 
       images.length > 0 &&
         images.forEach((v, k) => {
-          formData.append(`image[${k}]`, {
+          formData.append(`image[0]`, {
             name: v[k].fileName,
             type: v[k].type,
             uri: v[k].uri,
           });
         });
-      const datauser = await AsyncStorage.getItem('token');
+      console.log('INI DATA CREATE PUSDALOP', formData);
+
+      // const datauser = await AsyncStorage.getItem('token');
+      const datauser =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUxNjksImlhdCI6MTY3OTg5NTU1NSwiZXhwIjoxNjc5OTgxOTU1fQ.Llc9rtKMa9y6rIijgeWva1mlGl1V5J5Wnoc8I-Ron1Q';
+
       const result = await axios({
-        url: 'http://10.100.0.106:5000/api/v1/pusdalops',
+        url: 'https://apisimbebas.banyumaskab.go.id/api/v1/pusdalops',
         method: 'POST',
         data: formData,
         headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer ' + datauser,
+          'content-type': 'multipart/form-data',
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUxNjksImlhdCI6MTY3OTg5NTU1NSwiZXhwIjoxNjc5OTgxOTU1fQ.Llc9rtKMa9y6rIijgeWva1mlGl1V5J5Wnoc8I-Ron1Q',
         },
       });
-      console.log(result);
+      // console.log('INIII ERORR', result);
       alert('SUKSES MEMBUAT LAPORAN');
       props.navigation.navigate('Pusdalop');
     } catch (error) {
-      console.log(error);
+      console.log('INIII ERORR', error.message);
     }
   };
 
@@ -319,16 +391,16 @@ export default function PusdalopCreate(props) {
   });
   // console.log(stateMap);
 
-  useEffect(() => {
-    if (stateMap.latitude && stateMap.longitude) {
-      setMapRegion({
-        latitude: stateMap.latitude,
-        longitude: stateMap.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-    }
-  }, [stateMap.latitude, stateMap.longitude]);
+  // useEffect(() => {
+  //   if (stateMap.latitude && stateMap.longitude) {
+  //     setMapRegion({
+  //       latitude: stateMap.latitude,
+  //       longitude: stateMap.longitude,
+  //       latitudeDelta: 0.0922,
+  //       longitudeDelta: 0.0421,
+  //     });
+  //   }
+  // }, [stateMap.latitude, stateMap.longitude]);
 
   const handleChangeForm = (value, name) => {
     setDataPusdalop({...dataPusdalop, [name]: value});
@@ -337,7 +409,7 @@ export default function PusdalopCreate(props) {
   const [dataPusdalop, setDataPusdalop] = useState({
     id_jenis_bencana: '', // initialize with empty string
     id_tindakan: '',
-    user_pemohon: dataNama,
+    user_pemohon: '3276027010860007',
     isi_aduan: '',
     no_telepon: '',
     nama: '',
@@ -352,11 +424,14 @@ export default function PusdalopCreate(props) {
     image: images,
     keteranganImage: [],
   });
-  // console.log('INI DATA PUSDALOP', dataPusdalop.image[0]?.uri);
+  // console.log('INI DATA PUSDALOP', dataPusdalop);
 
   return (
     <View>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }>
         <View style={style.titleScreen}>
           <View
             style={{
@@ -451,48 +526,41 @@ export default function PusdalopCreate(props) {
             <View>
               <MapView
                 style={{flex: 1, height: 200, width: 380}}
+                initialRegion={region}
                 region={region}
                 onRegionChangeComplete={setRegion}
                 onPress={e => console.log(e.nativeEvent.coordinate)}>
-                {/* <Marker
+                <Marker
                   draggable
                   coordinate={{
                     latitude: region.latitude,
                     longitude: region.longitude,
                   }}
                   onDragEnd={onMarkerDragEnd}
-                /> */}
+                />
               </MapView>
             </View>
             <View
               style={{
                 flexDirection: 'row',
-                marginTop: 20,
+                marginTop: '5%',
                 justifyContent: 'space-between',
+                paddingHorizontal: '20%',
               }}>
               <TextInput
-                // style={styles.searchBar}
-                placeholder="Latitude"
-                value={dataPusdalop.lat}
-                // onChangeText={text => setLatitude(text)}
-                onChangeText={dataPusdalop =>
-                  handleChangeForm(dataPusdalop, 'lat')
-                }
-                keyboardtype="numeric"
+                editable={false}
+                placeholder={dataPusdalop.lat.toString()}
               />
               <TextInput
-                // style={styles.searchBar}
-                placeholder="Longitude"
-                value={dataPusdalop.lng}
-                // onChangeText={text => setLongitude(text)}
-                onChangeText={dataPusdalop =>
-                  handleChangeForm(dataPusdalop, 'lng')
-                }
+                editable={false}
+                placeholder={dataPusdalop.lng.toString()}
                 keyboardtype="numeric"
               />
-              <Pressable style={style.buttonSearchMap} onPress={() => search()}>
+              {/* <Pressable
+                style={style.buttonSearchMap}
+                onPress={() => requestLocationPermission()}>
                 <Text style={style.textSearchMap}>Cari</Text>
-              </Pressable>
+              </Pressable> */}
             </View>
             <View style={{flexDirection: 'row', marginTop: '5%'}}>
               <View>
@@ -519,7 +587,8 @@ export default function PusdalopCreate(props) {
                   onChangeText={dataPusdalop =>
                     handleChangeForm(dataPusdalop, 'nama')
                   }
-                  // value={dataNama}
+                  // editable={false}
+                  value={dataPusdalop.nama}
                 />
 
                 <TextInput
