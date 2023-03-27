@@ -95,7 +95,7 @@ export default function PusdalopDetail(props) {
 
   useEffect(() => {
     axios
-      .get(`/v1/kecamatan?page=1&perPage=27`)
+      .get('/v1/kecamatan?page=1&perPage=27')
       .then(res => {
         let newArray = res.data.rows.map(item => {
           return {key: item.id, value: item.kecamatan};
@@ -113,7 +113,7 @@ export default function PusdalopDetail(props) {
   useEffect(() => {
     setTimeout(() => {
       axios
-        .get(`/v1/desa?page=1&perPage=27`)
+        .get('/v1/desa?page=1&perPage=27')
         .then(res => {
           let newArray = res.data.rows.map(item => {
             return {key: item.id, value: item.desa};
