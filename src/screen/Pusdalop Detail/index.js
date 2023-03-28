@@ -18,6 +18,7 @@ import MapView from 'react-native-maps';
 import {Marker} from 'react-native-maps';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from '../../utils/axios';
+import moment from 'moment';
 // import axios from 'axios';
 import {
   deleteDataPusdalop,
@@ -52,6 +53,10 @@ export default function PusdalopDetail(props) {
   const pusdalopId = props.route.params.pusdalopId;
   const [latitudeData, setLatitudeData] = useState('');
   const [longitudeData, setLongitudeData] = useState('');
+  const [dataById, setDataByID] = useState({});
+  // console.log('ini data pusdalop', typeof dataById.data?.lng);
+  const dateStr = dataById?.data?.tanggal;
+  const formatDate = moment(dateStr).format('YYYY-MM-DD HH:mm:ss');
 
   const [dataUpdatePusdalop, setDataUpdatePusdalop] = useState({
     id_jenis_bencana: '',
@@ -67,7 +72,7 @@ export default function PusdalopDetail(props) {
     lat: latitudeData,
     tindakan_trc: true,
     logpal: true,
-    tanggal: date,
+    tanggal: date.toISOString().slice(0, 10),
   });
   // console.log('INI DATA UPDATE', dataUpdatePusdalop);
 
@@ -84,11 +89,11 @@ export default function PusdalopDetail(props) {
   useEffect(() => {
     handlegetPusdalopId();
   }, [handlegetPusdalopId]);
+
   const handleAddInput = () => {
     setInputs([...inputs, {value: '', image: null}]);
   };
-  const [dataById, setDataByID] = useState({});
-  console.log('ini data pusdalop', dataById.data?.risalah);
+
   const handleChangeALamat = text => {
     setDataAlamat(text);
   };
@@ -133,20 +138,14 @@ export default function PusdalopDetail(props) {
         },
       };
       const result = await axios.get(`/v1/pusdalops/${pusdalopid}`, config);
-      // console.log('INI DATA PUSDALOP DALAM', result.data.data.lat);
+
       setDataByID(result.data);
-      setMapRegion(prevMapRegion => ({
-        ...prevMapRegion,
-        latitude: parseFloat(result.data.data.lat),
-        longitude: parseFloat(result.data.data.lng),
-      }));
-      // setLatitudeData(result.data.data.lat);
-      // setLongitudeData(result.data.data.lng);
     } catch (error) {
       alert('gagal mendapat kan data');
       console.log(error);
     }
   };
+
   const handleInputChange = (text, index) => {
     const newInputs = [...inputs];
     newInputs[index].value = text;
@@ -266,13 +265,13 @@ export default function PusdalopDetail(props) {
     setImage(photo.assets[0].uri);
   };
 
-  const [stateMap, setStateMap] = useState({
-    latitude: -7.431391,
-    longitude: 109.247833,
-  });
+  // const [stateMap, setStateMap] = useState({
+  //   latitude: -7.431391,
+  //   longitude: 109.247833,
+  // });
   const [mapRegion, setMapRegion] = useState({
-    latitude: -7.431391,
-    longitude: 109.247833,
+    latitude: dataById.data ? parseFloat(dataById.data.lng) : -7.42850616,
+    longitude: dataById.data ? parseFloat(dataById.data.lat) : 109.23661492,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
@@ -301,16 +300,16 @@ export default function PusdalopDetail(props) {
   //     longitude: stateMap.longitude,
   //   });
   // };
-  const search = () => {
-    const latitude = parseFloat(latitudeData);
-    const longitude = parseFloat(longitudeData);
-    setMapRegion({
-      latitude: latitude,
-      longitude: longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    });
-  };
+  // const search = () => {
+  //   const latitude = parseFloat(latitudeData);
+  //   const longitude = parseFloat(longitudeData);
+  //   setMapRegion({
+  //     latitude: latitude,
+  //     longitude: longitude,
+  //     latitudeDelta: 0.01,
+  //     longitudeDelta: 0.01,
+  //   });
+  // };
   const handleDeletePusdalop = async () => {
     try {
       const datauser = await AsyncStorage.getItem('token');
@@ -328,23 +327,23 @@ export default function PusdalopDetail(props) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    if (stateMap.latitude && stateMap.longitude) {
-      setMapRegion({
-        latitude: stateMap.latitude,
-        longitude: stateMap.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-    }
-  }, [stateMap.latitude, stateMap.longitude]);
+  // useEffect(() => {
+  //   if (stateMap.latitude && stateMap.longitude) {
+  //     setMapRegion({
+  //       latitude: stateMap.latitude,
+  //       longitude: stateMap.longitude,
+  //       latitudeDelta: 0.0922,
+  //       longitudeDelta: 0.0421,
+  //     });
+  //   }
+  // }, [stateMap.latitude, stateMap.longitude]);
   const handleUpdatePusdalop = async () => {
     try {
       console.log('INI DATA PUSDALOP DALAM', dataUpdatePusdalop);
       const datauser = await AsyncStorage.getItem('token');
       const result = await axios({
-        method: 'patch',
-        url: `http://10.100.0.106:5000/api/v1/pusdalops/${pusdalopid}`,
+        method: 'PATCH',
+        url: `https://apisimbebas.banyumaskab.go.id/api/v1/pusdalops/${pusdalopid}`,
         data: dataUpdatePusdalop,
         headers: {
           'Content-Type': 'application/json',
@@ -435,7 +434,7 @@ export default function PusdalopDetail(props) {
           <View>
             <Text style={style.tittleOption}>Tanggal Kejadian</Text>
             <TextInput
-              placeholder={dataById?.data?.tanggal}
+              placeholder={formatDate}
               style={{borderWidth: 1, borderRadius: 10}}
             />
             <Pressable style={style.buttonLogin} onPress={() => setOpen(true)}>
@@ -481,6 +480,7 @@ export default function PusdalopDetail(props) {
             <View>
               <MapView
                 region={mapRegion}
+                initialRegion={mapRegion}
                 style={{flex: 1, height: 200, width: 380}}>
                 <Marker
                   draggable
@@ -498,7 +498,12 @@ export default function PusdalopDetail(props) {
                 />
               </MapView>
             </View>
-            <View style={{flexDirection: 'row', marginTop: 20}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: '5%',
+                paddingHorizontal: '25%',
+              }}>
               <TextInput
                 onChangeText={handleLatitudeChange}
                 // value={mapRegion.latitude}
@@ -514,12 +519,9 @@ export default function PusdalopDetail(props) {
                 // value={mapRegion.longitude}
                 style={{marginRight: 10}}
               />
-              <Pressable style={style.buttonSearchMap} onPress={() => search()}>
-                <Text style={style.textSearchMap}>Cari</Text>
-              </Pressable>
             </View>
           </View>
-          <View style={{flexDirection: 'row', marginTop: 10}}>
+          <View style={{flexDirection: 'row', marginTop: '5%'}}>
             <View>
               <Text style={style.titleEditMar}>Pelapor:</Text>
             </View>
@@ -531,9 +533,9 @@ export default function PusdalopDetail(props) {
             </View>
           </View>
           <View style={{flexDirection: 'row'}}>
-            <View style={{marginLeft: 80}}>
+            <View style={{marginLeft: '20%'}}>
               <TextInput
-                placeholder={dataById?.data?.user_pemohon}
+                placeholder={dataById?.data?.nama}
                 style={{
                   borderWidth: 1,
                   borderColor: 'Black',
@@ -574,12 +576,12 @@ export default function PusdalopDetail(props) {
             </View>
           </View>
           {/* Kecamatan */}
-          <View style={{marginTop: 20}}>
+          <View style={{marginTop: '3%'}}>
             <View>
               <Text style={style.tittleOption}>Kecamatan:</Text>
             </View>
             <View>
-              <View style={{marginLeft: 10}}>
+              <View>
                 <SelectList
                   setSelected={handleKecamatan}
                   boxStyles={{borderColor: 'black'}}
@@ -594,7 +596,7 @@ export default function PusdalopDetail(props) {
           </View>
           {/* end Kecamatan */}
           {/* Desa */}
-          <View style={{marginTop: 20}}>
+          <View style={{marginTop: '2%'}}>
             <View>
               <Text style={style.tittleOption}>Desa</Text>
             </View>
@@ -612,7 +614,7 @@ export default function PusdalopDetail(props) {
           </View>
           {/* End Desa */}
           {/* Alamat */}
-          <View style={{marginTop: 10}}>
+          <View style={{marginTop: '2%'}}>
             <View>
               <Text style={style.tittleOption}>Alamat</Text>
             </View>
