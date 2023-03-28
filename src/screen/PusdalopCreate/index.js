@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
 import Geolocation from '@react-native-community/geolocation';
+
 export default function PusdalopCreate(props) {
   // redux
   const dispatch = useDispatch();
@@ -255,12 +256,15 @@ export default function PusdalopCreate(props) {
       formData.append('alamat', dataPusdalop.alamat);
       formData.append('id_desa', dataPusdalop.id_desa);
       formData.append('id_kecamatan', dataPusdalop.id_kecamatan);
-      formData.append('lng', '109247833');
-      formData.append('lat', '7431391');
+      formData.append('lng', dataPusdalop.lng);
+      formData.append('lat', dataPusdalop.lat);
       formData.append('tindakan_trc', dataPusdalop.tindakan_trc);
       formData.append('logpal', dataPusdalop.logpal);
-      formData.append('tanggal', '2023-03-12');
-      formData.append('keteranganImage[0]', 'tes');
+      formData.append(
+        'tanggal',
+        dataPusdalop.tanggal.toISOString().slice(0, 10),
+      );
+      formData.append('keteranganImage[0]', dataPusdalop.keteranganImage);
 
       // formData.append('id_jenis_bencana', 1);
       // formData.append('id_tindakan', 1);
@@ -495,6 +499,7 @@ export default function PusdalopCreate(props) {
               modal
               open={open}
               date={date}
+              dateFormat="YYYY-MM-DD"
               onConfirm={date => {
                 setOpen(false);
                 setDate(date);
