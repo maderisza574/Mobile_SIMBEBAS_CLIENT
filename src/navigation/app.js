@@ -104,7 +104,7 @@ function MenuNavigator() {
           ),
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Map"
         component={Map}
         options={{
@@ -113,9 +113,9 @@ function MenuNavigator() {
             <Icon name="enviroment" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
       {/* Counter */}
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Counter"
         component={Counter}
         options={{
@@ -124,7 +124,7 @@ function MenuNavigator() {
             <Icon name="enviroment" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
       {/* <Drawer.Screen
         name="Coba"
         component={Coba}

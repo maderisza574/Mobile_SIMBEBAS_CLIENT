@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
 
 export default function Asesmen(props) {
   const pusdalop = useSelector(state => state.pusdalop.data);
@@ -31,58 +32,7 @@ export default function Asesmen(props) {
   const navAsesmenDetail = id => {
     props.navigation.navigate('AsesmenDetail', {pusdalopId: id});
   };
-  const [people, setPeople] = useState([
-    {
-      name: 'Shaun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '1',
-    },
-    {
-      name: 'San',
-      image: 'https://via.placeholder.com/100x100',
-      key: '2',
-    },
-    {
-      name: 'Sun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '3',
-    },
-    {
-      name: 'dab',
-      image: 'https://via.placeholder.com/100x100',
-      key: '4',
-    },
-    {
-      name: 'dun',
-      image: 'https://via.placeholder.com/100x100',
-      key: '5',
-    },
-    {
-      name: 'dor',
-      image: 'https://via.placeholder.com/100x100',
-      key: '6',
-    },
-    {
-      name: 'dur',
-      image: 'https://via.placeholder.com/100x100',
-      key: '7',
-    },
-    {
-      name: 'der',
-      image: 'https://via.placeholder.com/100x100',
-      key: '8',
-    },
-    {
-      name: 'doel',
-      image: 'https://via.placeholder.com/100x100',
-      key: '9',
-    },
-    {
-      name: 'doer',
-      image: 'https://via.placeholder.com/100x100',
-      key: '10',
-    },
-  ]);
+
   return (
     <View>
       <View style={style.titleScreen}>
@@ -132,7 +82,9 @@ export default function Asesmen(props) {
                   <View>
                     <Text style={style.textFlatlist}>{item.nama}</Text>
                     <Text style={style.textFlatlist}>{item.alamat}</Text>
-                    <Text style={style.textFlatlist}>{item.tanggal}</Text>
+                    <Text style={style.textFlatlist}>
+                      {moment(item.tanggal).format('YYYY-MM-DD')}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -144,12 +96,26 @@ export default function Asesmen(props) {
                       style={{
                         backgroundColor: '#FF6A16',
                         color: '#FFFF',
-                        width: 50,
+                        width: '150%',
+                        height: '100%',
                         borderRadius: 10,
                         marginRight: 5,
                       }}
-                      onPress={() => navPusdalop(item.id)}>
-                      <Text style={{marginLeft: 10}}>Lihat</Text>
+                      onPress={() => navAsesmenDetail(item.id)}>
+                      <View
+                        style={{
+                          paddingHorizontal: '10%',
+                          paddingVertical: '10%',
+                        }}>
+                        <Text
+                          style={{
+                            marginLeft: 10,
+                            color: 'white',
+                            fontSize: 15,
+                          }}>
+                          Lihat
+                        </Text>
+                      </View>
                     </Pressable>
                     {/* <Pressable
                     style={{

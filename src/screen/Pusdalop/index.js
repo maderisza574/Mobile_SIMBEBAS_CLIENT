@@ -3,6 +3,7 @@ import {View, Text, FlatList, StyleSheet, Image, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
+import moment from 'moment';
 
 export default function Pusdalop(props) {
   const [refreshing, setRefreshing] = useState(false);
@@ -54,13 +55,15 @@ export default function Pusdalop(props) {
         </View>
       </View>
       <View style={style.containerInput}>
-        <View>
-          <Text style={style.texttitle}>Riwayat Bencana</Text>
+        <View style={style.containerButton}>
           <View>
-            <Pressable style={style.buttonLogin} onPress={navPusdalopDetail}>
-              <Text style={style.textLogin}>Buat Laporan</Text>
-            </Pressable>
+            <Text style={style.texttitle}>Riwayat Bencana</Text>
           </View>
+          {/* <View> */}
+          <Pressable style={style.buttonLogin} onPress={navPusdalopDetail}>
+            <Text style={style.textLogin}>Buat Laporan</Text>
+          </Pressable>
+          {/* </View> */}
         </View>
         <View style={style.containerFlat}>
           <FlatList
@@ -86,7 +89,9 @@ export default function Pusdalop(props) {
                   <View>
                     <Text style={style.textFlatlist}>{item.nama}</Text>
                     <Text style={style.textFlatlist}>{item.alamat}</Text>
-                    <Text style={style.textFlatlist}>{item.tanggal}</Text>
+                    <Text style={style.textFlatlist}>
+                      {moment(item.tanggal).format('YYYY-MM-DD')}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -98,12 +103,26 @@ export default function Pusdalop(props) {
                       style={{
                         backgroundColor: '#FF6A16',
                         color: '#FFFF',
-                        width: 50,
+                        width: '150%',
+                        height: '100%',
                         borderRadius: 10,
                         marginRight: 5,
                       }}
                       onPress={() => navPusdalop(item.id)}>
-                      <Text style={{marginLeft: 10}}>Lihat</Text>
+                      <View
+                        style={{
+                          paddingHorizontal: '10%',
+                          paddingVertical: '10%',
+                        }}>
+                        <Text
+                          style={{
+                            marginLeft: 10,
+                            color: 'white',
+                            fontSize: 15,
+                          }}>
+                          Lihat
+                        </Text>
+                      </View>
                     </Pressable>
                     {/* <Pressable
                     style={{
@@ -148,27 +167,7 @@ const style = StyleSheet.create({
     position: 'relative',
     marginTop: -10,
   },
-  buttonLogin: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 7,
-    elevation: 3,
-    backgroundColor: '#ff471a',
-    width: '30%',
-    textAlign: 'center',
-    height: 50,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  textLogin: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: 'white',
-  },
+
   card: {
     width: 250,
     height: 100,
@@ -178,9 +177,36 @@ const style = StyleSheet.create({
     borderColor: 'Black',
   },
   containerFlat: {
-    height: 550,
+    height: '100%',
+    // marginTop: '-45%',
   },
   texttitle: {
     color: 'black',
+  },
+  containerButton: {
+    width: '100%',
+  },
+  buttonLogin: {
+    paddingVertical: 10,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    backgroundColor: '#ff471a',
+    width: '41%',
+    textAlign: 'center',
+    height: '50%',
+    marginTop: 10,
+  },
+  textLogin: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  containerButton: {
+    width: '100%',
+    height: '10%',
+    position: 'relative',
+    // backgroundColor: 'red',
   },
 });

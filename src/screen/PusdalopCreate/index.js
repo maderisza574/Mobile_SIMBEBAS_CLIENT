@@ -40,13 +40,6 @@ export default function PusdalopCreate(props) {
   const [images, setImages] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [region, setRegion] = useState({
-    latitude: -7.431391,
-    longitude: 109.247833,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
-
   const dataJenis = [
     {key: '1', value: 'PENCEGAHAN'},
     {key: '2', value: 'PENANGGULANGAN'},
@@ -75,34 +68,83 @@ export default function PusdalopCreate(props) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestLocationPermission();
-    } else {
-      Geolocation.getCurrentPosition(
-        position => {
-          setRegion({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
+  const [region, setRegion] = useState({
+    latitude: -7.431391,
+    longitude: 109.247833,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
+  // console.log('INI DATA MAP', region);
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'SIMBEBAS MEMBUTUHKAN LOKASI ANDA',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
         },
-        error => {
-          if (error.code === error.PERMISSION_DENIED) {
-            alert(
-              'Location permission denied. Please enable it in your settings.',
-            );
-          } else if (error.code === error.POSITION_UNAVAILABLE) {
-            alert('Position unavailable. Please try again later.');
-          } else {
-            alert('An error occurred while retrieving your location.');
-          }
-        },
-        {enableHighAccuracy: true, timeout: 1500},
       );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        await Geolocation.watchPosition(
+          position => {
+            setRegion({
+              ...region,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            setDataPusdalop({
+              ...dataPusdalop,
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+          },
+
+          error => {
+            if (error.code === error.TIMEOUT) {
+              alert('Position unavailable. Please try again later.');
+            } else {
+              alert('An error occurred while retrieving your location.');
+            }
+          },
+          {enableHighAccuracy: true, timeout: 10000},
+        );
+      } else {
+        alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
+      }
+    } catch (err) {
+      console.warn(err);
     }
+  };
+  useEffect(() => {
+    // if (Platform.OS === 'android') {
+    requestLocationPermission();
+    console.log('MAP');
+    // } else {
+    //   Geolocation.getCurrentPosition(
+    //     position => {
+    //       setRegion({
+    //         ...region,
+    //         latitude: position.coords.latitude,
+    //         longitude: position.coords.longitude,
+    //       });
+    //     },
+    //     error => {
+    //       if (error.code === error.PERMISSION_DENIED) {
+    //         alert(
+    //           'Location permission denied. Please enable it in your settings.',
+    //         );
+    //       } else if (error.code === error.POSITION_UNAVAILABLE) {
+    //         alert('Position unavailable. Please try again later.');
+    //       } else {
+    //         alert('An error occurred while retrieving your location.');
+    //       }
+    //     },
+    //     {enableHighAccuracy: true, timeout: 10000},
+    //   );
+    // }
   }, [requestLocationPermission]);
 
   useEffect(() => {
@@ -142,50 +184,7 @@ export default function PusdalopCreate(props) {
   }, []);
 
   //  NEW FUNCTION MAP
-  const requestLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'SIMBEBAS MEMBUTUHKAN LOKASI ANDA',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        await Geolocation.watchPosition(
-          position => {
-            setRegion({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            });
-            setDataPusdalop({
-              ...dataPusdalop,
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          },
 
-          error => {
-            if (error.code === error.TIMEOUT) {
-              alert('Position unavailable. Please try again later.');
-            } else {
-              alert('An error occurred while retrieving your location.');
-            }
-          },
-          {enableHighAccuracy: true, timeout: 1500},
-        );
-      } else {
-        alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
   const onMarkerDragEnd = e => {
     const newRegion = {
       latitude: e.nativeEvent.coordinate.latitude,
@@ -195,15 +194,15 @@ export default function PusdalopCreate(props) {
     };
     setRegion({
       ...region,
-      latitude: newRegion.latitude,
-      longitude: newRegion.longitude,
+      latitude: e.nativeEvent.coordinate.latitude,
+      longitude: e.nativeEvent.coordinate.latitude,
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     });
     setDataPusdalop({
       ...dataPusdalop,
-      lat: newRegion.latitude.toString(),
-      lng: newRegion.longitude.toString(),
+      lat: e.nativeEvent.coordinate.latitude.toString(),
+      lng: e.nativeEvent.coordinate.latitude.toString(),
     });
   };
 
@@ -428,7 +427,7 @@ export default function PusdalopCreate(props) {
     image: images,
     keteranganImage: [],
   });
-  // console.log('INI DATA PUSDALOP', dataPusdalop);
+  console.log('INI DATA PUSDALOP', dataPusdalop);
 
   return (
     <View>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -29,22 +29,20 @@ export default function AsesmenDetail(props) {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [dataStokBrang, setDataStokBarang] = useState('');
-  // console.log('INI DATA GET BARANG', dataStokBrang);
   const [namaBarang, setnamaBarang] = useState('');
   const [dataById, setDataByID] = useState({});
-  // console.log('INI DATA PUSDALOP', dataById?.data?.alamat);
   const pusdalopid = props.route.params.pusdalopId;
-  // console.log(pusdalopid);
   //  for map
   const [latitude, setlatitude] = useState();
   const [longitude, setlongiude] = useState();
+
   const [stateMap, setStateMap] = useState({
     latitude: null || -7.431391,
     longitude: null || 109.247833,
   });
   const [mapRegion, setMapRegion] = useState({
-    latitude: stateMap.latitude || -7.431391,
-    longitude: stateMap.longitude || 109.247833,
+    latitude: dataById?.data?.lat || -7.431391,
+    longitude: dataById?.data?.lng || 109.247833,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
@@ -155,7 +153,7 @@ export default function AsesmenDetail(props) {
     petugas: '',
     kerugianrp: '',
     korban_jiwa: '',
-    waktu_assesment: new Date().toLocaleDateString(),
+    waktu_assesment: new Date().toISOString().slice(0, 10),
     unsur_terlibat: '',
     kebutuhan_mendesak: '',
     cakupan: '',
@@ -173,7 +171,6 @@ export default function AsesmenDetail(props) {
     image: images,
   });
 
-  console.log('INI DATA ASESMEN', dataAssesmen);
   const handleChangeForm = (value, name) => {
     setDataAsesemen({...dataAssesmen, [name]: value});
   };
@@ -224,15 +221,16 @@ export default function AsesmenDetail(props) {
           });
         });
       const datauser = await AsyncStorage.getItem('token');
-      // console.log('INI DATA ASESMENT DALAM', formData);
-      // console.log('INI DATA PUSDALOP DALAM', dataUpdatePusdalop);
+      console.log('INI DATA ASESMENT DALAM', formData);
+
       const result = await axios({
-        method: 'patch',
-        url: `http://10.100.0.106:5000/api/v1/assesment/${pusdalopid}`,
+        method: 'PATCH',
+        url: `https://apisimbebas.banyumaskab.go.id/api/v1/assesment/${pusdalopid}`,
         data: formData,
       });
 
       console.log(result);
+      console.log('INI DATA DALAM', formData);
       alert('SUKSES MEMBUAT ASSESMEN');
       // props.navigation.navigate('Home');
     } catch (error) {
@@ -248,7 +246,7 @@ export default function AsesmenDetail(props) {
             style={{
               justifyContent: 'center',
               alignItems: 'center',
-              marginTop: -3,
+              marginTop: '-1%',
             }}>
             <Icon
               name="Safety"
@@ -263,26 +261,29 @@ export default function AsesmenDetail(props) {
           </View>
         </View>
         <View style={style.containerInput}>
-          <View>
-            <Text>Lapor Bencana</Text>
-            <Text>Perbaiki Isian Data Bencana</Text>
+          <View style={style.paddingAsesmen}>
+            <Text style={style.textAsesmen}>Lapor Bencana</Text>
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Jenis Bencana</Text>
+            <Text style={style.textTitleInput}>Jenis Bencana</Text>
             <TextInput
               placeholder={dataById?.data?.bencana?.sub_jenis}
               style={{borderWidth: 1, borderRadius: 10}}
+              editable={false}
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Tanggal Kejadian</Text>
+            <Text style={style.textTitleInput}>Tanggal Kejadian</Text>
             <TextInput
               placeholder={dataById?.data?.tanggal}
               style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
+              editable={false}
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Titik Lokasi Terjadinya Bencana</Text>
+            <Text style={style.textTitleInput}>
+              Titik Lokasi Terjadinya Bencana
+            </Text>
             <View style={style.containerMap}>
               <MapView
                 initialRegion={mapRegion}
@@ -305,21 +306,22 @@ export default function AsesmenDetail(props) {
             </View>
           </View>
           <View style={{marginTop: 200}}>
-            <Text>Kecamatan</Text>
+            <Text style={style.textTitleInput}>Kecamatan</Text>
             <TextInput
               placeholder={dataById?.data?.kecamatan?.kecamatan}
               style={{borderWidth: 1, borderRadius: 10}}
+              editable={false}
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Desa</Text>
+            <Text style={style.textTitleInput}>Desa</Text>
             <TextInput
               placeholder={dataById?.data?.desa?.desa}
               style={{borderWidth: 1, borderRadius: 10}}
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Alamat</Text>
+            <Text style={style.textTitleInput}>Alamat</Text>
             <TextInput
               placeholder={dataById?.data?.alamat}
               editable={false}
@@ -333,17 +335,20 @@ export default function AsesmenDetail(props) {
               marginTop: '5%',
               marginBottom: '5%',
               backgroundColor: '#FF6A16',
+              height: '2%',
+              borderRadius: 10,
             }}>
-            <Text style={{color: 'white'}}>
-              Isi Beberapa Data Beikut untuk Asesemen
+            <Text style={{color: 'white', fontWeight: 'bold'}}>
+              ISI BEBERAPA DATA BERIKUT UNTUK ASESMEN
             </Text>
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Tanggal Asesmen</Text>
+            <Text style={style.textTitleInput}>Tanggal Asesmen</Text>
             <TextInput
               value={date.toLocaleDateString()}
               placeholder={date.toLocaleDateString()}
-              style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
+              style={{borderWidth: 1, borderRadius: 10}}
+              editable={false}
               onChangeText={text =>
                 setDataAsesemen({
                   ...dataAssesmen,
@@ -360,7 +365,7 @@ export default function AsesmenDetail(props) {
             /> */}
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Dampak</Text>
+            <Text style={style.textTitleInput}>Dampak</Text>
             <TextInput
               placeholder="Dampak"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -373,7 +378,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Kerusakan Fasum</Text>
+            <Text style={style.textTitleInput}>Kerusakan Fasum</Text>
             <TextInput
               placeholder="Kerusakan Fasum"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -386,14 +391,18 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Kerusakan Rumah</Text>
+            <Text style={style.textTitleInput}>Kerusakan Rumah</Text>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingHorizontal: '3%',
+              }}>
               <View>
-                <Text>Rusak Ringan</Text>
+                <Text style={style.textAsesmen}>Rusak Ringan</Text>
                 <TextInput
                   placeholder="Ringan"
-                  style={{borderWidth: 1, borderRadius: 10}}
+                  style={{borderWidth: 1, borderRadius: 10, marginTop: '5%'}}
                   onChangeText={text =>
                     setDataAsesemen({
                       ...dataAssesmen,
@@ -403,10 +412,10 @@ export default function AsesmenDetail(props) {
                 />
               </View>
               <View>
-                <Text>Rusak Sedang</Text>
+                <Text style={style.textAsesmen}>Rusak Sedang</Text>
                 <TextInput
                   placeholder="Sedang"
-                  style={{borderWidth: 1, borderRadius: 10}}
+                  style={{borderWidth: 1, borderRadius: 10, marginTop: '5%'}}
                   onChangeText={text =>
                     setDataAsesemen({
                       ...dataAssesmen,
@@ -416,10 +425,10 @@ export default function AsesmenDetail(props) {
                 />
               </View>
               <View>
-                <Text>Rusak Berat</Text>
+                <Text style={style.textAsesmen}>Rusak Berat</Text>
                 <TextInput
                   placeholder="Berat"
-                  style={{borderWidth: 1, borderRadius: 10}}
+                  style={{borderWidth: 1, borderRadius: 10, marginTop: '5%'}}
                   onChangeText={text =>
                     setDataAsesemen({
                       ...dataAssesmen,
@@ -431,7 +440,7 @@ export default function AsesmenDetail(props) {
             </View>
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Kerugian</Text>
+            <Text style={style.textTitleInput}>Kerugian</Text>
             <TextInput
               placeholder="Masukan Kerugian"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -444,14 +453,18 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Korban Luka</Text>
+            <Text style={style.textTitleInput}>Korban Luka</Text>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingHorizontal: '5%',
+              }}>
               <View>
-                <Text>Luka Ringan</Text>
+                <Text style={style.textAsesmen}>Luka Ringan</Text>
                 <TextInput
                   placeholder="Ringan"
-                  style={{borderWidth: 1, borderRadius: 10}}
+                  style={{borderWidth: 1, borderRadius: 10, marginTop: '5%'}}
                   onChangeText={text =>
                     setDataAsesemen({
                       ...dataAssesmen,
@@ -461,10 +474,10 @@ export default function AsesmenDetail(props) {
                 />
               </View>
               <View>
-                <Text>Luka Sedang</Text>
+                <Text style={style.textAsesmen}>Luka Sedang</Text>
                 <TextInput
                   placeholder="Sedang"
-                  style={{borderWidth: 1, borderRadius: 10}}
+                  style={{borderWidth: 1, borderRadius: 10, marginTop: '5%'}}
                   onChangeText={text =>
                     setDataAsesemen({
                       ...dataAssesmen,
@@ -474,10 +487,10 @@ export default function AsesmenDetail(props) {
                 />
               </View>
               <View>
-                <Text>Luka Berat</Text>
+                <Text style={style.textAsesmen}>Luka Berat</Text>
                 <TextInput
                   placeholder="Berat"
-                  style={{borderWidth: 1, borderRadius: 10}}
+                  style={{borderWidth: 1, borderRadius: 10, marginTop: '5%'}}
                   onChangeText={text =>
                     setDataAsesemen({
                       ...dataAssesmen,
@@ -489,7 +502,7 @@ export default function AsesmenDetail(props) {
             </View>
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Korban Jiwa</Text>
+            <Text style={style.textTitleInput}>Korban Jiwa</Text>
             <TextInput
               placeholder="Korban Jiwa"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -502,7 +515,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Cakupan Bencana</Text>
+            <Text style={style.textTitleInput}>Cakupan Bencana</Text>
             <TextInput
               placeholder="Cakupan Bencana"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -515,7 +528,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Potensi Bencana Susulan</Text>
+            <Text style={style.textTitleInput}>Potensi Bencana Susulan</Text>
             <TextInput
               placeholder="Potensi Bencana Susulan"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -528,7 +541,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Deskripsi Kronologis</Text>
+            <Text style={style.textTitleInput}>Deskripsi Kronologis</Text>
             <TextInput
               placeholder="Kronologis"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -541,7 +554,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Tindakan akan dilakukan</Text>
+            <Text style={style.textTitleInput}>Tindakan akan dilakukan</Text>
             <TextInput
               placeholder="Tindakan"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -554,7 +567,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Peralatan yang dibutuhkan</Text>
+            <Text style={style.textTitleInput}>Peralatan yang dibutuhkan</Text>
             <TextInput
               placeholder="Peralatan"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -567,7 +580,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Kebutuhan mendesak</Text>
+            <Text style={style.textTitleInput}>Kebutuhan mendesak</Text>
             <TextInput
               placeholder="Kebutuhan Mendesak"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -580,7 +593,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Unsur terlibat</Text>
+            <Text style={style.textTitleInput}>Unsur terlibat</Text>
             <TextInput
               placeholder="Unsur Terlibat"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -593,7 +606,7 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Petugas</Text>
+            <Text style={style.textTitleInput}>Petugas</Text>
             <TextInput
               placeholder="Petugas"
               style={{borderWidth: 1, borderRadius: 10}}
@@ -606,7 +619,9 @@ export default function AsesmenDetail(props) {
             />
           </View>
           <View style={{marginTop: 10}}>
-            <Text>Data Barang Yang Di Butuhkan</Text>
+            <Text style={style.textTitleInput}>
+              Data Barang Yang Di Butuhkan
+            </Text>
             <View>
               <View>
                 <SelectList
@@ -638,10 +653,10 @@ export default function AsesmenDetail(props) {
             </View>
           </View>
           <View style={{marginTop: 10}}>
-            <Text>File Gambar</Text>
+            <Text style={style.textTitleInput}>File Gambar</Text>
             <View style={{flexDirection: 'row', padding: 10}}>
               <View style={{marginRight: 60}}>
-                <Text>Preview Image</Text>
+                <Text style={style.textAsesmen}>Preview Image</Text>
                 {dataAssesmen.image[0]?.uri && (
                   <Image
                     source={{
@@ -664,12 +679,22 @@ export default function AsesmenDetail(props) {
               <TouchableOpacity
                 style={{marginRight: 10, width: 60}}
                 onPress={handleLaunchCamera}>
-                <Icon name="camera" size={20} style={{marginLeft: 10}} />
+                <Icon
+                  name="camera"
+                  size={20}
+                  style={{marginLeft: 10}}
+                  color="black"
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 style={{marginRight: 10, width: 60}}
                 onPress={handleLaunchImageLibrary}>
-                <Icon name="folder1" size={20} style={{marginLeft: 10}} />
+                <Icon
+                  name="folder1"
+                  size={20}
+                  style={{marginLeft: 10}}
+                  color="black"
+                />
               </TouchableOpacity>
             </View>
             <View>
@@ -685,11 +710,18 @@ export default function AsesmenDetail(props) {
               />
             </View>
           </View>
-          <View>
+          <View style={{marginTop: -4}}>
             <Pressable style={style.buttonSimpan} onPress={handleCreateAsesmen}>
               <Text style={style.textLogin}>Simpan</Text>
             </Pressable>
+          </View>
+          <View>
             <Pressable style={style.buttonBatal}>
+              <Text style={style.textLogin}>Batal</Text>
+            </Pressable>
+          </View>
+          <View>
+            <Pressable style={style.buttonganjal}>
               <Text style={style.textLogin}>Batal</Text>
             </Pressable>
           </View>
@@ -712,7 +744,7 @@ const style = StyleSheet.create({
     borderRadius: 30,
     padding: 6,
     width: '100%',
-    maxHeight: '10000%',
+    maxHeight: '5000%',
     // height: '1000%',
     position: 'relative',
     marginTop: -10,
@@ -769,5 +801,29 @@ const style = StyleSheet.create({
     backgroundColor: '#fff',
     position: 'absolute',
     marginTop: 20,
+  },
+  textTitleInput: {
+    color: 'black',
+    marginBottom: '2%',
+  },
+  paddingAsesmen: {
+    paddingHorizontal: '3%',
+    marginTop: '3%',
+  },
+  textAsesmen: {
+    color: 'black',
+  },
+  buttonganjal: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 7,
+    elevation: 3,
+    backgroundColor: '#ffffff',
+    width: '100%',
+    textAlign: 'center',
+    height: 50,
+    marginTop: 10,
   },
 });
