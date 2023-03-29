@@ -11,6 +11,7 @@ import {
   Pressable,
   Image,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import {SelectList} from 'react-native-dropdown-select-list';
@@ -52,22 +53,7 @@ export default function PusdalopCreate(props) {
     setRefreshing(true);
     requestLocationPermission().finally(() => setRefreshing(false));
   };
-  useEffect(() => {
-    getMyStringValue();
-  }, [getMyStringValue]);
-  const getMyStringValue = async () => {
-    try {
-      const result = await AsyncStorage.getItem('nama');
-      // console.log(result);
-      await setDataPusdalop({
-        ...dataPusdalop,
-        user_pemohon: result.toString(),
-      });
-      // setDataNama(result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const [region, setRegion] = useState({
     latitude: -7.431391,
     longitude: 109.247833,
@@ -291,9 +277,9 @@ export default function PusdalopCreate(props) {
         });
       console.log('INI DATA CREATE PUSDALOP', formData);
 
-      // const datauser = await AsyncStorage.getItem('token');
-      const datauser =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUxNjksImlhdCI6MTY3OTg5NTU1NSwiZXhwIjoxNjc5OTgxOTU1fQ.Llc9rtKMa9y6rIijgeWva1mlGl1V5J5Wnoc8I-Ron1Q';
+      const datauser = await AsyncStorage.getItem('token');
+      // const datauser =
+      //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUxNjksImlhdCI6MTY3OTg5NTU1NSwiZXhwIjoxNjc5OTgxOTU1fQ.Llc9rtKMa9y6rIijgeWva1mlGl1V5J5Wnoc8I-Ron1Q';
 
       const result = await axios({
         url: 'https://apisimbebas.banyumaskab.go.id/api/v1/pusdalops',
@@ -301,8 +287,7 @@ export default function PusdalopCreate(props) {
         data: formData,
         headers: {
           'content-type': 'multipart/form-data',
-          Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUxNjksImlhdCI6MTY3OTg5NTU1NSwiZXhwIjoxNjc5OTgxOTU1fQ.Llc9rtKMa9y6rIijgeWva1mlGl1V5J5Wnoc8I-Ron1Q',
+          Authorization: `Bearer ${datauser}`,
         },
       });
       // console.log('INIII ERORR', result);
@@ -310,6 +295,11 @@ export default function PusdalopCreate(props) {
       props.navigation.navigate('Pusdalop');
     } catch (error) {
       console.log('INIII ERORR', error.message);
+      alert('SESI ANDA SUDAH BERAKHIR');
+      await AsyncStorage.clear();
+      props.navigation.replace('AuthScreen', {
+        screen: 'Login',
+      });
     }
   };
 

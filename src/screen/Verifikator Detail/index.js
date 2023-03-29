@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import MapView, {Marker} from 'react-native-maps';
 import axios from '../../utils/axios';
 
-export default function Verifikator() {
+export default function VerifikatorDetail() {
   const [stateMap, setStateMap] = useState({
     latitude: null || -7.431391,
     longitude: null || 109.247833,

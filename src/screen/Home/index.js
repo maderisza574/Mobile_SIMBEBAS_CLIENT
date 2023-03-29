@@ -163,8 +163,14 @@ export default function Home(props) {
                   alignItems: 'center',
                   marginTop: 5,
                 }}>
-                <Icon name="flag" color={'white'} size={50} />
-                <Text style={{color: 'white'}}>TRC</Text>
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <View style={{marginLeft: '10%', marginTop: '6%'}}>
+                    <Icon name="flag" color={'white'} size={50} />
+                  </View>
+                  <View>
+                    <Text style={{color: 'white'}}>TRC</Text>
+                  </View>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
