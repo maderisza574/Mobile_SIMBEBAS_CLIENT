@@ -7,6 +7,7 @@ import {
   TextInput,
   Pressable,
   Button,
+  Image,
   PermissionsAndroid,
   TouchableOpacity,
 } from 'react-native';
@@ -21,10 +22,25 @@ import {Chip} from 'react-native-paper';
 
 export default function VerifikatorDetail(props) {
   const [dataById, setDataByID] = useState({});
+  // console.log('INI DATA PUSDALOP', dataById?.data?.alamat);
   const [images, setImages] = useState([]);
+  const [dataStokBrang, setDataStokBarang] = useState('');
   const [inputs, setInputs] = useState([{value: '', image: null}]);
+  const lat = parseFloat(dataById?.data?.lat);
+  const lng = parseFloat(dataById?.data?.lng);
+  const defaultLat = -7.43973580004;
+  const defaultLng = 109.244402567;
   const pusdalopid = props.route.params.pusdalopId;
-  console.log('INI DATA PUSDALOP DETAIL', dataById?.data?.alamat);
+  const [stateMap, setStateMap] = useState({
+    latitude: null || -7.431391,
+    longitude: null || 109.247833,
+  });
+  const [mapRegion, setMapRegion] = useState({
+    latitude: stateMap.latitude || -7.431391,
+    longitude: stateMap.longitude || 109.247833,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
   const handlegetPusdalopId = async () => {
     try {
       const datauser = await AsyncStorage.getItem('token');
@@ -41,26 +57,35 @@ export default function VerifikatorDetail(props) {
       console.log(error);
     }
   };
+  const region = {
+    latitude: isNaN(lat) ? defaultLat : lat,
+    longitude: isNaN(lng) ? defaultLng : lng,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  };
+  const handleDataBarang = key => {
+    setDataVerifikator(prevData => ({
+      ...prevData,
+      barangid: [key],
+    }));
+  };
   useEffect(() => {
     handlegetPusdalopId();
   }, []);
-  const [stateMap, setStateMap] = useState({
-    latitude: null || -7.431391,
-    longitude: null || 109.247833,
-  });
-  const [mapRegion, setMapRegion] = useState({
-    latitude: stateMap.latitude || -7.431391,
-    longitude: stateMap.longitude || 109.247833,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+  useEffect(() => {
+    axios
+      .get(`/v1/barang?page=1&perPage=5`)
+      .then(res => {
+        let newArray = res.data.rows.map(item => {
+          return {key: item.namaBarang.id, value: item.namaBarang.nama_barang};
+        });
+        setDataStokBarang(newArray);
+      })
+      .catch(error => console.error(error));
+  }, []);
+
   // console.log(stateMap);
-  const handleLatitudeChange = latitude => {
-    setStateMap({...stateMap, latitude: parseFloat(latitude)});
-  };
-  const handleLongitudeChange = longitude => {
-    setStateMap({...stateMap, longitude: parseFloat(longitude)});
-  };
+
   const handleSearch = () => {
     setMapRegion({
       ...mapRegion,
@@ -115,10 +140,10 @@ export default function VerifikatorDetail(props) {
                 },
               ];
               setImages(prevImages => [...prevImages, response.assets]);
-              // setDataPusdalop({
-              //   ...dataPusdalop,
-              //   image: [...dataPusdalop.image, response.assets],
-              // });
+              setDataVerifikator({
+                ...dataVerifikator,
+                image: [...dataVerifikator.image, response.assets],
+              });
             } else {
               console.log('No image selected');
             }
@@ -131,7 +156,6 @@ export default function VerifikatorDetail(props) {
       console.log(error);
     }
   };
-  console.log();
   const handleLaunchImageLibrary = async () => {
     const photo = await launchImageLibrary({
       mediaType: 'photo',
@@ -146,7 +170,53 @@ export default function VerifikatorDetail(props) {
     // console.log('INI IMAGE LIBRARY', formData._parts[0]);
     // setImages(photo.assets[0].uri);
   };
-
+  const [dataVerifikator, setDataVerifikator] = useState({
+    tindakan_trc: true,
+    langsung: true,
+    kontruksi: true,
+    alat_berat: true,
+    dinas: true,
+    rekomendasi: 'tidak ada rekomendas',
+    barangid: 1,
+    barangqty: 2,
+    image: images,
+    keteranganImage: ['tesss'],
+  });
+  const handleCreateVerifikator = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('tindakan_trc', dataVerifikator.tindakan_trc);
+      formData.append('langsung', dataVerifikator.langsung);
+      formData.append('kontruksi', dataVerifikator.kontruksi);
+      formData.append('alat_berat', dataVerifikator.kontruksi);
+      formData.append('dinas', dataVerifikator.dinas);
+      formData.append('rekomendasi', dataVerifikator.rekomendasi);
+      formData.append('barang[0][id_barang]', dataVerifikator.barangid);
+      formData.append('barang[0][qty]', dataVerifikator.barangqty);
+      formData.append('keteranganImage[0]', dataVerifikator.keteranganImage);
+      images.length > 0 &&
+        images.forEach((v, k) => {
+          formData.append(`Image[${k}]`, {
+            name: v[k].fileName,
+            type: v[k].type,
+            uri: v[k].uri,
+          });
+        });
+      const datauser = await AsyncStorage.getItem('token');
+      console.log('INI DATA ASESMENT DALAM', formData);
+      const result = await axios({
+        method: 'PATCH',
+        url: `https://apisimbebas.banyumaskab.go.id/api/v1/verifikasi/${pusdalopid}`,
+        data: formData,
+        headers: {
+          'content-type': 'multipart/form-data',
+          Authorization: `Bearer ${datauser}`,
+        },
+      });
+      console.log('INI DATA VERIF', formData);
+      alert('SUKSES MEBUAT VERIFIKASI');
+    } catch (error) {}
+  };
   return (
     <>
       <ScrollView>
@@ -170,40 +240,68 @@ export default function VerifikatorDetail(props) {
             <Text>Perbaiki Isian Data Bencana</Text>
             <View style={{marginBottom: 10}}>
               <Text>Jenis Bencana</Text>
-              <TextInput
+              <Text>{dataById?.data?.bencana?.sub_jenis}</Text>
+              {/* <TextInput
                 placeholder="Tanah Longsor"
                 style={{borderWidth: 1, borderRadius: 10}}
                 editable={false}
-              />
+              /> */}
             </View>
             <View>
               <Text>Tanggal Kejadian</Text>
-              <TextInput
+              <Text>{dataById?.data?.tanggal}</Text>
+              {/* <TextInput
                 placeholder={dataById?.data?.tanggal}
                 style={{borderWidth: 1, borderRadius: 10}}
                 editable={false}
-              />
+              /> */}
             </View>
             <View>
               <Text>Lokasi Terjadinya Bencana</Text>
-              <TextInput
-                placeholder="INPUT MAP"
-                style={{borderWidth: 1, borderRadius: 10}}
-              />
+              <View>
+                <MapView
+                  region={region}
+                  initialRegion={region}
+                  style={{
+                    flex: 1,
+                    height: 200,
+                    width: 400,
+                    position: 'absolute',
+                    zIndex: 999999,
+                    marginLeft: '0.5%',
+                  }}>
+                  <Marker
+                    draggable
+                    coordinate={{
+                      latitude: region.latitude,
+                      longitude: region.longitude,
+                    }}
+                    // onDragEnd={e =>
+                    //   setMapRegion({
+                    //     ...mapRegion,
+                    //     latitude: e.nativeEvent.coordinate.latitude,
+                    //     longitude: e.nativeEvent.coordinate.longitude,
+                    //   })
+                    // }
+                  />
+                </MapView>
+              </View>
             </View>
-            <View>
+            <View style={{marginTop: '50%'}}>
               <Text>Kecamatan</Text>
-              <TextInput
+              <Text>{dataById?.data?.kecamatan?.kecamatan}</Text>
+              {/* <TextInput
                 placeholder={dataById?.data?.kecamatan?.kecamatan}
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
             <View>
               <Text>Desa</Text>
-              <TextInput
+              <Text>{dataById?.data?.desa?.desa}</Text>
+              {/* <TextInput
                 placeholder={dataById?.data?.desa?.desa}
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
             <View>
               <Text>Alamat</Text>
@@ -271,15 +369,12 @@ export default function VerifikatorDetail(props) {
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <SelectList
-                  // setSelected={handleSelect}
-                  // setSelected={key => setSelected(key)}
-                  // data={dataJenis}
+                  setSelected={handleDataBarang}
+                  data={dataStokBrang}
                   save="key"
-                  itemKey="key"
+                  item="key"
                   itemLabel="name"
-                  onValueChange
-                  boxStyles={{borderColor: 'black'}}
-                  placeholder="Pilih Jenis Tindakan"
+                  placeholder="Pilih Barang"
                 />
                 <TextInput
                   style={{
@@ -290,10 +385,19 @@ export default function VerifikatorDetail(props) {
                     marginRight: 10,
                     marginLeft: 5,
                   }}
+                  onChangeText={text =>
+                    setDataVerifikator({
+                      ...dataVerifikator,
+                      barangqty: text,
+                    })
+                  }
                   // onChangeText={text => setText2(text)}
                   // value={text2}
                 />
-                <Button title="Submit" />
+                <Button
+                  title="+"
+                  onPress={() => alert('FITUR BELUM TERSEDIA')}
+                />
               </View>
             </View>
             <View>
@@ -360,7 +464,8 @@ export default function VerifikatorDetail(props) {
                     {/* ))} */}
                     <Button
                       title="Remove"
-                      onPress={() => handleRemoveInput(index)}
+                      onPress={handleCreateVerifikator}
+                      // onPress={() => handleCre(index)}
                     />
                   </View>
                 </View>

@@ -12,7 +12,18 @@ export default function Pusdalop(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getDataPusdalop());
+    const fetchData = async () => {
+      try {
+        await dispatch(getDataPusdalop());
+      } catch (error) {
+        alert('SILAHKAN LOGIN ULANG');
+        await AsyncStorage.clear();
+        props.navigation.replace('AuthScreen', {
+          screen: 'Login',
+        });
+      }
+    };
+    fetchData();
   }, []);
 
   const navPusdalopDetail = () => {

@@ -19,8 +19,20 @@ export default function Asesmen(props) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(getDataPusdalop());
+    const fetchData = async () => {
+      try {
+        await dispatch(getDataPusdalop());
+      } catch (error) {
+        alert('SILAHKAN LOGIN ULANG');
+        await AsyncStorage.clear();
+        props.navigation.replace('AuthScreen', {
+          screen: 'Login',
+        });
+      }
+    };
+    fetchData();
   }, []);
   const handleRefresh = () => {
     setRefreshing(true);

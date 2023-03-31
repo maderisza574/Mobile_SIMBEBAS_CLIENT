@@ -57,6 +57,10 @@ export default function PusdalopDetail(props) {
   // console.log('ini data pusdalop', typeof dataById.data?.lng);
   const dateStr = dataById?.data?.tanggal;
   const formatDate = moment(dateStr).format('YYYY-MM-DD HH:mm:ss');
+  const lat = parseFloat(dataById?.data?.lat);
+  const lng = parseFloat(dataById?.data?.lng);
+  const defaultLat = -7.43973580004;
+  const defaultLng = 109.244402567;
 
   const [dataUpdatePusdalop, setDataUpdatePusdalop] = useState({
     id_jenis_bencana: '',
@@ -270,10 +274,10 @@ export default function PusdalopDetail(props) {
   //   longitude: 109.247833,
   // });
   const [mapRegion, setMapRegion] = useState({
-    latitude: dataById.data ? parseFloat(dataById.data.lng) : -7.42850616,
-    longitude: dataById.data ? parseFloat(dataById.data.lat) : 109.23661492,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitude: isNaN(lat) ? defaultLat : lat,
+    longitude: isNaN(lng) ? defaultLng : lng,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
   });
   // console.log('INI DATA MAP', mapRegion);
   // console.log(stateMap);

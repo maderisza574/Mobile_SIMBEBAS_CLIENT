@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Verifikator(props) {
   const [refreshing, setRefreshing] = useState(false);
@@ -12,7 +13,18 @@ export default function Verifikator(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getDataPusdalop());
+    const fetchData = async () => {
+      try {
+        await dispatch(getDataPusdalop());
+      } catch (error) {
+        alert('SILAHKAN LOGIN ULANG');
+        await AsyncStorage.clear();
+        props.navigation.replace('AuthScreen', {
+          screen: 'Login',
+        });
+      }
+    };
+    fetchData();
   }, []);
 
   const navVerifDetail = id => {

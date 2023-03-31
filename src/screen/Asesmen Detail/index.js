@@ -32,6 +32,11 @@ export default function AsesmenDetail(props) {
   const [namaBarang, setnamaBarang] = useState('');
   const [dataById, setDataByID] = useState({});
   const pusdalopid = props.route.params.pusdalopId;
+  const lat = parseFloat(dataById?.data?.lat);
+  console.log('INI DATA MAP API', lat);
+  const lng = parseFloat(dataById?.data?.lng);
+  const defaultLat = -7.43973580004;
+  const defaultLng = 109.244402567;
   //  for map
   const [latitude, setlatitude] = useState();
   const [longitude, setlongiude] = useState();
@@ -41,10 +46,10 @@ export default function AsesmenDetail(props) {
     longitude: null || 109.247833,
   });
   const [mapRegion, setMapRegion] = useState({
-    latitude: dataById?.data?.lat || -7.431391,
-    longitude: dataById?.data?.lng || 109.247833,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitude: isNaN(lat) ? defaultLat : lat,
+    longitude: isNaN(lng) ? defaultLng : lng,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
   });
 
   const handlegetPusdalopId = async () => {
@@ -227,6 +232,10 @@ export default function AsesmenDetail(props) {
         method: 'PATCH',
         url: `https://apisimbebas.banyumaskab.go.id/api/v1/assesment/${pusdalopid}`,
         data: formData,
+        headers: {
+          'content-type': 'multipart/form-data',
+          Authorization: `Bearer ${datauser}`,
+        },
       });
 
       console.log(result);
@@ -286,17 +295,18 @@ export default function AsesmenDetail(props) {
             </Text>
             <View style={style.containerMap}>
               <MapView
+                region={mapRegion}
                 initialRegion={mapRegion}
                 style={{flex: 1, height: 300, width: 380}}>
                 <Marker
                   draggable
                   coordinate={{
-                    latitude: stateMap.latitude,
-                    longitude: stateMap.longitude,
+                    latitude: mapRegion.latitude,
+                    longitude: mapRegion.longitude,
                   }}
                   onDragEnd={e =>
-                    setStateMap({
-                      ...stateMap,
+                    setMapRegion({
+                      ...mapRegion,
                       latitude: e.nativeEvent.coordinate.latitude,
                       longitude: e.nativeEvent.coordinate.longitude,
                     })
