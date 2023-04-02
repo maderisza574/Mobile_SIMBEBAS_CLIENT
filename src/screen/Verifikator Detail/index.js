@@ -74,7 +74,7 @@ export default function VerifikatorDetail(props) {
   }, []);
   useEffect(() => {
     axios
-      .get(`/v1/barang?page=1&perPage=5`)
+      .get('/v1/barang?page=1&perPage=5')
       .then(res => {
         let newArray = res.data.rows.map(item => {
           return {key: item.namaBarang.id, value: item.namaBarang.nama_barang};
@@ -238,18 +238,36 @@ export default function VerifikatorDetail(props) {
           </View>
           <View style={style.containerInput}>
             <Text>Perbaiki Isian Data Bencana</Text>
-            <View style={{marginBottom: 10}}>
-              <Text>Jenis Bencana</Text>
-              <Text>{dataById?.data?.bencana?.sub_jenis}</Text>
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Jenis Bencana:</Text>
+              </View>
+              <View style={{paddingHorizontal: '-30%'}}>
+                <Text>{dataById?.data?.bencana?.sub_jenis}</Text>
+              </View>
               {/* <TextInput
                 placeholder="Tanah Longsor"
                 style={{borderWidth: 1, borderRadius: 10}}
                 editable={false}
               /> */}
             </View>
-            <View>
-              <Text>Tanggal Kejadian</Text>
-              <Text>{dataById?.data?.tanggal}</Text>
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Tanggal Kejadian</Text>
+              </View>
+              <View>
+                <Text>{dataById?.data?.tanggal}</Text>
+              </View>
               {/* <TextInput
                 placeholder={dataById?.data?.tanggal}
                 style={{borderWidth: 1, borderRadius: 10}}
@@ -287,70 +305,174 @@ export default function VerifikatorDetail(props) {
                 </MapView>
               </View>
             </View>
-            <View style={{marginTop: '50%'}}>
-              <Text>Kecamatan</Text>
-              <Text>{dataById?.data?.kecamatan?.kecamatan}</Text>
+            <View
+              style={{
+                marginTop: '50%',
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Kecamatan</Text>
+              </View>
+              <View>
+                <Text>{dataById?.data?.kecamatan?.kecamatan}</Text>
+              </View>
               {/* <TextInput
                 placeholder={dataById?.data?.kecamatan?.kecamatan}
                 style={{borderWidth: 1, borderRadius: 10}}
               /> */}
             </View>
-            <View>
-              <Text>Desa</Text>
-              <Text>{dataById?.data?.desa?.desa}</Text>
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Desa</Text>
+              </View>
+              <View>
+                <Text>{dataById?.data?.desa?.desa}</Text>
+              </View>
               {/* <TextInput
                 placeholder={dataById?.data?.desa?.desa}
                 style={{borderWidth: 1, borderRadius: 10}}
               /> */}
             </View>
-            <View>
-              <Text>Alamat</Text>
-              <TextInput
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View
+                style={{
+                  marginBottom: 10,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text>Alamat</Text>
+              </View>
+              <View>
+                <Text>{dataById?.data?.alamat}</Text>
+              </View>
+              {/* <TextInput
                 placeholder={dataById?.data?.alamat}
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
-            <View>
-              <Text>Kerusakan Rumah</Text>
-              <TextInput
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Kerusakan Rumah</Text>
+              </View>
+              <View>
+                <Text>Ringan</Text>
+              </View>
+              {/* <TextInput
                 placeholder="alamat"
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
-            <View>
-              <Text>Cakupan Banjir</Text>
-              <TextInput
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Cakupan Banjir</Text>
+              </View>
+              <View>
+                <Text>Data Cakupan Banjir</Text>
+              </View>
+              {/* <TextInput
                 placeholder="alamat"
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
-            <View>
-              <Text>Deskripsi Kronologis</Text>
-              <TextInput
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Deskripsi Kronologis</Text>
+              </View>
+              <View>
+                <Text>Data Deskripsi Kronologis</Text>
+              </View>
+              {/* <TextInput
                 placeholder="alamat"
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
-            <View>
-              <Text>Tindakan</Text>
-              <TextInput
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View
+                style={{
+                  marginBottom: 10,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text>Tindakan</Text>
+              </View>
+              <View>
+                <Text>Data Tindakan</Text>
+              </View>
+              {/* <TextInput
                 placeholder="Pendataan dan koordinasi dengan perangkat desa"
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
-            <View>
-              <Text>Peralatan dibutuhkan</Text>
-              <TextInput
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View
+                style={{
+                  marginBottom: 10,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text>Peralatan dibutuhkan</Text>
+              </View>
+              <View>
+                <Text>Data Peralatan yang dibutuhkan</Text>
+              </View>
+              {/* <TextInput
                 placeholder="Pendataan dan koordinasi dengan perangkat desa"
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
-            <View>
-              <Text>Rekomendasi</Text>
-              <TextInput
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Text>Rekomendasi</Text>
+              </View>
+              <View>
+                <Text>Data Rekomendasi</Text>
+              </View>
+              {/* <TextInput
                 placeholder="Pendataan dan koordinasi dengan perangkat desa"
                 style={{borderWidth: 1, borderRadius: 10}}
-              />
+              /> */}
             </View>
             <View style={style.viewVerifikator}>
               <View>
@@ -365,123 +487,102 @@ export default function VerifikatorDetail(props) {
               </View>
               <View style={{flexDirection: 'row'}}>
                 <Text>Nama Barang</Text>
-                <Text style={{marginLeft: '22%'}}>Qty</Text>
+                <Text style={{marginLeft: '55%'}}>Qty</Text>
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <SelectList
-                  setSelected={handleDataBarang}
-                  data={dataStokBrang}
-                  save="key"
-                  item="key"
-                  itemLabel="name"
-                  placeholder="Pilih Barang"
-                />
-                <TextInput
-                  style={{
-                    flex: 1,
-                    height: 40,
-                    borderColor: 'gray',
-                    borderWidth: 1,
-                    marginRight: 10,
-                    marginLeft: 5,
-                  }}
-                  onChangeText={text =>
-                    setDataVerifikator({
-                      ...dataVerifikator,
-                      barangqty: text,
-                    })
-                  }
-                  // onChangeText={text => setText2(text)}
-                  // value={text2}
-                />
-                <Button
-                  title="+"
-                  onPress={() => alert('FITUR BELUM TERSEDIA')}
-                />
+              <View style={{flexDirection: 'row'}}>
+                <View style={{width: '70%'}}>
+                  <SelectList
+                    setSelected={handleDataBarang}
+                    data={dataStokBrang}
+                    save="key"
+                    item="key"
+                    itemLabel="name"
+                    placeholder="Pilih Barang"
+                  />
+                </View>
+                <View style={{marginLeft: '5%'}}>
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      height: 40,
+                      borderColor: 'black',
+                      borderWidth: 1,
+                      marginRight: 10,
+                      marginLeft: 5,
+                      width: '70%', // set the width to 200 pixels
+                    }}
+                    onChangeText={text =>
+                      setDataVerifikator({
+                        ...dataVerifikator,
+                        barangqty: text,
+                      })
+                    }
+                  />
+                </View>
+                <View style={{marginLeft: '5%'}}>
+                  <Button
+                    title="+"
+                    onPress={() => alert('FITUR BELUM TERSEDIA')}
+                  />
+                </View>
               </View>
             </View>
             <View>
               <Text>Upload File Gambar</Text>
             </View>
             <View>
-              {inputs.map((input, index) => (
-                <View key={index}>
-                  <View style={{flexDirection: 'row', padding: 10}}>
-                    <View style={{marginRight: '30%'}}>
-                      {images && images[0] && images[0][0]?.uri && (
-                        <Image
-                          source={{
-                            uri: images[0][0].uri,
-                          }}
-                          style={{height: 200, width: 200}}
-                        />
-                      )}
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <TouchableOpacity
-                      style={{marginRight: 10, width: 60}}
-                      onPress={handleLaunchCamera}>
-                      <Icon name="camera" size={20} style={{marginLeft: 10}} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{marginRight: 10, width: 60}}
-                      onPress={handleLaunchImageLibrary}>
-                      <Icon
-                        name="folder-images"
-                        size={20}
-                        style={{marginLeft: 10}}
+              <View>
+                <View style={{flexDirection: 'row', padding: 10}}>
+                  <View style={{marginRight: '30%'}}>
+                    {images && images[0] && images[0][0]?.uri && (
+                      <Image
+                        source={{
+                          uri: images[0][0].uri,
+                        }}
+                        style={{height: 200, width: 200}}
                       />
-                    </TouchableOpacity>
-                  </View>
-                  <View>
-                    <Text style={style.titleOption}>Keterangan</Text>
-                    {/* {keteranganImage.map((text, index) => ( */}
-                    <TextInput
-                      placeholder="Masukan Keterangan gambar"
-                      key={index}
-                      style={{
-                        height: 100,
-                        width: 350,
-                        borderWidth: 1,
-                        marginLeft: 15,
-                        marginTop: 5,
-                        marginBottom: 10,
-                      }}
-                      // value={dataPusdalop.keteranganImage}
-                      // onChangeText={text =>
-                      //   setDataPusdalop({
-                      //     ...dataPusdalop,
-                      //     keteranganImage: [text],
-                      //   })
-                      // }
-                    />
-                    {/* ))} */}
-                    <Button
-                      title="Remove"
-                      onPress={handleCreateVerifikator}
-                      // onPress={() => handleCre(index)}
-                    />
+                    )}
                   </View>
                 </View>
-              ))}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <TouchableOpacity
+                    style={{marginRight: 10, width: 60}}
+                    onPress={handleLaunchCamera}>
+                    <Icon name="camera" size={20} style={{marginLeft: 10}} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{marginRight: 10, width: 60}}
+                    onPress={handleLaunchImageLibrary}>
+                    <Icon
+                      name="folder-images"
+                      size={20}
+                      style={{marginLeft: 10}}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <Text style={style.titleOption}>Keterangan</Text>
+                  <TextInput
+                    placeholder="Masukan Keterangan gambar"
+                    style={{
+                      height: 100,
+                      width: 350,
+                      borderWidth: 1,
+                      marginLeft: 15,
+                      marginTop: 5,
+                      marginBottom: 10,
+                    }}
+                  />
+                </View>
+              </View>
             </View>
-            <View></View>
-            <View
-              style={{
-                flexDirection: 'row',
-                marginTop: 1300,
-                marginBottom: '3%',
-                // backgroundColor: 'red',
-                position: 'absolute',
-                // zIndex: 100,
-              }}>
-              <View>
+            <View style={{flexDirection: 'row', width: '100%', height: '15%'}}>
+              <View style={{width: '40%', height: '15%'}}>
                 <Chip
                   styicon="information"
                   onPress={() => console.log('Pressed')}
@@ -495,7 +596,7 @@ export default function VerifikatorDetail(props) {
                   <Text>Tindakan TRC</Text>
                 </Chip>
               </View>
-              <View>
+              <View style={{width: '60%', height: '15%'}}>
                 <Chip
                   styicon="information"
                   onPress={() => console.log('Pressed')}
@@ -508,12 +609,11 @@ export default function VerifikatorDetail(props) {
             <View
               style={{
                 flexDirection: 'row',
-                zIndex: 99999,
-                position: 'absolute',
-                marginTop: 1340,
-                marginBottom: '2%',
+                width: '100%',
+                height: '15%',
+                marginTop: '-55%',
               }}>
-              <View>
+              <View style={{width: '48%', height: '15%'}}>
                 <Chip
                   styicon="information"
                   onPress={() => console.log('Pressed')}
@@ -527,42 +627,6 @@ export default function VerifikatorDetail(props) {
                   <Text>Penangan Kontruksi</Text>
                 </Chip>
               </View>
-              <View>
-                <Chip
-                  styicon="information"
-                  onPress={() => console.log('Pressed')}
-                  style={style.chipAlat}>
-                  <Icon
-                    name="creative-commons-remix"
-                    size={20}
-                    style={{marginLeft: 5, marginRight: 3}}
-                    selectionColor
-                  />
-                  <Text>Alat Berat</Text>
-                </Chip>
-              </View>
-            </View>
-            <View style={{marginTop: '25%'}}>
-              <Chip
-                styicon="information"
-                onPress={() => console.log('Pressed')}
-                style={style.chipDitangani}>
-                <Icon
-                  name="creative-commons-attribution"
-                  size={20}
-                  style={{marginLeft: 5, marginRight: 3}}
-                  selectionColor
-                />
-                <Text>Ditangani Dinas Lain</Text>
-              </Chip>
-            </View>
-            <View style={style.buttonStyle}>
-              <Button title="Verifikasi & Simpan" />
-            </View>
-            <View>
-              <Pressable style={style.buttonBatal}>
-                <Text style={{color: 'white', fontWeight: 'bold'}}>Batal</Text>
-              </Pressable>
             </View>
           </View>
         </View>
