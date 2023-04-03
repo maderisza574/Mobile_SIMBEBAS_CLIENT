@@ -172,12 +172,12 @@ export default function PusdalopCreate(props) {
   //  NEW FUNCTION MAP
 
   const onMarkerDragEnd = e => {
-    const newRegion = {
-      latitude: e.nativeEvent.coordinate.latitude,
-      longitude: e.nativeEvent.coordinate.longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    };
+    // const newRegion = {
+    //   latitude: e.nativeEvent.coordinate.latitude,
+    //   longitude: e.nativeEvent.coordinate.longitude,
+    //   latitudeDelta: 0.01,
+    //   longitudeDelta: 0.01,
+    // };
     setRegion({
       ...region,
       latitude: e.nativeEvent.coordinate.latitude,
@@ -519,7 +519,7 @@ export default function PusdalopCreate(props) {
             </Text>
             <View>
               <MapView
-                style={{flex: 1, height: 200, width: 380}}
+                style={{flex: 1, height: 200, width: '100%'}}
                 initialRegion={region}
                 region={region}
                 onRegionChangeComplete={setRegion}
@@ -542,10 +542,12 @@ export default function PusdalopCreate(props) {
                 paddingHorizontal: '20%',
               }}>
               <TextInput
+                value={`${region.latitude}`}
                 editable={false}
                 placeholder={dataPusdalop.lat.toString()}
               />
               <TextInput
+                value={`${region.longitude}`}
                 editable={false}
                 placeholder={dataPusdalop.lng.toString()}
                 keyboardtype="numeric"

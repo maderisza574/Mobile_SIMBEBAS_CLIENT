@@ -21,6 +21,7 @@ import {getDataPusdalopById} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createDataAssesmen} from '../../stores/actions/asesmen';
+import moment from 'moment';
 
 export default function AsesmenDetail(props) {
   const dispatch = useDispatch();
@@ -33,24 +34,11 @@ export default function AsesmenDetail(props) {
   const [dataById, setDataByID] = useState({});
   const pusdalopid = props.route.params.pusdalopId;
   const lat = parseFloat(dataById?.data?.lat);
-  console.log('INI DATA MAP API', lat);
+  console.log('INI DATA MAP', lat);
   const lng = parseFloat(dataById?.data?.lng);
   const defaultLat = -7.43973580004;
   const defaultLng = 109.244402567;
   //  for map
-  const [latitude, setlatitude] = useState();
-  const [longitude, setlongiude] = useState();
-
-  const [stateMap, setStateMap] = useState({
-    latitude: null || -7.431391,
-    longitude: null || 109.247833,
-  });
-  const [mapRegion, setMapRegion] = useState({
-    latitude: isNaN(lat) ? defaultLat : lat,
-    longitude: isNaN(lng) ? defaultLng : lng,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
 
   const handlegetPusdalopId = async () => {
     try {
@@ -63,6 +51,11 @@ export default function AsesmenDetail(props) {
       };
       const result = await axios.get(`/v1/pusdalops/${pusdalopid}`, config);
       setDataByID(result.data);
+      // setMapRegion({
+      //   ...mapRegion,
+      //   latitude: result.data.lat,
+      //   longitude: result.data.lng,
+      // });
     } catch (error) {
       alert('gagal mendapat kan data');
       console.log(error);
@@ -83,6 +76,12 @@ export default function AsesmenDetail(props) {
       .catch(error => console.error(error));
   }, []);
   // untuk data barang
+  const mapRegion = {
+    latitude: isNaN(lat) ? defaultLat : lat,
+    longitude: isNaN(lng) ? defaultLng : lng,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  };
 
   // Image
   const [images, setImages] = useState([]);
@@ -273,21 +272,43 @@ export default function AsesmenDetail(props) {
           <View style={style.paddingAsesmen}>
             <Text style={style.textAsesmen}>Lapor Bencana</Text>
           </View>
-          <View style={{marginTop: 10}}>
-            <Text style={style.textTitleInput}>Jenis Bencana</Text>
-            <TextInput
+          <View
+            style={{
+              marginTop: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View>
+              <Text style={style.textTitleInput}>Jenis Bencana</Text>
+            </View>
+            <View>
+              <Text>{dataById?.data?.bencana?.sub_jenis}</Text>
+            </View>
+            {/* <TextInput
               placeholder={dataById?.data?.bencana?.sub_jenis}
               style={{borderWidth: 1, borderRadius: 10}}
               editable={false}
-            />
+            /> */}
           </View>
-          <View style={{marginTop: 10}}>
-            <Text style={style.textTitleInput}>Tanggal Kejadian</Text>
-            <TextInput
+          <View
+            style={{
+              marginTop: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View>
+              <Text style={style.textTitleInput}>Tanggal Kejadian</Text>
+            </View>
+            <View>
+              <Text>
+                {moment(dataById?.data?.tanggal).format('YYYY-MM-DD h:mm:ss a')}
+              </Text>
+            </View>
+            {/* <TextInput
               placeholder={dataById?.data?.tanggal}
               style={{borderWidth: 1, borderRadius: 10, marginTop: 5}}
               editable={false}
-            />
+            /> */}
           </View>
           <View style={{marginTop: 10}}>
             <Text style={style.textTitleInput}>
@@ -297,7 +318,7 @@ export default function AsesmenDetail(props) {
               <MapView
                 region={mapRegion}
                 initialRegion={mapRegion}
-                style={{flex: 1, height: 300, width: 380}}>
+                style={{flex: 1, height: 300, width: '100%'}}>
                 <Marker
                   draggable
                   coordinate={{
@@ -315,28 +336,54 @@ export default function AsesmenDetail(props) {
               </MapView>
             </View>
           </View>
-          <View style={{marginTop: 200}}>
-            <Text style={style.textTitleInput}>Kecamatan</Text>
-            <TextInput
+          <View
+            style={{
+              marginTop: 200,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View>
+              <Text style={style.textTitleInput}>Kecamatan</Text>
+            </View>
+            <View>
+              <Text>{dataById?.data?.kecamatan?.kecamatan}</Text>
+            </View>
+            {/* <TextInput
               placeholder={dataById?.data?.kecamatan?.kecamatan}
               style={{borderWidth: 1, borderRadius: 10}}
               editable={false}
-            />
+            /> */}
           </View>
-          <View style={{marginTop: 10}}>
-            <Text style={style.textTitleInput}>Desa</Text>
-            <TextInput
+          <View
+            style={{
+              marginTop: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View>
+              <Text style={style.textTitleInput}>Desa</Text>
+            </View>
+            <View>
+              <Text>{dataById?.data?.desa?.desa}</Text>
+            </View>
+            {/* <TextInput
               placeholder={dataById?.data?.desa?.desa}
               style={{borderWidth: 1, borderRadius: 10}}
-            />
+            /> */}
           </View>
-          <View style={{marginTop: 10}}>
+          <View
+            style={{
+              marginTop: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
             <Text style={style.textTitleInput}>Alamat</Text>
-            <TextInput
+            <Text>{dataById?.data?.alamat}</Text>
+            {/* <TextInput
               placeholder={dataById?.data?.alamat}
               editable={false}
               style={{borderWidth: 1, borderRadius: 10}}
-            />
+            /> */}
           </View>
           <View
             style={{
@@ -806,7 +853,7 @@ const style = StyleSheet.create({
     marginTop: 10,
   },
   containerMap: {
-    width: 100,
+    width: '100%',
     height: 200,
     backgroundColor: '#fff',
     position: 'absolute',

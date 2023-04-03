@@ -171,29 +171,49 @@ export default function VerifikatorDetail(props) {
     // setImages(photo.assets[0].uri);
   };
   const [dataVerifikator, setDataVerifikator] = useState({
-    tindakan_trc: true,
-    langsung: true,
-    kontruksi: true,
-    alat_berat: true,
-    dinas: true,
-    rekomendasi: 'tidak ada rekomendas',
-    barangid: 1,
-    barangqty: 2,
+    tindakan_trc: false,
+    langsung: false,
+    kontruksi: false,
+    alat_berat: false,
+    dinas: false,
+    rekomendasi: '',
+    barangid: '',
+    barangqty: '',
     image: images,
-    keteranganImage: ['tesss'],
+    keteranganImage: [],
   });
   const handleCreateVerifikator = async () => {
     try {
       const formData = new FormData();
-      formData.append('tindakan_trc', dataVerifikator.tindakan_trc);
-      formData.append('langsung', dataVerifikator.langsung);
-      formData.append('kontruksi', dataVerifikator.kontruksi);
-      formData.append('alat_berat', dataVerifikator.kontruksi);
-      formData.append('dinas', dataVerifikator.dinas);
-      formData.append('rekomendasi', dataVerifikator.rekomendasi);
-      formData.append('barang[0][id_barang]', dataVerifikator.barangid);
-      formData.append('barang[0][qty]', dataVerifikator.barangqty);
-      formData.append('keteranganImage[0]', dataVerifikator.keteranganImage);
+      // formData.append('tindakan_trc', dataVerifikator.tindakan_trc);
+      // formData.append('langsung', dataVerifikator.langsung);
+      // formData.append('kontruksi', dataVerifikator.kontruksi);
+      // formData.append('alat_berat', dataVerifikator.kontruksi);
+      // formData.append('dinas', dataVerifikator.dinas);
+      // formData.append('rekomendasi', dataVerifikator.rekomendasi);
+      // formData.append('barang[0][id_barang]', dataVerifikator.barangid);
+      // formData.append('barang[0][qty]', dataVerifikator.barangqty);
+      // formData.append('keteranganImage[0]', dataVerifikator.keteranganImage);
+
+      formData.append('tindakan_trc', true);
+      formData.append('langsung', true);
+      formData.append('kontruksi', true);
+      formData.append('alat_berat', true);
+      formData.append('dinas', true);
+      formData.append('rekomendasi', 'tidak ada');
+      formData.append('barang[0][id_barang]', 1);
+      formData.append('barang[0][qty]', 1);
+      formData.append('keteranganImage[0]', 'tess');
+      //       tindakan_trc:true
+      // langsung:true
+      // kontruksi:true
+      // alat_berat:true
+      // dinas:true
+      // rekomendasi:tidak ada rekomendas
+      // barang[0][id_barang]:1
+      // barang[0][qty]:2
+      // keteranganImage[0]:tesss
+
       images.length > 0 &&
         images.forEach((v, k) => {
           formData.append(`Image[${k}]`, {
@@ -214,8 +234,49 @@ export default function VerifikatorDetail(props) {
         },
       });
       console.log('INI DATA VERIF', formData);
+      console.log('INI DATA VERIF', result);
       alert('SUKSES MEBUAT VERIFIKASI');
-    } catch (error) {}
+    } catch (error) {
+      alert(error);
+    }
+  };
+  const handleTindakanTRCPress = () => {
+    alert('BERHASIL SET TINDAKAN TRC');
+    setDataVerifikator({
+      ...dataVerifikator,
+      tindakan_trc: true,
+    });
+  };
+  const handlePemberianPress = () => {
+    alert('BERHASIL SET PEMBERIAN LANGSUNG');
+    setDataVerifikator({
+      ...dataVerifikator,
+      langsung: true,
+    });
+  };
+  const handleKontruksiPress = () => {
+    alert('BERHASIL SET PENANGANAN KONTRUKSI');
+    setDataVerifikator({
+      ...dataVerifikator,
+      kontruksi: true,
+    });
+  };
+  const handleAlatPress = () => {
+    alert('BERHASIL SET PENANGANAN ALAT');
+    setDataVerifikator({
+      ...dataVerifikator,
+      alat_berat: true,
+    });
+  };
+  const handleDinasPress = () => {
+    alert('BERHASIL SET DINAS LAIN');
+    setDataVerifikator({
+      ...dataVerifikator,
+      dinas: true,
+    });
+  };
+  const handleChangeForm = (value, name) => {
+    setDataVerifikator({...dataVerifikator, [name]: value});
   };
   return (
     <>
@@ -266,7 +327,11 @@ export default function VerifikatorDetail(props) {
                 <Text>Tanggal Kejadian</Text>
               </View>
               <View>
-                <Text>{dataById?.data?.tanggal}</Text>
+                <Text>
+                  {moment(dataById?.data?.tanggal).format(
+                    'YYYY-MM-DD h:mm:ss a',
+                  )}
+                </Text>
               </View>
               {/* <TextInput
                 placeholder={dataById?.data?.tanggal}
@@ -507,6 +572,7 @@ export default function VerifikatorDetail(props) {
                       height: 40,
                       borderColor: 'black',
                       borderWidth: 1,
+                      borderRadius: 5,
                       marginRight: 10,
                       marginLeft: 5,
                       width: '70%', // set the width to 200 pixels
@@ -577,6 +643,29 @@ export default function VerifikatorDetail(props) {
                       marginTop: 5,
                       marginBottom: 10,
                     }}
+                    onChangeText={text =>
+                      setDataVerifikator({
+                        ...dataVerifikator,
+                        keteranganImage: [text],
+                      })
+                    }
+                  />
+                </View>
+                <View>
+                  <Text style={style.titleOption}>Rekomendasi</Text>
+                  <TextInput
+                    placeholder="Masukan Rekomendasi"
+                    style={{
+                      height: 100,
+                      width: 350,
+                      borderWidth: 1,
+                      marginLeft: 15,
+                      marginTop: 5,
+                      marginBottom: 10,
+                    }}
+                    onChangeText={dataVerifikator =>
+                      handleChangeForm(dataVerifikator, 'rekomendasi')
+                    }
                   />
                 </View>
               </View>
@@ -585,7 +674,7 @@ export default function VerifikatorDetail(props) {
               <View style={{width: '40%', height: '15%'}}>
                 <Chip
                   styicon="information"
-                  onPress={() => console.log('Pressed')}
+                  onPress={handleTindakanTRCPress}
                   style={style.styleChip}>
                   <Icon
                     name="hand"
@@ -599,7 +688,8 @@ export default function VerifikatorDetail(props) {
               <View style={{width: '60%', height: '15%'}}>
                 <Chip
                   styicon="information"
-                  onPress={() => console.log('Pressed')}
+                  onPress={handlePemberianPress}
+                  // onPress={() => console.log('Pressed')}
                   style={style.chipLangsung}>
                   <Icon name="archive" size={20} selectionColor />
                   <Text>Pemberian Langsung</Text>
@@ -611,12 +701,13 @@ export default function VerifikatorDetail(props) {
                 flexDirection: 'row',
                 width: '100%',
                 height: '15%',
-                marginTop: '-35%',
+                marginTop: '-50%',
               }}>
               <View style={{width: '48%', height: '15%'}}>
                 <Chip
                   styicon="information"
-                  onPress={() => console.log('Pressed')}
+                  onPress={handleKontruksiPress}
+                  // onPress={() => console.log('Pressed')}
                   style={style.styleChip}>
                   <Icon
                     name="new"
@@ -631,7 +722,8 @@ export default function VerifikatorDetail(props) {
                 <View style={{width: '100%', height: '15%'}}>
                   <Chip
                     styicon="information"
-                    onPress={() => console.log('Pressed')}
+                    onPress={handleAlatPress}
+                    // onPress={() => console.log('Pressed')}
                     style={style.styleChip}>
                     <Icon
                       name="traffic-cone"
@@ -644,11 +736,12 @@ export default function VerifikatorDetail(props) {
                 </View>
               </View>
             </View>
-            <View style={{marginTop: '-35%'}}>
+            <View style={{marginTop: '-50%'}}>
               <View style={{width: '50%', height: '15%'}}>
                 <Chip
                   styicon="information"
-                  onPress={() => console.log('Pressed')}
+                  onPress={handleDinasPress}
+                  // onPress={() => console.log('Pressed')}
                   style={style.styleChip}>
                   <Icon
                     name="users"
@@ -664,12 +757,13 @@ export default function VerifikatorDetail(props) {
               style={{
                 width: '100%',
                 backgroundColor: '#1a75ff',
-                height: '2%',
+                height: '3%',
                 borderRadius: 5,
-                marginTop: '-35%',
+                marginTop: '-48%',
               }}>
               <Pressable
-                style={{justifyContent: 'center', alignItems: 'center'}}>
+                style={{justifyContent: 'center', alignItems: 'center'}}
+                onPress={handleCreateVerifikator}>
                 <Text
                   style={{color: 'white', fontWeight: 'bold', marginTop: '2%'}}>
                   Verifikasi & Simpan
@@ -680,7 +774,7 @@ export default function VerifikatorDetail(props) {
               style={{
                 width: '100%',
                 backgroundColor: '#ff1a1a',
-                height: '2%',
+                height: '3%',
                 borderRadius: 5,
                 marginTop: '5%',
               }}>
@@ -703,7 +797,7 @@ const style = StyleSheet.create({
   titleScreen: {
     backgroundColor: '#FF6A16',
     color: 'white',
-    height: 1300,
+    height: 1700,
   },
   containerInput: {
     backgroundColor: '#ffffff',
