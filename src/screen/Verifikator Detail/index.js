@@ -611,7 +611,7 @@ export default function VerifikatorDetail(props) {
                 flexDirection: 'row',
                 width: '100%',
                 height: '15%',
-                marginTop: '-55%',
+                marginTop: '-35%',
               }}>
               <View style={{width: '48%', height: '15%'}}>
                 <Chip
@@ -627,6 +627,70 @@ export default function VerifikatorDetail(props) {
                   <Text>Penangan Kontruksi</Text>
                 </Chip>
               </View>
+              <View style={{marginLeft: '3%'}}>
+                <View style={{width: '100%', height: '15%'}}>
+                  <Chip
+                    styicon="information"
+                    onPress={() => console.log('Pressed')}
+                    style={style.styleChip}>
+                    <Icon
+                      name="traffic-cone"
+                      size={20}
+                      style={{marginLeft: 5, marginRight: 3}}
+                      selectionColor
+                    />
+                    <Text>Alat Berat</Text>
+                  </Chip>
+                </View>
+              </View>
+            </View>
+            <View style={{marginTop: '-35%'}}>
+              <View style={{width: '50%', height: '15%'}}>
+                <Chip
+                  styicon="information"
+                  onPress={() => console.log('Pressed')}
+                  style={style.styleChip}>
+                  <Icon
+                    name="users"
+                    size={20}
+                    style={{marginLeft: 5, marginRight: 3}}
+                    selectionColor
+                  />
+                  <Text>Ditangani Dinas Lain</Text>
+                </Chip>
+              </View>
+            </View>
+            <View
+              style={{
+                width: '100%',
+                backgroundColor: '#1a75ff',
+                height: '2%',
+                borderRadius: 5,
+                marginTop: '-35%',
+              }}>
+              <Pressable
+                style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text
+                  style={{color: 'white', fontWeight: 'bold', marginTop: '2%'}}>
+                  Verifikasi & Simpan
+                </Text>
+              </Pressable>
+            </View>
+            <View
+              style={{
+                width: '100%',
+                backgroundColor: '#ff1a1a',
+                height: '2%',
+                borderRadius: 5,
+                marginTop: '5%',
+              }}>
+              <Pressable
+                style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text
+                  style={{color: 'white', fontWeight: 'bold', marginTop: '2%'}}>
+                  Batal
+                </Text>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -639,7 +703,7 @@ const style = StyleSheet.create({
   titleScreen: {
     backgroundColor: '#FF6A16',
     color: 'white',
-    height: 1700,
+    height: 1300,
   },
   containerInput: {
     backgroundColor: '#ffffff',
@@ -648,7 +712,7 @@ const style = StyleSheet.create({
     borderRadius: 30,
     padding: 6,
     width: '100%',
-    height: 2000,
+    height: '100%',
     position: 'relative',
     marginTop: -20,
   },
