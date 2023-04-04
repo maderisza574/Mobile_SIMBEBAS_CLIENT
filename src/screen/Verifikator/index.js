@@ -98,31 +98,60 @@ export default function Verifikator(props) {
                       flexDirection: 'row',
                       position: 'absolute',
                     }}>
-                    <Pressable
-                      style={{
-                        backgroundColor: '#FF6A16',
-                        color: '#FFFF',
-                        width: '150%',
-                        height: '100%',
-                        borderRadius: 10,
-                        marginRight: 5,
-                      }}
-                      onPress={() => navVerifDetail(item.id)}>
-                      <View
+                    {item.lock_gudang === false ? (
+                      <Pressable
                         style={{
-                          paddingHorizontal: '10%',
-                          paddingVertical: '10%',
-                        }}>
-                        <Text
+                          backgroundColor: '#FF6A16',
+                          color: '#FFFF',
+                          width: '120%',
+                          height: '100%',
+                          borderRadius: 10,
+                          marginRight: 5,
+                        }}
+                        onPress={() => navVerifDetail(item.id)}>
+                        <View
                           style={{
-                            marginLeft: 10,
-                            color: 'white',
-                            fontSize: 15,
+                            paddingHorizontal: '10%',
+                            paddingVertical: '10%',
                           }}>
-                          Lihat
-                        </Text>
-                      </View>
-                    </Pressable>
+                          <Text
+                            style={{
+                              marginLeft: 10,
+                              color: 'white',
+                              fontSize: 15,
+                            }}>
+                            Verifikasi
+                          </Text>
+                        </View>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        style={{
+                          backgroundColor: '#FF6A16',
+                          color: '#FFFF',
+                          width: '150%',
+                          height: '100%',
+                          borderRadius: 10,
+                          marginRight: 5,
+                        }}
+                        onPress={() => alert('BELUM TERSEDIA')}>
+                        {/* // onPress={() => navAsesmenDetail(item.id)}> */}
+                        <View
+                          style={{
+                            paddingHorizontal: '10%',
+                            paddingVertical: '10%',
+                          }}>
+                          <Text
+                            style={{
+                              marginLeft: 10,
+                              color: 'white',
+                              fontSize: 15,
+                            }}>
+                            Lihat
+                          </Text>
+                        </View>
+                      </Pressable>
+                    )}
                     {/* <Pressable
                     style={{
                       backgroundColor: '#FF6A16',

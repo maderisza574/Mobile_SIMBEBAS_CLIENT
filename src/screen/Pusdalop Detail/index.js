@@ -54,7 +54,7 @@ export default function PusdalopDetail(props) {
   const [latitudeData, setLatitudeData] = useState('');
   const [longitudeData, setLongitudeData] = useState('');
   const [dataById, setDataByID] = useState({});
-  // console.log('ini data pusdalop', typeof dataById.data?.lng);
+  console.log('ini data pusdalop', dataById?.data?.subBencana?.sub_jenis);
   const dateStr = dataById?.data?.tanggal;
   const formatDate = moment(dateStr).format('YYYY-MM-DD HH:mm:ss');
   const lat = parseFloat(dataById?.data?.lat);
@@ -431,7 +431,7 @@ export default function PusdalopDetail(props) {
               itemLabel="name"
               defaultOption={bencanaOptions}
               boxStyles={{borderColor: 'black'}}
-              placeholder={dataById?.data?.bencana?.sub_jenis.toString()}
+              placeholder={dataById?.data?.subBencana?.sub_jenis}
               setSelected={handleJenis}
             />
           </View>
@@ -485,7 +485,7 @@ export default function PusdalopDetail(props) {
               <MapView
                 region={mapRegion}
                 initialRegion={mapRegion}
-                style={{flex: 1, height: 200, width: 380}}>
+                style={{flex: 1, height: 200, width: '100%'}}>
                 <Marker
                   draggable
                   coordinate={{

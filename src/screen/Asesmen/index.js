@@ -16,6 +16,7 @@ import moment from 'moment';
 
 export default function Asesmen(props) {
   const pusdalop = useSelector(state => state.pusdalop.data);
+  console.log('INI DATA GET PUSDALOP', pusdalop);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ export default function Asesmen(props) {
   const navAsesmenDetail = id => {
     props.navigation.navigate('AsesmenDetail', {pusdalopId: id});
   };
-
+  const filteredData = pusdalop.filter(item => item.lock === false);
   return (
     <View>
       <View style={style.titleScreen}>
@@ -104,41 +105,70 @@ export default function Asesmen(props) {
                       flexDirection: 'row',
                       position: 'absolute',
                     }}>
-                    <Pressable
+                    {item.lock_verif === false ? (
+                      <Pressable
+                        style={{
+                          backgroundColor: '#FF6A16',
+                          color: '#FFFF',
+                          width: '120%',
+                          height: '100%',
+                          borderRadius: 10,
+                          marginRight: 5,
+                        }}
+                        onPress={() => navAsesmenDetail(item.id)}>
+                        <View
+                          style={{
+                            paddingHorizontal: '10%',
+                            paddingVertical: '10%',
+                          }}>
+                          <Text
+                            style={{
+                              marginLeft: 10,
+                              color: 'white',
+                              fontSize: 15,
+                            }}>
+                            Asesmen
+                          </Text>
+                        </View>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        style={{
+                          backgroundColor: '#FF6A16',
+                          color: '#FFFF',
+                          width: '150%',
+                          height: '100%',
+                          borderRadius: 10,
+                          marginRight: 5,
+                        }}
+                        onPress={() => alert('BELUM TERSEDIA')}>
+                        {/* // onPress={() => navAsesmenDetail(item.id)}> */}
+                        <View
+                          style={{
+                            paddingHorizontal: '10%',
+                            paddingVertical: '10%',
+                          }}>
+                          <Text
+                            style={{
+                              marginLeft: 10,
+                              color: 'white',
+                              fontSize: 15,
+                            }}>
+                            Lihat
+                          </Text>
+                        </View>
+                      </Pressable>
+                    )}
+                    {/* <Pressable
                       style={{
                         backgroundColor: '#FF6A16',
                         color: '#FFFF',
-                        width: '150%',
-                        height: '100%',
+                        width: 50,
                         borderRadius: 10,
-                        marginRight: 5,
                       }}
-                      onPress={() => navAsesmenDetail(item.id)}>
-                      <View
-                        style={{
-                          paddingHorizontal: '10%',
-                          paddingVertical: '10%',
-                        }}>
-                        <Text
-                          style={{
-                            marginLeft: 10,
-                            color: 'white',
-                            fontSize: 15,
-                          }}>
-                          Lihat
-                        </Text>
-                      </View>
-                    </Pressable>
-                    {/* <Pressable
-                    style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                    }}
-                    onPress={handleDeleteBencana(item.id)}>
-                    <Text style={{marginLeft: 8}}>Delete</Text>
-                  </Pressable> */}
+                      onPress={handleDeleteBencana(item.id)}>
+                      <Text style={{marginLeft: 8}}>Delete</Text>
+                    </Pressable> */}
                   </View>
                 </View>
               </View>
