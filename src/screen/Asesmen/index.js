@@ -45,7 +45,6 @@ export default function Asesmen(props) {
   const navAsesmenDetail = id => {
     props.navigation.navigate('AsesmenDetail', {pusdalopId: id});
   };
-  const filteredData = pusdalop.filter(item => item.lock === false);
   return (
     <View>
       <View style={style.titleScreen}>
@@ -98,6 +97,17 @@ export default function Asesmen(props) {
                     <Text style={style.textFlatlist}>
                       {moment(item.tanggal).format('YYYY-MM-DD')}
                     </Text>
+                    <View>
+                      {item.lock_verif === false ? (
+                        <Text style={{color: 'red', marginLeft: '3%'}}>
+                          Assesmen
+                        </Text>
+                      ) : (
+                        <Text style={{color: 'green', marginLeft: '3%'}}>
+                          Assesmen
+                        </Text>
+                      )}
+                    </View>
                   </View>
                   <View
                     style={{
@@ -185,6 +195,8 @@ const style = StyleSheet.create({
   textFlatlist: {
     color: 'black',
     marginLeft: '5%',
+    marginBottom: '3%',
+    marginTop: '2%',
   },
   titleScreen: {
     backgroundColor: '#FF6A16',
@@ -226,11 +238,13 @@ const style = StyleSheet.create({
   },
   card: {
     width: 250,
-    height: 100,
+    height: 110,
     marginHorizontal: 15,
     marginTop: 20,
     backgroundColor: 'Blue',
     borderColor: 'Black',
+    borderWidth: 1,
+    borderRadius: 5,
   },
   texttitle: {
     color: 'black',

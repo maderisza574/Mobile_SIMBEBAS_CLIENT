@@ -164,7 +164,9 @@ const style = StyleSheet.create({
   },
   textFlatlist: {
     color: 'black',
-    marginLeft: '10%',
+    marginLeft: '5%',
+    marginBottom: '3%',
+    marginTop: '2%',
   },
   containerInput: {
     backgroundColor: '#ffffff',
@@ -181,11 +183,13 @@ const style = StyleSheet.create({
 
   card: {
     width: 250,
-    height: 100,
+    height: 110,
     marginHorizontal: 15,
     marginTop: 20,
     backgroundColor: 'Blue',
     borderColor: 'Black',
+    borderWidth: 1,
+    borderRadius: 5,
   },
   containerFlat: {
     height: '100%',
