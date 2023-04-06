@@ -198,8 +198,11 @@ const style = StyleSheet.create({
     // borderRadius: 5,
   },
   containerFlat: {
-    height: '100%',
-    // marginTop: '-30%',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    elevation: 5, // Add elevation for shadow effect
+    marginVertical: 8,
+    // Set shadow radius
   },
   texttitle: {
     color: 'black',

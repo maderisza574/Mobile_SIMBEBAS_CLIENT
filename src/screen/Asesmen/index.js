@@ -152,7 +152,7 @@ const style = StyleSheet.create({
     height: 100,
   },
   containerInput: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f5f5f0',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     borderRadius: 30,
@@ -162,6 +162,13 @@ const style = StyleSheet.create({
     // height: 2800,
     position: 'relative',
     marginTop: -10,
+  },
+  containerFlat: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    elevation: 5, // Add elevation for shadow effect
+    marginVertical: 8,
+    // Set shadow radius
   },
   buttonLogin: {
     alignItems: 'center',
