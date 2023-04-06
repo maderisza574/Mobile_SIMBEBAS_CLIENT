@@ -10,6 +10,7 @@ import {
   PermissionsAndroid,
   Pressable,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import {SelectList} from 'react-native-dropdown-select-list';
@@ -28,6 +29,8 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {black} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import Geolocation from '@react-native-community/geolocation';
+
 export default function PusdalopDetail(props) {
   const dispatch = useDispatch();
   const dataPusdalopRedux = useSelector(state => state.pusdalop.data);
@@ -61,6 +64,7 @@ export default function PusdalopDetail(props) {
   const lng = parseFloat(dataById?.data?.lng);
   const defaultLat = -7.43973580004;
   const defaultLng = 109.244402567;
+  const [isLoading, setIsLoading] = useState(false);
 
   const [dataUpdatePusdalop, setDataUpdatePusdalop] = useState({
     id_jenis_bencana: '',
@@ -72,13 +76,13 @@ export default function PusdalopDetail(props) {
     alamat: '',
     id_desa: '',
     id_kecamatan: '',
-    lng: longitudeData,
-    lat: latitudeData,
-    tindakan_trc: true,
-    logpal: true,
+    lng: '',
+    lat: '',
+    tindakan_trc: false,
+    logpal: false,
     tanggal: date.toISOString().slice(0, 10),
   });
-  // console.log('INI DATA UPDATE', dataUpdatePusdalop);
+  console.log('INI DATA UPDATE', dataUpdatePusdalop);
 
   const handleChangeNama = text => {
     setDataNama(text);
@@ -297,6 +301,51 @@ export default function PusdalopDetail(props) {
       lng: text,
     });
   };
+  const requestLocationPermission = async () => {
+    try {
+      setIsLoading(true);
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'SIMBEBAS MEMBUTUHKAN LOKASI ANDA',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        await Geolocation.watchPosition(
+          position => {
+            setMapRegion({
+              ...mapRegion,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            setDataUpdatePusdalop({
+              ...dataUpdatePusdalop,
+              lat: position.coords.latitude.toString(),
+              lng: position.coords.longitude.toString(),
+            });
+          },
+
+          error => {
+            if (error.code === error.TIMEOUT) {
+              alert('Position unavailable. Please try again later.');
+            } else {
+              alert('An error occurred while retrieving your location.');
+            }
+          },
+          {enableHighAccuracy: true, timeout: 1500},
+        );
+      } else {
+        alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
+      }
+      setIsLoading(false);
+    } catch (err) {
+      console.warn(err);
+    }
+  };
   // const handleSearch = () => {
   //   setMapRegion({
   //     ...mapRegion,
@@ -343,36 +392,25 @@ export default function PusdalopDetail(props) {
   // }, [stateMap.latitude, stateMap.longitude]);
   const handleUpdatePusdalop = async () => {
     try {
-      console.log('INI DATA PUSDALOP DALAM', dataUpdatePusdalop);
+      // console.log('INI DATA PUSDALOP DALAM', dataUpdatePusdalop);
       const datauser = await AsyncStorage.getItem('token');
-      const result = await axios({
-        method: 'PATCH',
-        url: `https://apisimbebas.banyumaskab.go.id/api/v1/pusdalops/${pusdalopid}`,
-        data: dataUpdatePusdalop,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + datauser,
-        },
-      });
-      console.log(result);
-      // const datauser = await AsyncStorage.getItem('token');
-      // const config = {
+      // console.log(datauser);
+      const result = await axios.patch(
+        `https://apisimbebas.banyumaskab.go.id/api/v1/pusdalops/${pusdalopid}`,
+        dataUpdatePusdalop,
+      );
+      // const result = await axios({
+      //   url: `https://apisimbebas.banyumaskab.go.id/api/v1/pusdalops/${pusdalopid}`,
+      //   method: 'PATCH',
+      //   data: dataUpdatePusdalop,
       //   headers: {
-      //     'Content-Type': 'application/x-www-form-urlencoded',
-      //     Authorization: 'Bearer ' + datauser,
+      //     'content-type': 'application/json',
+      //     Authorization: `Bearer ${datauser}`,
       //   },
-      // };
-      // console.log(
-      //   'INI DATA PUSDALOP ID',
-      //   dataUpdatePusdalop,
-      //   config,
-      //   pusdalopid,
-      // );
-      // await dispatch(
-      //   updateDataPusdalop(dataUpdatePusdalop, config, pusdalopid),
-      // );
+      // });
+      console.log(result);
       alert('SUKSES');
-      // props.navigation.navigate('Pusdalop');
+      props.navigation.navigate('Pusdalop');
     } catch (error) {
       console.log(error);
       alert('GAGAL UPDATE');
@@ -438,6 +476,8 @@ export default function PusdalopDetail(props) {
           <View>
             <Text style={style.tittleOption}>Tanggal Kejadian</Text>
             <TextInput
+              value={date}
+              editable={false}
               placeholder={formatDate}
               style={{borderWidth: 1, borderRadius: 10}}
             />
@@ -468,13 +508,10 @@ export default function PusdalopDetail(props) {
               style={style.inputAduan}
               multiline={true}
               boxStyles={{borderColor: 'black'}}
-              onChangeText={text =>
-                setDataUpdatePusdalop({
-                  ...dataUpdatePusdalop,
-                  isi_aduan: text,
-                })
+              onChangeText={dataUpdatePusdalop =>
+                handleChangeForm(dataUpdatePusdalop, 'isi_aduan')
               }
-              // value={isiaduan}adsddasdsad
+              value={dataUpdatePusdalop.isi_aduan}
             />
           </View>
           <View>
@@ -501,6 +538,36 @@ export default function PusdalopDetail(props) {
                   }
                 />
               </MapView>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: '3%',
+                }}>
+                <Pressable
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: '2%',
+                    width: '60%',
+                    height: 30,
+                    backgroundColor: '#1a8cff',
+                    borderRadius: 5,
+                  }}
+                  onPress={() => requestLocationPermission()}>
+                  {isLoading ? (
+                    <ActivityIndicator size="large" color="#1a8cff" />
+                  ) : (
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}>
+                      Dapatkan Lokasi Terkini
+                    </Text>
+                  )}
+                </Pressable>
+              </View>
             </View>
             <View
               style={{
@@ -510,7 +577,7 @@ export default function PusdalopDetail(props) {
               }}>
               <TextInput
                 onChangeText={handleLatitudeChange}
-                // value={mapRegion.latitude}
+                value={mapRegion.latitude}
                 placeholder={dataById?.data?.lat}
                 keyboardType="numeric"
                 style={{marginRight: 30}}
@@ -520,7 +587,7 @@ export default function PusdalopDetail(props) {
                 onChangeText={handleLongitudeChange}
                 keyboardType="numeric"
                 placeholder={dataById?.data?.lng}
-                // value={mapRegion.longitude}
+                value={mapRegion.longitude}
                 style={{marginRight: 10}}
               />
             </View>
@@ -636,7 +703,9 @@ export default function PusdalopDetail(props) {
           </View>
           {/* End Alamat */}
           <View style={{marginTop: 10}}>
-            <Pressable style={style.buttonLogin} onPress={handleUpdatePusdalop}>
+            <Pressable
+              style={style.buttonLogin}
+              onPress={() => handleUpdatePusdalop()}>
               <Text style={style.textLogin}>Perbaiki</Text>
             </Pressable>
             <Pressable style={style.buttonBatal} onPress={handleDeletePusdalop}>

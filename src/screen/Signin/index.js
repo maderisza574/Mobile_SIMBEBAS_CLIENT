@@ -109,7 +109,7 @@ export default function Signin(props) {
               </View>
             </TouchableOpacity>
 
-            <View
+            {/* <View
               style={{marginLeft: 100, marginTop: 15, flexDirection: 'row'}}>
               <Text style={{color: 'black', marginRight: 5}}>
                 Belum Punya Akun?
@@ -117,7 +117,7 @@ export default function Signin(props) {
               <TouchableOpacity onPress={navSignUp}>
                 <Text style={{color: 'blue'}}>Daftar</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <TouchableOpacity
               style={{
                 position: 'absolute',
@@ -126,7 +126,7 @@ export default function Signin(props) {
                 height: '100%',
                 paddingHorizontal: 6,
                 justifyContent: 'center',
-                marginTop: '-5%',
+                marginTop: '-1%',
               }}
               onPress={() => setShowPassword(!showPassword)}>
               {showPassword ? (

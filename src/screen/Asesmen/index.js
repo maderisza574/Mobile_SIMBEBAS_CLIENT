@@ -13,6 +13,7 @@ import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 
 export default function Asesmen(props) {
   const pusdalop = useSelector(state => state.pusdalop.data);
@@ -78,110 +79,57 @@ export default function Asesmen(props) {
             onEndReached={handleEndReached}
             onEndReachedThreshold={0.5}
             renderItem={({item}) => (
-              <View style={style.card}>
-                <View style={{flexDirection: 'row'}}>
-                  <Image
-                    source={
-                      item.risalah[0]?.file
-                        ? {
-                            uri: `${item.risalah[0]?.file}`,
-                          }
-                        : require('../../assets/img/bencana1.png')
-                    }
-                    // source={{uri: `${item.risalah[0]?.file}`}}
-                    style={{width: 100, height: 100}}
-                  />
-                  <View>
-                    <Text style={style.textFlatlist}>{item.nama}</Text>
-                    <Text style={style.textFlatlist}>{item.alamat}</Text>
-                    <Text style={style.textFlatlist}>
-                      {moment(item.tanggal).format('YYYY-MM-DD')}
-                    </Text>
+              <TouchableHighlight
+                onPress={() => {
+                  if (!item.lock_verif) {
+                    navAsesmenDetail(item.id);
+                  }
+                }}
+                underlayColor="#eeeedd"
+                disabled={item.lock_verif}>
+                <View style={style.card}>
+                  <View style={{flexDirection: 'row'}}>
+                    <Image
+                      source={
+                        item.risalah[0]?.file
+                          ? {
+                              uri: `${item.risalah[0]?.file}`,
+                            }
+                          : require('../../assets/img/bencana1.png')
+                      }
+                      style={{width: 100, height: 100}}
+                    />
                     <View>
-                      {item.lock_verif === false ? (
-                        <Text style={{color: 'red', marginLeft: '3%'}}>
-                          Assesmen
-                        </Text>
-                      ) : (
-                        <Text style={{color: 'green', marginLeft: '3%'}}>
-                          Assesmen
-                        </Text>
-                      )}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <View>
+                          <Text style={style.textFlatlist}>{item.nama}</Text>
+                        </View>
+                        <View style={{marginLeft: '10%'}}>
+                          {item.lock_verif === false ? (
+                            <Text style={{color: 'red', marginLeft: '3%'}}>
+                              Assesmen
+                            </Text>
+                          ) : (
+                            <Text style={{color: 'green', marginLeft: '3%'}}>
+                              Assesmen
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                      <Text style={style.textFlatlist}>{item.alamat}</Text>
+                      <Text style={style.textFlatlist}>
+                        {moment(item.tanggal).format('YYYY-MM-DD')}
+                      </Text>
+                      <Text style={style.textFlatlist}>{item.isi_aduan}</Text>
+                      <View></View>
                     </View>
                   </View>
-                  <View
-                    style={{
-                      paddingLeft: 280,
-                      flexDirection: 'row',
-                      position: 'absolute',
-                    }}>
-                    {item.lock_verif === false ? (
-                      <Pressable
-                        style={{
-                          backgroundColor: '#FF6A16',
-                          color: '#FFFF',
-                          width: '120%',
-                          height: '100%',
-                          borderRadius: 10,
-                          marginRight: 5,
-                        }}
-                        onPress={() => navAsesmenDetail(item.id)}>
-                        <View
-                          style={{
-                            paddingHorizontal: '10%',
-                            paddingVertical: '10%',
-                          }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              color: 'white',
-                              fontSize: 15,
-                            }}>
-                            Asesmen
-                          </Text>
-                        </View>
-                      </Pressable>
-                    ) : (
-                      <Pressable
-                        style={{
-                          backgroundColor: '#FF6A16',
-                          color: '#FFFF',
-                          width: '150%',
-                          height: '100%',
-                          borderRadius: 10,
-                          marginRight: 5,
-                        }}
-                        onPress={() => alert('BELUM TERSEDIA')}>
-                        {/* // onPress={() => navAsesmenDetail(item.id)}> */}
-                        <View
-                          style={{
-                            paddingHorizontal: '10%',
-                            paddingVertical: '10%',
-                          }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              color: 'white',
-                              fontSize: 15,
-                            }}>
-                            Lihat
-                          </Text>
-                        </View>
-                      </Pressable>
-                    )}
-                    {/* <Pressable
-                      style={{
-                        backgroundColor: '#FF6A16',
-                        color: '#FFFF',
-                        width: 50,
-                        borderRadius: 10,
-                      }}
-                      onPress={handleDeleteBencana(item.id)}>
-                      <Text style={{marginLeft: 8}}>Delete</Text>
-                    </Pressable> */}
-                  </View>
                 </View>
-              </View>
+              </TouchableHighlight>
             )}
             keyExtractor={item => item.id}
           />
@@ -237,14 +185,25 @@ const style = StyleSheet.create({
     color: 'white',
   },
   card: {
-    width: 250,
+    width: '95%',
     height: 110,
     marginHorizontal: 15,
     marginTop: 20,
-    backgroundColor: 'Blue',
-    borderColor: 'Black',
-    borderWidth: 1,
-    borderRadius: 5,
+    elevation: 100,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 12,
+    shadowRadius: 10,
+    marginBottom: 3,
+    zIndex: -1,
+    shadowRadius: 4,
+    // backgroundColor: 'Blue',
+    // borderColor: 'Black',
+    // borderWidth: 1,
+    // borderRadius: 5,
   },
   texttitle: {
     color: 'black',

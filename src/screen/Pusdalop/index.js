@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 
 export default function Pusdalop(props) {
   const [refreshing, setRefreshing] = useState(false);
@@ -77,80 +78,63 @@ export default function Pusdalop(props) {
           {/* </View> */}
         </View>
         <View style={style.containerFlat}>
-          <FlatList
-            data={pusdalop}
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            onEndReached={handleEndReached}
-            onEndReachedThreshold={0.5}
-            renderItem={({item}) => (
-              <View style={style.card}>
-                <View style={{flexDirection: 'row'}}>
-                  <Image
-                    source={
-                      item.risalah[0]?.file
-                        ? {
-                            uri: `${item.risalah[0]?.file}`,
-                          }
-                        : require('../../assets/img/bencana1.png')
-                    }
-                    // source={{uri: `${item.risalah[0]?.file}`}}
-                    style={{width: 100, height: 100}}
-                  />
-                  <View>
-                    <Text style={style.textFlatlist}>{item.nama}</Text>
-                    <Text style={style.textFlatlist}>{item.alamat}</Text>
-                    <Text style={style.textFlatlist}>
-                      {moment(item.tanggal).format('YYYY-MM-DD')}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingLeft: 280,
-                      flexDirection: 'row',
-                      position: 'absolute',
-                    }}>
-                    <Pressable
-                      style={{
-                        backgroundColor: '#FF6A16',
-                        color: '#FFFF',
-                        width: '150%',
-                        height: '100%',
-                        borderRadius: 10,
-                        marginRight: 5,
-                      }}
-                      onPress={() => navPusdalop(item.id)}>
+          <View style={{marginBottom: '10%'}}>
+            <FlatList
+              style={{
+                marginBottom: '5%',
+                elevation: 10,
+                shadowColor: '#0000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 10,
+              }}
+              data={pusdalop}
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              onEndReached={handleEndReached}
+              onEndReachedThreshold={0.5}
+              renderItem={({item}) => (
+                <TouchableHighlight
+                  onPress={() => navPusdalop(item.id)}
+                  underlayColor="#eeeedd">
+                  <View style={style.card}>
+                    <View style={{flexDirection: 'row'}}>
+                      <Image
+                        source={
+                          item.risalah[0]?.file
+                            ? {
+                                uri: `${item.risalah[0]?.file}`,
+                              }
+                            : require('../../assets/img/bencana1.png')
+                        }
+                        // source={{uri: `${item.risalah[0]?.file}`}}
+                        style={{width: 100, height: 100}}
+                      />
+                      <View>
+                        <Text style={style.textFlatlist}>{item.nama}</Text>
+                        <Text style={style.textFlatlist}>{item.alamat}</Text>
+                        <Text style={style.textFlatlist}>
+                          {moment(item.tanggal).format('YYYY-MM-DD')}
+                        </Text>
+                        <Text style={style.textFlatlist}>{item.isi_aduan}</Text>
+                      </View>
                       <View
                         style={{
-                          paddingHorizontal: '10%',
-                          paddingVertical: '10%',
-                        }}>
-                        <Text
-                          style={{
-                            marginLeft: 10,
-                            color: 'white',
-                            fontSize: 15,
-                          }}>
-                          Lihat
-                        </Text>
-                      </View>
-                    </Pressable>
-                    {/* <Pressable
-                    style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                    }}
-                    onPress={handleDeleteBencana(item.id)}>
-                    <Text style={{marginLeft: 8}}>Delete</Text>
-                  </Pressable> */}
+                          paddingLeft: 280,
+                          flexDirection: 'row',
+                          position: 'absolute',
+                        }}></View>
+                    </View>
                   </View>
-                </View>
-              </View>
-            )}
-            keyExtractor={item => item.id}
-          />
+                </TouchableHighlight>
+              )}
+              keyExtractor={item => item.id}
+              ItemSeparatorComponent={() => <View style={{height: 5}} />}
+            />
+          </View>
         </View>
       </View>
     </View>
@@ -169,7 +153,7 @@ const style = StyleSheet.create({
     marginTop: '2%',
   },
   containerInput: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f5f5f0',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     borderRadius: 30,
@@ -182,18 +166,32 @@ const style = StyleSheet.create({
   },
 
   card: {
-    width: 250,
+    width: '95%',
     height: 110,
     marginHorizontal: 15,
     marginTop: 20,
-    backgroundColor: 'Blue',
-    borderColor: 'Black',
-    borderWidth: 1,
-    borderRadius: 5,
+    elevation: 100,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 12,
+    shadowRadius: 10,
+    marginBottom: 3,
+    zIndex: -1,
+    shadowRadius: 4,
+    // backgroundColor: 'Blue',
+    // borderColor: 'Black',
+    // borderWidth: 1,
+    // borderRadius: 5,
   },
   containerFlat: {
-    height: '100%',
-    // marginTop: '-45%',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    elevation: 5, // Add elevation for shadow effect
+    marginVertical: 8,
+    // Set shadow radius
   },
   texttitle: {
     color: 'black',

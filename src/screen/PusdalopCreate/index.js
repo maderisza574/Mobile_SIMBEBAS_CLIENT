@@ -63,6 +63,7 @@ export default function PusdalopCreate(props) {
   // console.log('INI DATA MAP', region);
   const requestLocationPermission = async () => {
     try {
+      console.log('PRESSED MAP');
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
@@ -95,7 +96,7 @@ export default function PusdalopCreate(props) {
               alert('An error occurred while retrieving your location.');
             }
           },
-          {enableHighAccuracy: true, timeout: 10000},
+          {enableHighAccuracy: true, timeout: 1500},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
@@ -736,14 +737,16 @@ export default function PusdalopCreate(props) {
                   {/* ))} */}
                   <Button
                     title="Remove"
-                    onPress={() => handleRemoveInput(index)}
+                    // onPress={() => handleRemoveInput(index)}
+                    onPress={() => alert('FITUR INI BELUM TERSEDIA')}
                   />
                 </View>
               </View>
             ))}
             <Button
               title="Tambahkan Beberapa Gambar"
-              onPress={handleAddInput}
+              // onPress={handleAddInput}
+              onPress={() => alert('FITUR INI BELUM TERSEDIA')}
             />
           </View>
           {/* end input loop image */}

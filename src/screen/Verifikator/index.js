@@ -5,17 +5,33 @@ import {getDataPusdalop} from '../../stores/actions/pusdalop';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from '../../utils/axios';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 
 export default function Verifikator(props) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const pusdalop = useSelector(state => state.pusdalop.data);
   const dispatch = useDispatch();
+  const [dataVerif, setDataVerif] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await dispatch(getDataPusdalop());
+        const datauser = await AsyncStorage.getItem('token');
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: 'Bearer ' + datauser,
+          },
+        };
+        const result = await axios.get(
+          `/v1/verfikasi?page=1&perPage=100`,
+          config,
+        );
+        setDataVerif(result.data.rows);
+
+        // await dispatch(getDataPusdalop());
       } catch (error) {
         alert('SILAHKAN LOGIN ULANG');
         await AsyncStorage.clear();
@@ -66,15 +82,22 @@ export default function Verifikator(props) {
         </View>
         <View style={style.containerFlat}>
           <FlatList
-            data={pusdalop}
+            data={dataVerif}
             refreshing={refreshing}
             onRefresh={handleRefresh}
             onEndReached={handleEndReached}
             onEndReachedThreshold={0.5}
             renderItem={({item}) => (
-              <View style={style.card}>
-                <View style={{flexDirection: 'row'}}>
-                  <Image
+              <TouchableHighlight
+                onPress={() => {
+                  if (!item.lock_gudang) {
+                    navVerifDetail(item.id);
+                  }
+                }}
+                underlayColor="#eeeedd">
+                <View style={style.card}>
+                  <View style={{flexDirection: 'row'}}>
+                    {/* <Image
                     source={
                       item.risalah[0]?.file
                         ? {
@@ -84,98 +107,42 @@ export default function Verifikator(props) {
                     }
                     // source={{uri: `${item.risalah[0]?.file}`}}
                     style={{width: 100, height: 100}}
-                  />
-                  <View>
-                    <Text style={style.textFlatlist}>{item.nama}</Text>
-                    <Text style={style.textFlatlist}>{item.alamat}</Text>
-                    <Text style={style.textFlatlist}>
-                      {moment(item.tanggal).format('YYYY-MM-DD')}
-                    </Text>
+                  /> */}
                     <View>
-                      {item.lock_gudang === false ? (
-                        <Text style={{color: 'red', marginLeft: '7%'}}>
-                          Verifikasi
-                        </Text>
-                      ) : (
-                        <Text style={{color: 'green', marginLeft: '7%'}}>
-                          Verifikasi
-                        </Text>
-                      )}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <View>
+                          <Text style={style.textFlatlist}>{item.nama}</Text>
+                        </View>
+                        <View style={{marginLeft: '40%'}}>
+                          {item.lock_gudang === false ? (
+                            <Text style={{color: 'red', marginLeft: '7%'}}>
+                              Verifikasi
+                            </Text>
+                          ) : (
+                            <Text style={{color: 'green', marginLeft: '7%'}}>
+                              Verifikasi
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                      <Text style={style.textFlatlist}>{item.alamat}</Text>
+                      <Text style={style.textFlatlist}>
+                        {moment(item.tanggal).format('YYYY-MM-DD')}
+                      </Text>
                     </View>
-                  </View>
-                  <View
-                    style={{
-                      paddingLeft: 280,
-                      flexDirection: 'row',
-                      position: 'absolute',
-                    }}>
-                    {item.lock_gudang === false ? (
-                      <Pressable
-                        style={{
-                          backgroundColor: '#FF6A16',
-                          color: '#FFFF',
-                          width: '120%',
-                          height: '100%',
-                          borderRadius: 10,
-                          marginRight: 5,
-                        }}
-                        onPress={() => navVerifDetail(item.id)}>
-                        <View
-                          style={{
-                            paddingHorizontal: '10%',
-                            paddingVertical: '10%',
-                          }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              color: 'white',
-                              fontSize: 15,
-                            }}>
-                            Verifikasi
-                          </Text>
-                        </View>
-                      </Pressable>
-                    ) : (
-                      <Pressable
-                        style={{
-                          backgroundColor: '#FF6A16',
-                          color: '#FFFF',
-                          width: '150%',
-                          height: '100%',
-                          borderRadius: 10,
-                          marginRight: 5,
-                        }}
-                        onPress={() => alert('BELUM TERSEDIA')}>
-                        {/* // onPress={() => navAsesmenDetail(item.id)}> */}
-                        <View
-                          style={{
-                            paddingHorizontal: '10%',
-                            paddingVertical: '10%',
-                          }}>
-                          <Text
-                            style={{
-                              marginLeft: 10,
-                              color: 'white',
-                              fontSize: 15,
-                            }}>
-                            Lihat
-                          </Text>
-                        </View>
-                      </Pressable>
-                    )}
-                    {/* <Pressable
-                    style={{
-                      backgroundColor: '#FF6A16',
-                      color: '#FFFF',
-                      width: 50,
-                      borderRadius: 10,
-                    }}
-                    onPress={handleDeleteBencana(item.id)}>
-                    <Text style={{marginLeft: 8}}>Delete</Text>
-                  </Pressable> */}
+                    <View
+                      style={{
+                        paddingLeft: 280,
+                        flexDirection: 'row',
+                        position: 'absolute',
+                      }}></View>
                   </View>
                 </View>
-              </View>
+              </TouchableHighlight>
             )}
             keyExtractor={item => item.id}
           />
@@ -210,14 +177,25 @@ const style = StyleSheet.create({
   },
 
   card: {
-    width: 250,
+    width: '95%',
     height: 110,
     marginHorizontal: 15,
     marginTop: 20,
-    backgroundColor: 'Blue',
-    borderColor: 'Black',
-    borderWidth: 1,
-    borderRadius: 5,
+    elevation: 100,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 12,
+    shadowRadius: 10,
+    marginBottom: 3,
+    zIndex: -1,
+    shadowRadius: 4,
+    // backgroundColor: 'Blue',
+    // borderColor: 'Black',
+    // borderWidth: 1,
+    // borderRadius: 5,
   },
   containerFlat: {
     height: '100%',

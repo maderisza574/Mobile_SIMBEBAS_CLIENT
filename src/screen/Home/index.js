@@ -11,6 +11,9 @@ import {
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import Logo from '../../assets/img/BPBD.png';
+import {ImageSlider} from 'react-native-image-slider-banner';
+import {ScrollView} from 'react-native-gesture-handler';
+import {color} from 'react-native-reanimated';
 // import Foto from '../../assets/img/';
 
 export default function Home(props) {
@@ -40,7 +43,7 @@ export default function Home(props) {
   // const nav
 
   return (
-    <View>
+    <>
       <View style={style.containerTop}></View>
       <View style={style.containerButton}>
         <View style={style.cardWelcome}>
@@ -65,138 +68,170 @@ export default function Home(props) {
             </Text>
           </View>
         </View>
-        <View style={style.grupButton}>
+        <ScrollView>
           <View>
-            <View
-              style={{
-                backgroundColor: '#FF6A16',
-                width: 90,
-                height: 90,
-                borderRadius: 44 / 1,
-              }}>
-              <TouchableOpacity
-                onPress={navPusdalop}
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 5,
-                }}>
-                <Icon name="filetext1" color={'white'} size={50} />
-                <Text style={{color: 'white'}}>PUSDALOP</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View>
-            <View
-              style={{
-                backgroundColor: '#FF6A16',
-                width: 90,
-                height: 90,
-                borderRadius: 44 / 1,
-              }}>
-              <TouchableOpacity
-                onPress={navAsesmen}
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 5,
-                }}>
-                <Icon name="Safety" color={'white'} size={50} />
-                <Text style={{color: 'white'}}>Asesmen</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View>
-            <View
-              style={{
-                backgroundColor: '#FF6A16',
-                width: 90,
-                height: 90,
-                borderRadius: 44 / 1,
-              }}>
-              <TouchableOpacity
-                onPress={navVerifikator}
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 5,
-                }}>
-                <Icon name="team" color={'white'} size={50} />
-                <Text style={{color: 'white'}}>Verifikator</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-        <View style={style.grupButton2}>
-          <View>
-            <View
-              style={{
-                backgroundColor: '#FF6A16',
-                width: 90,
-                height: 90,
-                borderRadius: 44 / 1,
-              }}>
-              <TouchableOpacity
-                onPress={navLogpal}
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 5,
-                }}>
-                <Icon name="inbox" color={'white'} size={50} />
-                <Text style={{color: 'white'}}>Logpal</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View>
-            <View
-              style={{
-                backgroundColor: '#FF6A16',
-                width: 90,
-                height: 90,
-                borderRadius: 44 / 1,
-              }}>
-              <TouchableOpacity
-                onPress={navTrc}
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 5,
-                }}>
-                <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <View style={{marginLeft: '10%', marginTop: '6%'}}>
-                    <Icon name="flag" color={'white'} size={50} />
-                  </View>
-                  <View>
-                    <Text style={{color: 'white'}}>TRC</Text>
-                  </View>
+            <View style={style.grupButton}>
+              <View>
+                <View
+                  style={{
+                    backgroundColor: '#FF6A16',
+                    width: 90,
+                    height: 90,
+                    borderRadius: 44 / 1,
+                  }}>
+                  <TouchableOpacity
+                    onPress={navPusdalop}
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: 5,
+                    }}>
+                    <Icon name="filetext1" color={'white'} size={50} />
+                    <Text style={{color: 'white'}}>PUSDALOP</Text>
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
+              </View>
+              <View>
+                <View
+                  style={{
+                    backgroundColor: '#FF6A16',
+                    width: 90,
+                    height: 90,
+                    borderRadius: 44 / 1,
+                  }}>
+                  <TouchableOpacity
+                    onPress={navAsesmen}
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: 5,
+                    }}>
+                    <Icon name="Safety" color={'white'} size={50} />
+                    <Text style={{color: 'white'}}>Asesmen</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View>
+                <View
+                  style={{
+                    backgroundColor: '#FF6A16',
+                    width: 90,
+                    height: 90,
+                    borderRadius: 44 / 1,
+                  }}>
+                  <TouchableOpacity
+                    onPress={navVerifikator}
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: 5,
+                    }}>
+                    <Icon name="team" color={'white'} size={50} />
+                    <Text style={{color: 'white'}}>Verifikator</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <View style={style.grupButton2}>
+              <View>
+                <View
+                  style={{
+                    backgroundColor: '#FF6A16',
+                    width: 90,
+                    height: 90,
+                    borderRadius: 44 / 1,
+                  }}>
+                  <TouchableOpacity
+                    onPress={navLogpal}
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: 5,
+                    }}>
+                    <Icon name="inbox" color={'white'} size={50} />
+                    <Text style={{color: 'white'}}>Logpal</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View>
+                <View
+                  style={{
+                    backgroundColor: '#FF6A16',
+                    width: 90,
+                    height: 90,
+                    borderRadius: 44 / 1,
+                  }}>
+                  <TouchableOpacity
+                    onPress={navTrc}
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: 5,
+                    }}>
+                    <View
+                      style={{alignItems: 'center', justifyContent: 'center'}}>
+                      <View style={{marginLeft: '10%', marginTop: '6%'}}>
+                        <Icon name="flag" color={'white'} size={50} />
+                      </View>
+                      <View>
+                        <Text style={{color: 'white'}}>TRC</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View>
+                <View
+                  style={{
+                    backgroundColor: '#FF6A16',
+                    width: 90,
+                    height: 90,
+                    borderRadius: 44 / 1,
+                  }}>
+                  <TouchableOpacity
+                    onPress={navLogCepat}
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: 5,
+                    }}>
+                    <Icon name="exception1" color={'white'} size={50} />
+                    <Text style={{color: 'white'}}>LogCepat</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
           </View>
-          <View>
-            <View
-              style={{
-                backgroundColor: '#FF6A16',
-                width: 90,
-                height: 90,
-                borderRadius: 44 / 1,
-              }}>
-              <TouchableOpacity
-                onPress={navLogCepat}
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 5,
-                }}>
-                <Icon name="exception1" color={'white'} size={50} />
-                <Text style={{color: 'white'}}>LogCepat</Text>
-              </TouchableOpacity>
+          <View style={{paddingHorizontal: '3%'}}>
+            <View>
+              <Text
+                style={{color: 'black', fontWeight: 'bold', marginTop: '2%'}}>
+                Banner
+              </Text>
+            </View>
+            <View style={{width: '100%', height: '80%', borderRadius: 5}}>
+              <ImageSlider
+                data={[
+                  {
+                    img: 'https://monitorindonesia.com/wp-content/uploads/2022/05/WhatsApp-Image-2022-05-16-at-16.25.20.jpeg',
+                  },
+                  {
+                    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSg8cikBsNwefxO12X8Q3QxwME_YxKu9iRahA&usqp=CAU',
+                  },
+                  {
+                    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGHmFWobSfzJNBV_NL2Gb0wKxbfwtabxy1mg&usqp=CAU',
+                  },
+                ]}
+                autoPlay={true}
+                timer={5000}
+                onItemChanged={item => console.log('item', item)}
+                closeIconColor="#fff"
+              />
             </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
-    </View>
+    </>
   );
 }
 
@@ -228,7 +263,7 @@ const style = StyleSheet.create({
   },
   textSim: {
     color: '#0000ff',
-    marginRight: 5,
+    marginRight: '3%',
   },
   textBebas: {
     color: '#ff0000',
