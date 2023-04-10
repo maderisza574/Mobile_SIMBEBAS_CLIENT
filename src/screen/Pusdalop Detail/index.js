@@ -336,7 +336,7 @@ export default function PusdalopDetail(props) {
               alert('An error occurred while retrieving your location.');
             }
           },
-          {enableHighAccuracy: true, timeout: 1500},
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 0},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
@@ -522,7 +522,19 @@ export default function PusdalopDetail(props) {
               <MapView
                 region={mapRegion}
                 initialRegion={mapRegion}
-                style={{flex: 1, height: 200, width: '100%'}}>
+                style={{flex: 1, height: 200, width: '100%'}}
+                onRegionChangeComplete={region => {
+                  setMapRegion({
+                    ...mapRegion,
+                    latitude: region.latitude,
+                    longitude: region.longitude,
+                  });
+                  setDataUpdatePusdalop({
+                    ...dataUpdatePusdalop,
+                    lat: region.latitude.toString(),
+                    lng: region.longitude.toString(),
+                  });
+                }}>
                 <Marker
                   draggable
                   coordinate={{
