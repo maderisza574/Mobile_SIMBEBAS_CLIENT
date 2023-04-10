@@ -303,7 +303,6 @@ export default function PusdalopDetail(props) {
   };
   const requestLocationPermission = async () => {
     try {
-      setIsLoading(true);
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
@@ -315,33 +314,35 @@ export default function PusdalopDetail(props) {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        await Geolocation.watchPosition(
+        setLoading(true);
+        const watchId = Geolocation.watchPosition(
           position => {
-            setMapRegion({
-              ...mapRegion,
+            setRegion({
+              ...region,
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             });
-            setDataUpdatePusdalop({
-              ...dataUpdatePusdalop,
-              lat: position.coords.latitude.toString(),
-              lng: position.coords.longitude.toString(),
+            setDataPusdalop({
+              ...dataPusdalop,
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
             });
+            setLoading(false);
+            Geolocation.clearWatch(watchId); // Stop watching location
           },
-
           error => {
             if (error.code === error.TIMEOUT) {
               alert('Position unavailable. Please try again later.');
             } else {
               alert('An error occurred while retrieving your location.');
             }
+            setLoading(false);
           },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 0},
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
       }
-      setIsLoading(false);
     } catch (err) {
       console.warn(err);
     }

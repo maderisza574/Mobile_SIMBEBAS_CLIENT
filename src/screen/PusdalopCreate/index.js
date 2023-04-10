@@ -12,6 +12,7 @@ import {
   Image,
   RefreshControl,
   ActivityIndicator,
+  InteractionManager,
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -24,8 +25,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
-import Geolocation from '@react-native-community/geolocation';
-
+import Geolocation from 'react-native-geolocation-service';
 export default function PusdalopCreate(props) {
   // redux
   const dispatch = useDispatch();
@@ -78,7 +78,7 @@ export default function PusdalopCreate(props) {
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         setLoading(true);
-        await Geolocation.watchPosition(
+        const watchId = Geolocation.watchPosition(
           position => {
             setRegion({
               ...region,
@@ -91,6 +91,7 @@ export default function PusdalopCreate(props) {
               lng: position.coords.longitude,
             });
             setLoading(false);
+            Geolocation.clearWatch(watchId); // Stop watching location
           },
           error => {
             if (error.code === error.TIMEOUT) {
@@ -98,8 +99,9 @@ export default function PusdalopCreate(props) {
             } else {
               alert('An error occurred while retrieving your location.');
             }
+            setLoading(false);
           },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 0},
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
@@ -553,6 +555,32 @@ export default function PusdalopCreate(props) {
                   }
                 />
               </MapView>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: '3%',
+                }}>
+                <Pressable
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: '2%',
+                    width: '60%',
+                    height: 30,
+                    backgroundColor: '#1a8cff',
+                    borderRadius: 5,
+                  }}
+                  onPress={() => requestLocationPermission()}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontWeight: 'bold',
+                    }}>
+                    Dapatkan Lokasi Terkini
+                  </Text>
+                </Pressable>
+              </View>
             </View>
             <View
               style={{
