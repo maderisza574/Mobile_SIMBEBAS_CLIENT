@@ -33,7 +33,7 @@ export default function PusdalopCreate(props) {
   // end redux
   const [open, setOpen] = useState(false);
   const [dataNama, setDataNama] = useState('');
-  const [bencanaOptions, setBencanaOptions] = useState('');
+  const [bencanaOptions, setBencanaOptions] = useState([]);
   const [selected, setSelected] = React.useState(0);
   const [date, setDate] = useState(new Date());
   const [kecamatanOption, setKecamatanOption] = useState([]);
@@ -659,10 +659,13 @@ export default function PusdalopCreate(props) {
                     // marginRight: '1%',
                     width: '50%',
                   }}
-                  onChangeText={dataPusdalop =>
-                    handleChangeForm(dataPusdalop, 'no_telepon')
+                  onChangeText={text =>
+                    setDataPusdalop({
+                      ...dataPusdalop,
+                      no_telepon: text,
+                    })
                   }
-                  // value={dataTelp}
+                  value={dataPusdalop.no_telepon}
                   keyboardType="numeric"
                 />
               </View>

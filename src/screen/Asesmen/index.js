@@ -100,32 +100,25 @@ export default function Asesmen(props) {
                       style={{width: 100, height: 100}}
                     />
                     <View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        }}>
-                        <View>
-                          <Text style={style.textFlatlist}>{item.nama}</Text>
-                        </View>
-                        <View style={{marginLeft: '10%'}}>
-                          {item.lock_verif === false ? (
-                            <Text style={{color: 'red', marginLeft: '3%'}}>
-                              Assesmen
-                            </Text>
-                          ) : (
-                            <Text style={{color: 'green', marginLeft: '3%'}}>
-                              Assesmen
-                            </Text>
-                          )}
-                        </View>
-                      </View>
+                      <Text style={style.textFlatlist}>{item.nama}</Text>
                       <Text style={style.textFlatlist}>{item.alamat}</Text>
                       <Text style={style.textFlatlist}>
                         {moment(item.tanggal).format('YYYY-MM-DD')}
                       </Text>
                       <Text style={style.textFlatlist}>{item.isi_aduan}</Text>
-                      <View></View>
+                    </View>
+                    <View style={{}}>
+                      <View style={{marginLeft: '20%'}}>
+                        {item.lock_verif === false ? (
+                          <Text style={{color: 'red', marginLeft: '3%'}}>
+                            Assesmen
+                          </Text>
+                        ) : (
+                          <Text style={{color: 'green', marginLeft: '3%'}}>
+                            Assesmen
+                          </Text>
+                        )}
+                      </View>
                     </View>
                   </View>
                 </View>
