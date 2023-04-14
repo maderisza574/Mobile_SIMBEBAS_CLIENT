@@ -11,6 +11,8 @@ import {
   Pressable,
   Image,
   RefreshControl,
+  ActivityIndicator,
+  InteractionManager,
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -23,8 +25,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDataPusdalop} from '../../stores/actions/pusdalop';
-import Geolocation from '@react-native-community/geolocation';
-
+import Geolocation from 'react-native-geolocation-service';
 export default function PusdalopCreate(props) {
   // redux
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ export default function PusdalopCreate(props) {
   // end redux
   const [open, setOpen] = useState(false);
   const [dataNama, setDataNama] = useState('');
-  const [bencanaOptions, setBencanaOptions] = useState('');
+  const [bencanaOptions, setBencanaOptions] = useState([]);
   const [selected, setSelected] = React.useState(0);
   const [date, setDate] = useState(new Date());
   const [kecamatanOption, setKecamatanOption] = useState([]);
@@ -40,7 +41,8 @@ export default function PusdalopCreate(props) {
   const [inputs, setInputs] = useState([{value: '', image: null}]);
   const [images, setImages] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  // console.log('SETDATA', loading);
   const dataJenis = [
     {key: '1', value: 'PENCEGAHAN'},
     {key: '2', value: 'PENANGGULANGAN'},
@@ -60,10 +62,10 @@ export default function PusdalopCreate(props) {
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   });
+  const [isLoading, setIsLoading] = useState(true);
   // console.log('INI DATA MAP', region);
   const requestLocationPermission = async () => {
     try {
-      console.log('PRESSED MAP');
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
@@ -75,7 +77,8 @@ export default function PusdalopCreate(props) {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        await Geolocation.watchPosition(
+        setLoading(true);
+        const watchId = Geolocation.watchPosition(
           position => {
             setRegion({
               ...region,
@@ -87,16 +90,18 @@ export default function PusdalopCreate(props) {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             });
+            setLoading(false);
+            Geolocation.clearWatch(watchId); // Stop watching location
           },
-
           error => {
             if (error.code === error.TIMEOUT) {
               alert('Position unavailable. Please try again later.');
             } else {
               alert('An error occurred while retrieving your location.');
             }
+            setLoading(false);
           },
-          {enableHighAccuracy: true, timeout: 1500},
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
@@ -108,7 +113,7 @@ export default function PusdalopCreate(props) {
   useEffect(() => {
     // if (Platform.OS === 'android') {
     requestLocationPermission();
-    console.log('MAP');
+    // console.log('MAP');
     // } else {
     //   Geolocation.getCurrentPosition(
     //     position => {
@@ -132,7 +137,7 @@ export default function PusdalopCreate(props) {
     //     {enableHighAccuracy: true, timeout: 10000},
     //   );
     // }
-  }, [requestLocationPermission]);
+  }, []);
 
   useEffect(() => {
     axioses
@@ -276,7 +281,7 @@ export default function PusdalopCreate(props) {
             uri: v[k].uri,
           });
         });
-      console.log('INI DATA CREATE PUSDALOP', formData);
+      // console.log('INI DATA CREATE PUSDALOP', formData);
 
       const datauser = await AsyncStorage.getItem('token');
       // const datauser =
@@ -418,7 +423,7 @@ export default function PusdalopCreate(props) {
     image: images,
     keteranganImage: [],
   });
-  console.log('INI DATA PUSDALOP', dataPusdalop);
+  // console.log('INI DATA PUSDALOP', dataPusdalop);
 
   return (
     <View>
@@ -523,17 +528,59 @@ export default function PusdalopCreate(props) {
                 style={{flex: 1, height: 200, width: '100%'}}
                 initialRegion={region}
                 region={region}
-                onRegionChangeComplete={setRegion}
-                onPress={e => console.log(e.nativeEvent.coordinate)}>
+                onRegionChangeComplete={region => {
+                  setMapRegion({
+                    ...mapRegion,
+                    latitude: region.latitude,
+                    longitude: region.longitude,
+                  });
+                  setDataPusdalop({
+                    ...dataPusdalop,
+                    lat: region.latitude.toString(),
+                    lng: region.longitude.toString(),
+                  });
+                }}>
                 <Marker
                   draggable
                   coordinate={{
                     latitude: region.latitude,
                     longitude: region.longitude,
                   }}
-                  onDragEnd={onMarkerDragEnd}
+                  onDragEnd={e =>
+                    setMapRegion({
+                      ...mapRegion,
+                      latitude: e.nativeEvent.coordinate.latitude,
+                      longitude: e.nativeEvent.coordinate.longitude,
+                    })
+                  }
                 />
               </MapView>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: '3%',
+                }}>
+                <Pressable
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: '2%',
+                    width: '60%',
+                    height: 30,
+                    backgroundColor: '#1a8cff',
+                    borderRadius: 5,
+                  }}
+                  onPress={() => requestLocationPermission()}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontWeight: 'bold',
+                    }}>
+                    Dapatkan Lokasi Terkini
+                  </Text>
+                </Pressable>
+              </View>
             </View>
             <View
               style={{
@@ -542,17 +589,31 @@ export default function PusdalopCreate(props) {
                 justifyContent: 'space-between',
                 paddingHorizontal: '20%',
               }}>
-              <TextInput
-                value={`${region.latitude}`}
-                editable={false}
-                placeholder={dataPusdalop.lat.toString()}
-              />
-              <TextInput
-                value={`${region.longitude}`}
-                editable={false}
-                placeholder={dataPusdalop.lng.toString()}
-                keyboardtype="numeric"
-              />
+              {loading ? (
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <ActivityIndicator size="large" />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                  }}>
+                  <TextInput
+                    value={`${region.latitude}`}
+                    editable={false}
+                    placeholder={dataPusdalop.lat.toString()}
+                  />
+                  <TextInput
+                    value={`${region.longitude}`}
+                    editable={false}
+                    placeholder={dataPusdalop.lng.toString()}
+                    keyboardtype="numeric"
+                  />
+                </View>
+              )}
+
               {/* <Pressable
                 style={style.buttonSearchMap}
                 onPress={() => requestLocationPermission()}>
@@ -598,10 +659,13 @@ export default function PusdalopCreate(props) {
                     // marginRight: '1%',
                     width: '50%',
                   }}
-                  onChangeText={dataPusdalop =>
-                    handleChangeForm(dataPusdalop, 'no_telepon')
+                  onChangeText={text =>
+                    setDataPusdalop({
+                      ...dataPusdalop,
+                      no_telepon: text,
+                    })
                   }
-                  // value={dataTelp}
+                  value={dataPusdalop.no_telepon}
                   keyboardType="numeric"
                 />
               </View>

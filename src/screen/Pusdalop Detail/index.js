@@ -29,7 +29,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {black} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 
 export default function PusdalopDetail(props) {
   const dispatch = useDispatch();
@@ -57,7 +57,6 @@ export default function PusdalopDetail(props) {
   const [latitudeData, setLatitudeData] = useState('');
   const [longitudeData, setLongitudeData] = useState('');
   const [dataById, setDataByID] = useState({});
-  console.log('ini data pusdalop', dataById?.data?.subBencana?.sub_jenis);
   const dateStr = dataById?.data?.tanggal;
   const formatDate = moment(dateStr).format('YYYY-MM-DD HH:mm:ss');
   const lat = parseFloat(dataById?.data?.lat);
@@ -82,7 +81,7 @@ export default function PusdalopDetail(props) {
     logpal: false,
     tanggal: date.toISOString().slice(0, 10),
   });
-  console.log('INI DATA UPDATE', dataUpdatePusdalop);
+  // console.log('INI DATA UPDATE', dataUpdatePusdalop);
 
   const handleChangeNama = text => {
     setDataNama(text);
@@ -153,7 +152,34 @@ export default function PusdalopDetail(props) {
       console.log(error);
     }
   };
+  useEffect(() => {
+    try {
+      const lat = parseFloat(dataById?.data?.lat);
+      const lng = parseFloat(dataById?.data?.lng);
 
+      setMapRegion({
+        latitude: isNaN(lat) ? defaultLat : lat,
+        longitude: isNaN(lng) ? defaultLng : lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    } catch (error) {
+      console.error('Error parsing latitude and longitude values', error);
+      // fallback to default location
+      setMapRegion({
+        latitude: DEFAULT_LATITUDE,
+        longitude: DEFAULT_LONGITUDE,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    }
+  }, [dataById]);
+  const [mapRegion, setMapRegion] = useState({
+    latitude: defaultLat,
+    longitude: defaultLng,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
   const handleInputChange = (text, index) => {
     const newInputs = [...inputs];
     newInputs[index].value = text;
@@ -214,75 +240,11 @@ export default function PusdalopDetail(props) {
     }));
   };
   // for camera
-  const handleLaunchCamera = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: 'Cool Photo App Camera Permission',
-          message: 'Cool Photo App needs access to your camera ',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        launchCamera(
-          {
-            mediaType: 'photo',
-            includeBase64: false,
-            maxHeight: 200,
-            maxWidth: 200,
-          },
-          response => {
-            if (response.didCancel) {
-              console.log('User cancelled image picker');
-            }
-            if (response.errorCode) {
-              console.log('ImagePicker Error: ', response.errorMessage);
-            }
-            if (response.assets) {
-              const source = {
-                uri: response.assets[0].uri,
-                type: response.assets[0].type,
-                name: response.assets[0].fileName,
-              };
-              setImage(response.assets[0].uri);
-              // setImage({...image, image: source});
-            }
-          },
-        );
-      } else {
-        console.log('Camera permission denied');
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleLaunchImageLibrary = async () => {
-    const photo = await launchImageLibrary({
-      mediaType: 'photo',
-      maxWidth: 100,
-    });
-    const formData = new FormData();
-    formData.append('image', {
-      name: photo.assets[0].fileName,
-      type: photo.assets[0].type,
-      uri: photo.assets[0].uri,
-    });
-    setImage(photo.assets[0].uri);
-  };
-
   // const [stateMap, setStateMap] = useState({
   //   latitude: -7.431391,
   //   longitude: 109.247833,
   // });
-  const [mapRegion, setMapRegion] = useState({
-    latitude: isNaN(lat) ? defaultLat : lat,
-    longitude: isNaN(lng) ? defaultLng : lng,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
+
   // console.log('INI DATA MAP', mapRegion);
   // console.log(stateMap);
   const handleLatitudeChange = text => {
@@ -303,7 +265,6 @@ export default function PusdalopDetail(props) {
   };
   const requestLocationPermission = async () => {
     try {
-      setIsLoading(true);
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
@@ -315,33 +276,35 @@ export default function PusdalopDetail(props) {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        await Geolocation.watchPosition(
+        setLoading(true);
+        const watchId = Geolocation.watchPosition(
           position => {
-            setMapRegion({
-              ...mapRegion,
+            setRegion({
+              ...region,
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             });
             setDataUpdatePusdalop({
               ...dataUpdatePusdalop,
-              lat: position.coords.latitude.toString(),
-              lng: position.coords.longitude.toString(),
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
             });
+            setLoading(false);
+            Geolocation.clearWatch(watchId); // Stop watching location
           },
-
           error => {
             if (error.code === error.TIMEOUT) {
               alert('Position unavailable. Please try again later.');
             } else {
               alert('An error occurred while retrieving your location.');
             }
+            setLoading(false);
           },
-          {enableHighAccuracy: true, timeout: 1500},
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
       } else {
         alert('Error', 'ALAMAT YANG ANDA MASUKAN SALAH');
       }
-      setIsLoading(false);
     } catch (err) {
       console.warn(err);
     }
@@ -417,6 +380,7 @@ export default function PusdalopDetail(props) {
       props.navigation.navigate('Pusdalop');
     }
   };
+
   return (
     <View>
       <ScrollView>
@@ -522,7 +486,19 @@ export default function PusdalopDetail(props) {
               <MapView
                 region={mapRegion}
                 initialRegion={mapRegion}
-                style={{flex: 1, height: 200, width: '100%'}}>
+                style={{flex: 1, height: 200, width: '100%'}}
+                onRegionChangeComplete={region => {
+                  setMapRegion({
+                    ...mapRegion,
+                    latitude: region.latitude,
+                    longitude: region.longitude,
+                  });
+                  setDataUpdatePusdalop({
+                    ...dataUpdatePusdalop,
+                    lat: region.latitude.toString(),
+                    lng: region.longitude.toString(),
+                  });
+                }}>
                 <Marker
                   draggable
                   coordinate={{

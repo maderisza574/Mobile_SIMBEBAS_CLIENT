@@ -34,7 +34,6 @@ export default function AsesmenDetail(props) {
   const [dataById, setDataByID] = useState({});
   const pusdalopid = props.route.params.pusdalopId;
   const lat = parseFloat(dataById?.data?.lat);
-  console.log('INI DATA MAP', lat);
   const lng = parseFloat(dataById?.data?.lng);
   const defaultLat = -7.43973580004;
   const defaultLng = 109.244402567;
@@ -238,9 +237,8 @@ export default function AsesmenDetail(props) {
       });
 
       console.log(result);
-      console.log('INI DATA DALAM', formData);
       alert('SUKSES MEMBUAT ASSESMEN');
-      // props.navigation.navigate('Home');
+      props.navigation.navigate('Asesmen');
     } catch (error) {
       console.log(error);
     }
@@ -714,12 +712,20 @@ export default function AsesmenDetail(props) {
             <View style={{flexDirection: 'row', padding: 10}}>
               <View style={{marginRight: 60}}>
                 <Text style={style.textAsesmen}>Preview Image</Text>
-                {dataAssesmen.image[0]?.uri && (
+                {/* {dataAssesmen.image[0]?.uri && (
                   <Image
                     source={{
                       uri: dataAssesmen.image[0]
                         ? dataAssesmen.image[0]?.uri
                         : null,
+                    }}
+                    style={{height: 200, width: 200}}
+                  />
+                )} */}
+                {images && images[0] && images[0][0]?.uri && (
+                  <Image
+                    source={{
+                      uri: images[0][0].uri,
                     }}
                     style={{height: 200, width: 200}}
                   />

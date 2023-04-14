@@ -16,44 +16,65 @@ export default function Verifikator(props) {
   const [dataVerif, setDataVerif] = useState({});
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const datauser = await AsyncStorage.getItem('token');
-        const config = {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: 'Bearer ' + datauser,
-          },
-        };
-        const result = await axios.get(
-          `/v1/verfikasi?page=1&perPage=100`,
-          config,
-        );
-        setDataVerif(result.data.rows);
-
-        // await dispatch(getDataPusdalop());
-      } catch (error) {
-        alert('SILAHKAN LOGIN ULANG');
-        await AsyncStorage.clear();
-        props.navigation.replace('AuthScreen', {
-          screen: 'Login',
-        });
-      }
-    };
     fetchData();
   }, []);
+  const fetchData = async () => {
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      const result = await axios.get(
+        `/v1/verfikasi?page=1&perPage=100`,
+        config,
+      );
+      setDataVerif(result.data.rows);
 
+      // await dispatch(getDataPusdalop());
+    } catch (error) {
+      alert('SILAHKAN LOGIN ULANG');
+      await AsyncStorage.clear();
+      props.navigation.replace('AuthScreen', {
+        screen: 'Login',
+      });
+    }
+  };
   const navVerifDetail = id => {
     // setDataPusdalop(id);
     // console.log('ini id flat list', id);
     props.navigation.navigate('VerifikatorDetail', {pusdalopId: id});
   };
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    dispatch(getDataPusdalop()).finally(() => setRefreshing(false));
+    try {
+      const datauser = await AsyncStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + datauser,
+        },
+      };
+      const result = await axios.get(
+        `/v1/verfikasi?page=1&perPage=100`,
+        config,
+      );
+      setDataVerif(result.data.rows);
+    } catch (error) {
+      alert('SILAHKAN LOGIN ULANG');
+      await AsyncStorage.clear();
+      props.navigation.replace('AuthScreen', {
+        screen: 'Login',
+      });
+    } finally {
+      setRefreshing(false);
+    }
   };
+
   const handleEndReached = () => {
-    dispatch(getDataPusdalop());
+    dispatch(fetchData());
   };
   const renderItem = ({item}) => {
     // render your item here
@@ -97,49 +118,24 @@ export default function Verifikator(props) {
                 underlayColor="#eeeedd">
                 <View style={style.card}>
                   <View style={{flexDirection: 'row'}}>
-                    {/* <Image
-                    source={
-                      item.risalah[0]?.file
-                        ? {
-                            uri: `${item.risalah[0]?.file}`,
-                          }
-                        : require('../../assets/img/bencana1.png')
-                    }
-                    // source={{uri: `${item.risalah[0]?.file}`}}
-                    style={{width: 100, height: 100}}
-                  /> */}
                     <View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        }}>
-                        <View>
-                          <Text style={style.textFlatlist}>{item.nama}</Text>
-                        </View>
-                        <View style={{marginLeft: '40%'}}>
-                          {item.lock_gudang === false ? (
-                            <Text style={{color: 'red', marginLeft: '7%'}}>
-                              Verifikasi
-                            </Text>
-                          ) : (
-                            <Text style={{color: 'green', marginLeft: '7%'}}>
-                              Verifikasi
-                            </Text>
-                          )}
-                        </View>
-                      </View>
+                      <Text style={style.textFlatlist}>{item.nama}</Text>
                       <Text style={style.textFlatlist}>{item.alamat}</Text>
                       <Text style={style.textFlatlist}>
                         {moment(item.tanggal).format('YYYY-MM-DD')}
                       </Text>
                     </View>
-                    <View
-                      style={{
-                        paddingLeft: 280,
-                        flexDirection: 'row',
-                        position: 'absolute',
-                      }}></View>
+                    <View style={{marginLeft: '40%'}}>
+                      {item.lock_gudang === false ? (
+                        <Text style={{color: 'red', marginLeft: '7%'}}>
+                          Verifikasi
+                        </Text>
+                      ) : (
+                        <Text style={{color: 'green', marginLeft: '7%'}}>
+                          Verifikasi
+                        </Text>
+                      )}
+                    </View>
                   </View>
                 </View>
               </TouchableHighlight>

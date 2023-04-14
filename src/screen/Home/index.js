@@ -224,7 +224,7 @@ export default function Home(props) {
                 ]}
                 autoPlay={true}
                 timer={5000}
-                onItemChanged={item => console.log('item', item)}
+                // onItemChanged={item => console.log('item', item)}
                 closeIconColor="#fff"
               />
             </View>
